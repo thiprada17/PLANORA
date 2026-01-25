@@ -16,7 +16,7 @@ export default function GoogleButton({
         className="mr-3 h-5 w-5"
         resizeMode="contain"
       />
-      <Text className="font-kanitBold text-black">
+      <Text className="font-kanitRegular text-black">
         Continue with Google
       </Text>
     </Pressable>
