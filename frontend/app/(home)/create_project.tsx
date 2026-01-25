@@ -1,14 +1,27 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { useState } from "react";
+import { Feather } from "@expo/vector-icons";
+import { useFonts } from "expo-font";
 
-const create_project = () => {
+export default function CreateProject() {
+  const [step, setStep] = useState(0);
+  const [name, setName] = useState("");
+
+    const [fonts] = useFonts({
+    KanitBold: require("../../assets/fonts/KanitBold.ttf"),
+  });
+
+  const steps = [
+    { icon: "folder" },
+    { icon: "clipboard" },
+    { icon: "trello" },
+    { icon: "user-plus" },
+  ];
+
   return (
-    <View>
-      <Text className='justify-center text-center color-green'>Create Project</Text>
+    <View className="flex-1 bg-neutral-100 items-center pt-20">
+      <Text className="font-kanitBold text-2xl color-BLACK">Create Project</Text>
+
     </View>
-  )
+  );
 }
-
-export default create_project
-
-const styles = StyleSheet.create({})
