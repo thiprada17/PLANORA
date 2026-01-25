@@ -9,6 +9,7 @@ export default function Index() {
       </Text>
 
       <Link href="/(home)/create_project">create project</Link>
+      <Link href="/(authen)/login">LOGIN</Link>
     </View>
     
   );

@@ -10,6 +10,7 @@ module.exports = {
     extend: {
       fontFamily: {
         kanitBold: ["KanitBold"],
+        kanitRegular: ["KanitRegular"]
       },
       colors: {
         GREEN: '#CAEAD5',
