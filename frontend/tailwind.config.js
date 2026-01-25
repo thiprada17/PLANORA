@@ -10,8 +10,7 @@ module.exports = {
     extend: {
       fontFamily: {
         kanitBold: ["KanitBold"],
-        kanitRegular: ["KanitRegular"],
-        kanitMed: ["KanitMedium"]
+        kanitRegular: ["KanitRegular"]
       },
 
       colors: {
