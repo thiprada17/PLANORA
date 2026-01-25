@@ -12,7 +12,7 @@ export default function GoogleButton({
       className="mt-0 w-full flex-row items-center justify-center rounded-xl bg-white py-3 border border-gray-300"
     >
       <Image
-        source={icons.google}
+        source={icons.googleLogo}
         className="mr-3 h-5 w-5"
         resizeMode="contain"
       />
