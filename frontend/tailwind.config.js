@@ -12,6 +12,7 @@ module.exports = {
         kanitBold: ["KanitBold"],
         kanitRegular: ["KanitRegular"]
       },
+
       colors: {
         GREEN: '#CAEAD5',
         GRAY: '#F0F0F0',
