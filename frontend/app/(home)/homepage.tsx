@@ -58,7 +58,6 @@ export default function HomePage() {
 
             {/*กล่องโปรเจคตรงกลางจ้า*/}
             <View className="flex-1 bg-neutral-200 rounded-3xl p-4 shadow-inner">
-                {/*การ์โบวกแบบแก้ขัด*/}
                 <Pressable
                     onPress={() => router.push("/(home)/create_project")}
                     className="w-[160px] h-[160px] border-2 border-dashed border-neutral-400 rounded-3xl items-center justify-center bg-neutral-100"
