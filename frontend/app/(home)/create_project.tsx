@@ -4,10 +4,23 @@ import { useFonts } from "expo-font";
 import { icons } from "@/constants/icons";
 import { Image } from "react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
-import Dropdown from '../../components/dropdown'
+import DropDownPicker from "react-native-dropdown-picker";
+import { Stack } from "expo-router";
 
 export default function CreateProject() {
   const [showPicker, setShowPicker] = useState(false);
+
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(null);
+  const [items, setItems] = useState([
+    { label: "CN321", value: "CN321" },
+    { label: "CN334", value: "CN334" },
+    { label: "CN311", value: "CN311" },
+    { label: "SF222", value: "SF222" },
+    { label: "SF231", value: "SF231" },
+    { label: "SF251", value: "SF251" },
+  ]);
+
 
   const [fonts] = useFonts({
     KanitBold: require("../../assets/fonts/KanitBold.ttf"),
@@ -100,7 +113,7 @@ export default function CreateProject() {
           onPress={() => setShowPicker(true)}
           className="flex-row items-center border rounded-xl px-4 py-3 color-neutral-700 border-neutral-300 w-[85%] bg-white justify-between"
         >
-          <Text className={`font-kanitRegular ${project.deadline ? 'text-black' : 'text-neutral-400'}`}>
+          <Text className={`font-kanitRegular ${project.deadline ? 'text-black' : 'text-neutral-400'}`} >
             {project.deadline || "DD/MM/YY"}
           </Text>
 
@@ -121,24 +134,83 @@ export default function CreateProject() {
     </View>
   )
 
-    const Subject = () => (
+  const Subject = () => (
     <View>
       <Text className="font-kanitRegular color-BLACK mb-2">
         Subject
       </Text>
 
+      <View className="flex-row items-center" style={{ zIndex: 1000 }}>
+        <View className="w-[85%] ">
+          <DropDownPicker
+            style={{
+              borderColor: "#d4d4d8",
+              borderRadius: 12,
+              minHeight: 43,
+
+            }}
+            dropDownContainerStyle={{
+              borderColor: "#d4d4d8",
+              borderRadius: 12,
+            }}
+            textStyle={{
+              fontFamily: "KanitRegular",
+              color: "#404040",
+            }}
+            placeholderStyle={{
+              color: "#A3A3A3",
+              fontFamily: "KanitRegular",
+            }}
+            open={open}
+            value={value}
+            items={items}
+            setOpen={setOpen}
+            setValue={setValue}
+            setItems={setItems}
+            placeholder="SFXXX"
+            onChangeValue={(val) => {
+              if (val) setProject({ ...project, subject: val });
+            }}
+            listMode="SCROLLVIEW"
+          />
+
+        </View>
+        <CheckButton nothaveinput={!project.subject} />
+      </View>
+    </View>
+
+    
+  )
+
+  const Assign = () => (
+    <View>
+      <Text className="font-kanitRegular color-BLACK mb-2">
+        Assign
+      </Text>
+
       <View className="flex-row">
-          <Dropdown />
+        <TextInput
+          placeholder="JerseyJamTU"
+          className="font-kanitRegular border rounded-xl px-4 py-3 color-neutral-700 border-neutral-300 w-[85%]"
+          value={project.name}
+          onChangeText={(text) =>
+            setProject({ ...project, name: text })
+          }
+        />
         <CheckButton nothaveinput={project.name.trim().length == 0} />
       </View>
-    </View>  
+    </View>
   )
+
   
+
   if (!fonts) return null;
 
 
   return (
-    <View className="flex-1 bg-neutral-100 items-center pt-[6rem]">
+    <View className="flex-1 bg-neutral-100 items-center pt-[150px]">
+
+            <Stack.Screen options={{ headerShown: false }} />
       <Text className="font-kanitBold text-xl color-BLACK mb-7">CREATE PROJECT</Text>
       <View className="w-[90%] min-h-[280px] bg-white border border-neutral-900 rounded-2xl mt-2 px-6 py-6 shadow-sm">
 
@@ -176,6 +248,7 @@ export default function CreateProject() {
           {step == 1 && ProjectName()}
           {step == 2 && Deadline()}
           {step == 3 && Subject()}
+                   {step == 4 && Assign()}
         </View>
 
 
