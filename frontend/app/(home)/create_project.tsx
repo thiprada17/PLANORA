@@ -1,15 +1,19 @@
-import { View, Text, TextInput, TouchableOpacity, Pressable } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Pressable, Button } from "react-native";
 import { useState } from "react";
 import { useFonts } from "expo-font";
 import { icons } from "@/constants/icons";
 import { Image } from "react-native";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import Dropdown from '../../components/dropdown'
 
 export default function CreateProject() {
-const [fontsLoaded] = useFonts({
+  const [showPicker, setShowPicker] = useState(false);
+
+  const [fonts] = useFonts({
     KanitBold: require("../../assets/fonts/KanitBold.ttf"),
     KanitRegular: require("../../assets/fonts/KanitRegular.ttf"),
-    KanitMed: require("../../assets/fonts/KanitMediumItalic.ttf"),
   });
+
 
   const [project, setProject] = useState({
     name: "",
@@ -20,7 +24,6 @@ const [fontsLoaded] = useFonts({
 
   const [step, setStep] = useState(1);
 
-  if (!fontsLoaded) return null;
   const getStepCircleStyle = (currentStep: number, stepNumber: number) => {
     if (currentStep > stepNumber) {
       // ผ่านแล้ว
@@ -45,10 +48,16 @@ const [fontsLoaded] = useFonts({
       : "w-10 h-0.5 bg-neutral-300 ml-[7px] mr-[7px]";
   };
 
-  const CheckButton = () => (
+
+
+  const CheckButton = ({ nothaveinput }: { nothaveinput: boolean }) => (
     <Pressable
-      className="bg-GREEN ml-2 px-6 py-3 rounded-lg w-1 items-center justify-center"
-      onPress={() => step < 4 && setStep(step + 1)}>
+      className={`bg-GREEN ml-2 px-6 py-3 rounded-lg w-1 items-center justify-center ${nothaveinput ? 'opacity-50' : ''}`}
+      onPress={() => {
+        if (!nothaveinput && step < 4) {
+          setStep(step + 1)
+        }
+      }}>
 
       <Image source={icons.check} className="items-center justify-center w-6 h-6" />
     </Pressable>
@@ -56,32 +65,84 @@ const [fontsLoaded] = useFonts({
 
   const ProjectName = () => (
     <View>
-      <Text className="font-kanitMed color-BLACK mb-2">
+      <Text className="font-kanitRegular color-BLACK mb-2">
         Project Name
       </Text>
 
       <View className="flex-row">
         <TextInput
           placeholder="JerseyJamTU"
-          className="border rounded-xl px-4 py-3 border-neutral-300 w-[85%]"
+          className="font-kanitRegular border rounded-xl px-4 py-3 color-neutral-700 border-neutral-300 w-[85%]"
           value={project.name}
-          onChangeText = {(text) =>
-            setProject({ ...project, name: text})
+          onChangeText={(text) =>
+            setProject({ ...project, name: text })
           }
         />
-        <CheckButton />
+        <CheckButton nothaveinput={project.name.trim().length == 0} />
       </View>
     </View>
-  );
+  )
 
+  const onDateChange = (event: any, selectedDate?: Date) => {
+    setShowPicker(false);
+    if (selectedDate) {
+      const formattedDate = `${selectedDate.getDate()}/${selectedDate.getMonth() + 1}/${selectedDate.getFullYear().toString().slice(-2)}`;
+      setProject({ ...project, deadline: formattedDate });
+    }
+  };
+
+  const Deadline = () => (
+    <View>
+      <Text className="font-kanitRegular color-BLACK mb-2">Deadline</Text>
+
+      <View className="flex-row items-center">
+        <Pressable
+          onPress={() => setShowPicker(true)}
+          className="flex-row items-center border rounded-xl px-4 py-3 color-neutral-700 border-neutral-300 w-[85%] bg-white justify-between"
+        >
+          <Text className={`font-kanitRegular ${project.deadline ? 'text-black' : 'text-neutral-400'}`}>
+            {project.deadline || "DD/MM/YY"}
+          </Text>
+
+          <Image source={icons.calendar} className="w-5 h-5 opacity-50" />
+        </Pressable>
+        <CheckButton nothaveinput={!project.deadline} />
+
+      </View>
+
+      {showPicker && (
+        <DateTimePicker
+          value={new Date()}
+          mode="date"
+          display="default"
+          onChange={onDateChange}
+        />
+      )}
+    </View>
+  )
+
+    const Subject = () => (
+    <View>
+      <Text className="font-kanitRegular color-BLACK mb-2">
+        Subject
+      </Text>
+
+      <View className="flex-row">
+          <Dropdown />
+        <CheckButton nothaveinput={project.name.trim().length == 0} />
+      </View>
+    </View>  
+  )
+  
+  if (!fonts) return null;
 
 
   return (
-    <View className="flex-1 bg-neutral-100 items-center pt-[8rem]">
+    <View className="flex-1 bg-neutral-100 items-center pt-[6rem]">
       <Text className="font-kanitBold text-xl color-BLACK mb-7">CREATE PROJECT</Text>
-      <View className="w-[90%] min-h-[280px] bg-white border border-neutral-300 rounded-2xl mt-6 px-6 py-6">
+      <View className="w-[90%] min-h-[280px] bg-white border border-neutral-900 rounded-2xl mt-2 px-6 py-6 shadow-sm">
 
-        <View className="flex-row justify-center items-start mt-4">
+        <View className="flex-row justify-center items-start mt-2 mb-8">
 
 
           <View className="flex-row items-center">
@@ -111,8 +172,10 @@ const [fontsLoaded] = useFonts({
 
         </View>
 
-        <View className="flex-1 justify-center">
-          {step === 1 && <ProjectName />}
+        <View className="flex-1 justify-start pt-3">
+          {step == 1 && ProjectName()}
+          {step == 2 && Deadline()}
+          {step == 3 && Subject()}
         </View>
 
 
