@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useRef, useState } from 'react';
 import { useFonts } from 'expo-font';
-import GoogleButton from './googleBtn';
+import GoogleButton from '../(authen)/googleBtn';
 
 const screenHeight = Dimensions.get('window').height;
 
