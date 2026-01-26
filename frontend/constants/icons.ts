@@ -6,6 +6,9 @@ import googleLogo from "@/assets/icons/google.png";
 import topic from "@/assets/icons/topic.png";
 import back from "@/assets/icons/back.png";
 import calendar from "@/assets/icons/calendar.png";
+import profile from "@/assets/icons/profile.png";
+import home_garden from "@/assets/icons/home_garden.png";
+import filter from "@/assets/icons/filter.png";
 
 export const icons = {
   deadline,
@@ -15,7 +18,8 @@ export const icons = {
   googleLogo,
   topic,
   back,
-  calendar
-
-
+  calendar,
+  profile,
+  home_garden,
+  filter,
 };
