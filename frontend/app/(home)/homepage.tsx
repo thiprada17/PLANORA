@@ -1,161 +1,212 @@
-import { View, Text, Pressable, Image, Modal } from "react-native";
+import { View, Text, Pressable, Image, Modal, ScrollView } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { icons } from "@/constants/icons";
 import { useFonts } from "expo-font";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import DropDownPicker from "react-native-dropdown-picker";
 
 export default function HomePage() {
   const router = useRouter();
-
+  const user = {
+    name: "Pony",
+    email: "pony@gmail.com",
+  };
   const [openFilter, setOpenFilter] = useState(false);
-  const [openStatus, setOpenStatus] = useState(false);
-  const [status, setStatus] = useState<"All" | "Process" | "Complete">("All");
+  const [statusOpen, setStatusOpen] = useState(false);
+  const [statusValue, setStatusValue] = useState("ALL");
 
+  const statusItems = [
+    { label: "Status: ALL", value: "ALL" },
+    { label: "Status: PROCESS", value: "PROCESS" },
+    { label: "Status: COMPLETE", value: "COMPLETE" },];
   const [date, setDate] = useState<Date | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
-
-  const [fonts] = useFonts({
+  const [fontsLoaded] = useFonts({
     KanitBold: require("../../assets/fonts/KanitBold.ttf"),
     KanitRegular: require("../../assets/fonts/KanitRegular.ttf"),
   });
 
-  if (!fonts) return null;
+  if (!fontsLoaded) return null;
+
+  const FILTER_HEIGHT = 30;
+  const FILTER_RADIUS = 11;
+  const FILTER_TEXT_SIZE = 9;
 
   return (
-    <View className="flex-1 pt-0 px-5">
-      <View className="flex-row justify-between items-start mb-6">
-
-        {/*PROFILE*/}
+    <View className="flex-1 bg-white px-5 pb-8">
+      <View className="flex-row justify-between items-start mb-2">
         <View className="flex-row items-center">
-          <View className="w-12 h-12 rounded-full items-center justify-center mr-3">
-            <Image source={icons.profile} className="w-6 h-6" />
+          <View className="w-12 h-12 rounded-full items-center justify-center">
+            <Image source={icons.profile} className="w-6 h-6 mr-2" />
           </View>
-
-          <View>
-            <Text className="font-kanitBold text-base text-black">
-              Pony
-            </Text>
-            <Text className="font-kanitRegular text-xs text-neutral-500">
-              pony@gmail.com
-            </Text>
+          <View> {/* leading = lineHeight น้า */}
+            <Text className="font-kanitBold text-base leading-[17px] text-black">{user.name}</Text>
+            <Text className="font-kanitRegular text-xs leading-[10px] text-neutral-500">{user.email}</Text>
           </View>
         </View>
-
-        <Pressable className="flex-row items-center">
+        <Pressable
+          className="flex-row items-center mt-2"
+          onPress={() => router.replace("/login")}>
           <Image source={icons.door_open} className="w-5 h-5 mr-1" />
-          <Text className="text-red-500 font-kanitRegular">
-            Log out
-          </Text>
+          <Text className="text-red-500 font-kanitRegular">Log out</Text>
         </Pressable>
       </View>
-
-      <View className="flex-row justify-between items-center">
-        <Text className="font-kanitBold text-[50px] text-black">
-          Planora
-        </Text>
-
-        <View className="flex-row items-center top-3">
-          <Image source={icons.home_garden} className="w-4 h-4 mr-2" />
-          <Text className="font-kanitRegular text-black">
-            Pony's Homepage
+      <View className="flex-row items-baseline justify-between px-1 mt-2">
+        <Text className="font-kanitBold text-[50px] leading-[56px] text-black">Planora</Text>
+        <View className="flex-row items-center">
+          <Image source={icons.home_garden} className="w-3.5 h-3.5 mr-1.5" />
+          <Text className="font-kanitRegular text-sm text-black">
+            {user.name}&apos;s Homepage
           </Text>
         </View>
       </View>
 
-      <View className="flex-row justify-end items-center mb-6 space-x-2">
+      {/*FILTER*/}
+      <View className="px-2 py-2 mb-3">
+        <View className="flex-row justify-end items-center space-x-2">
 
-        {/*STATUS*/}
-        <Pressable
-          className="flex-row items-center border border-neutral-300 rounded-full px-4 py-2"
-          onPress={() => setOpenStatus(!openStatus)}
-        >
-          <Text className="text-sm mr-2">Status: {status}</Text>
-          <Image source={icons.arrow_down} className="w-3 h-3" />
-        </Pressable>
-
-        {/*DEADLINE*/}
-        <Pressable
-          className="flex-row items-center border border-neutral-300 rounded-full px-4 py-2"
-          onPress={() => setShowDatePicker(true)}
-        >
-          <Text className="text-sm mr-2">
-            {date ? date.toDateString() : "Deadline"}
-          </Text>
-          <Image source={icons.arrow_down} className="w-3 h-3" />
-        </Pressable>
-
-        <Pressable
-          className="border border-neutral-300 rounded-full p-3"
-          onPress={() => setOpenFilter(true)}
-        >
-          <Image source={icons.filter} className="w-6 h-6" />
-        </Pressable>
-      </View>
-
-      {openStatus && (
-        <View className="absolute top-[265px] right-24 bg-white border border-neutral-200 rounded-xl shadow-lg z-50">
-          {["All", "Process", "Complete"].map((item) => (
-            <Pressable
-              key={item}
-              className="px-4 py-3"
-              onPress={() => {
-                setStatus(item as any);
-                setOpenStatus(false);
+          {/* STATUS */}
+          <View style={{ width: 110, zIndex: 50, marginRight: 8 }}>
+            <DropDownPicker
+              open={statusOpen}
+              value={statusValue}
+              items={statusItems}
+              setOpen={setStatusOpen}
+              setValue={setStatusValue}
+              listMode="SCROLLVIEW"
+              containerStyle={{
+                height: FILTER_HEIGHT,
               }}
-            >
-              <Text>{item}</Text>
+              style={{
+                height: FILTER_HEIGHT,
+                minHeight: FILTER_HEIGHT,       // มันชอบอ้วน ต้องดักทาง
+                borderRadius: FILTER_RADIUS,
+                borderColor: "#D1D5DB",
+                paddingHorizontal: 10,
+                backgroundColor: "#fff",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              textStyle={{
+                fontSize: FILTER_TEXT_SIZE,
+                lineHeight: FILTER_TEXT_SIZE + 1,
+                color: "#6B7280",
+              }}
+              labelStyle={{
+                fontSize: FILTER_TEXT_SIZE,
+              }}
+              ArrowDownIconComponent={() => (
+                <Image source={icons.arrow_down} className="w-3 h-3" />
+              )}
+              dropDownContainerStyle={{
+                borderRadius: 14,
+                borderColor: "#D1D5DB",
+                backgroundColor: "#fff",
+                marginTop: 6,
+              }}
+            />
+          </View>
+
+          {/* DEADLINE */}
+          <View className="h-[30px] w-[110px] rounded-[11px] border border-gray-300 px-2.5 flex-row items-center bg-white mr-2">
+            <Pressable
+              style={{ flex: 1 }}
+              onPress={() => setShowDatePicker(true)}>
+              <Text
+                style={{ fontSize: FILTER_TEXT_SIZE, color: "#000" }}
+                numberOfLines={1}>
+                <Text
+                  style={{
+                    fontSize: FILTER_TEXT_SIZE,
+                    color: date ? "#000" : "#6B7280",
+                  }}
+                  numberOfLines={1}>
+                  {date ? date.toLocaleDateString() : "Deadline"}
+                </Text>
+              </Text>
             </Pressable>
-          ))}
+            {date && (
+              <Pressable onPress={() => setDate(null)}>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    color: "#6B7280",
+                    marginHorizontal: 4,
+                  }}>
+                  Any
+                </Text>
+              </Pressable>
+            )}
+            <Image source={icons.arrow_down} className="w-3 h-3" />
+            {showDatePicker && (
+              <View
+                style={{
+                  position: "absolute",
+                  top: FILTER_HEIGHT + 8,
+                  right: 0,
+                  backgroundColor: "#E5E7EB",
+                  borderRadius: 16,
+                  padding: 8,
+                  zIndex: 100,
+                }}
+              >
+                <DateTimePicker
+                  value={date ?? new Date()}
+                  mode="date"
+                  display="default"
+                  onChange={(_, selectedDate) => {
+                    setShowDatePicker(false);
+                    if (selectedDate) setDate(selectedDate);
+                  }}
+                />
+              </View>
+            )}
+          </View>
+          {/* FILTER ICON */}
+          <Pressable
+            onPress={() => setOpenFilter(true)}
+            style={{
+              height: FILTER_HEIGHT,
+              width: FILTER_HEIGHT,
+              borderRadius: FILTER_RADIUS,
+              borderWidth: 1,
+              borderColor: "#D1D5DB",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "#fff",
+            }}
+          >
+            <Image source={icons.filter} className="w-6 h-6 pt-1" />
+          </Pressable>
         </View>
-      )}
-
-      {showDatePicker && (
-        <DateTimePicker
-          value={date ?? new Date()}
-          mode="date"
-          onChange={(_, selectedDate) => {
-            setShowDatePicker(false);
-            if (selectedDate) setDate(selectedDate);
-          }}
-        />
-      )}
-
-      <View
-        className="
-          flex-1 
-          bg-neutral-200 
-          rounded-3xl 
-          p-4
-          shadow-inner
-        "
-        style={{
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: -4 },
-          shadowOpacity: 0.25,
-          shadowRadius: 6,
-        }}
-      >
-        <Pressable
-          onPress={() => router.push("/(home)/create_project")}
-          className="w-[160px] h-[160px] border-2 border-dashed border-neutral-400 rounded-3xl items-center justify-center bg-neutral-100"
-        >
-          <Text className="text-4xl text-neutral-400">+</Text>
-        </Pressable>
       </View>
-
+      <View className="flex-1 bg-white rounded-3xl p-0.5">
+        <View className="flex-1 bg-gray-200 rounded-[22px] p-0.5">
+          <View className="flex-1 bg-gray-100 rounded-[21px] overflow-hidden">
+            <ScrollView
+              contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
+              showsVerticalScrollIndicator={false}
+            >
+              <Pressable
+                onPress={() => router.push("/(home)/create_project")}
+                className="w-[150px] h-[150px] mt-4 rounded-3xl
+                     border-2 border-dashed border-neutral-400
+                     bg-white items-center justify-center"
+              >
+                <Text className="text-4xl text-neutral-400">+</Text>
+              </Pressable>
+            </ScrollView>
+          </View>
+        </View>
+      </View>
       <Modal transparent animationType="slide" visible={openFilter}>
         <Pressable
           className="flex-1 bg-black/30"
-          onPress={() => setOpenFilter(false)}
-        >
+          onPress={() => setOpenFilter(false)}>
           <View className="absolute bottom-0 w-full bg-white rounded-t-3xl p-6 h-[250px]">
-            <Text className="font-kanitBold text-lg mb-2">
-              Filter
-            </Text>
-            <Text className="text-neutral-500">
-              ยังไม่มีอะไรจ้า
-            </Text>
+            <Text className="font-kanitBold text-lg mb-2">Filter</Text>
+            <Text className="text-neutral-500">ยังไม่มีอะไรจ้า</Text>
           </View>
         </Pressable>
       </Modal>
