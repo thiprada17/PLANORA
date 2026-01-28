@@ -40,7 +40,7 @@ export default function HomePage() {
           <View className="w-12 h-12 rounded-full items-center justify-center">
             <Image source={icons.profile} className="w-6 h-6 mr-2" />
           </View>
-          <View> {/* leading = lineHeight น้า */}
+          <View>
             <Text className="font-kanitBold text-base leading-[17px] text-black">{user.name}</Text>
             <Text className="font-kanitRegular text-xs leading-[10px] text-neutral-500">{user.email}</Text>
           </View>
@@ -57,16 +57,12 @@ export default function HomePage() {
         <View className="flex-row items-center">
           <Image source={icons.home_garden} className="w-3.5 h-3.5 mr-1.5" />
           <Text className="font-kanitRegular text-sm text-black">
-            {user.name}&apos;s Homepage
+            {user.name}'s Homepage
           </Text>
         </View>
       </View>
-
-      {/*FILTER*/}
       <View className="px-2 py-2 mb-3">
-        <View className="flex-row justify-end items-center space-x-2">
-
-          {/* STATUS */}
+        <View className="flex-row justify-end items-center">
           <View style={{ width: 110, zIndex: 50, marginRight: 8 }}>
             <DropDownPicker
               open={statusOpen}
@@ -107,8 +103,6 @@ export default function HomePage() {
               }}
             />
           </View>
-
-          {/* DEADLINE */}
           <View className="h-[30px] w-[110px] rounded-[11px] border border-gray-300 px-2.5 flex-row items-center bg-white mr-2">
             <Pressable
               style={{ flex: 1 }}
@@ -163,7 +157,6 @@ export default function HomePage() {
               </View>
             )}
           </View>
-          {/* FILTER ICON */}
           <Pressable
             onPress={() => setOpenFilter(true)}
             style={{
@@ -177,7 +170,9 @@ export default function HomePage() {
               backgroundColor: "#fff",
             }}
           >
-            <Image source={icons.filter} className="w-6 h-6 pt-1" />
+            <View className="pt-1">
+              <Image source={icons.filter} className="w-6 h-6" />
+            </View>
           </Pressable>
         </View>
       </View>
