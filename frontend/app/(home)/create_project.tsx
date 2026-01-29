@@ -238,7 +238,7 @@ export default function CreateProject() {
 
             <Text className="font-kanitRegular color-BLACK mb-2">Assign (Email)</Text>
 
-            <View className="flex-row flex-wrap items-center border rounded-xl p-2 border-neutral-300 bg-white max-h-[90px]">
+            <View className="flex-row flex-wrap items-center border rounded-xl p-2 border-neutral-300 bg-white max-h-[60px]">
               <ScrollView
                 contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}
                 showsVerticalScrollIndicator={true}
