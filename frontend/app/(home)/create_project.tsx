@@ -9,6 +9,7 @@ import { Stack } from "expo-router";
 import { Animated } from "react-native";
 import { useRef, useEffect } from "react";
 import { navigate } from "expo-router/build/global-state/routing";
+import { Keyboard, TouchableWithoutFeedback } from "react-native";
 
 
 export default function CreateProject() {
@@ -102,24 +103,12 @@ export default function CreateProject() {
 
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <View className="flex-1 bg-neutral-100 items-center pt-[50px]">
 
       <Stack.Screen options={{ headerShown: false }} />
 
-      <Pressable
-        className={`mb-7 px-6 py-3 rounded-xl items-center ${readytocreate ? "bg-GREEN" : ""}`}
-        disabled={!readytocreate}
-        onPress={() => {
-          console.log("Create project:", project);
-          navigate('/homepage')
-        }}
-      >
-        <Text
-          className={`font-kanitBold text-lg ${readytocreate ? "text-BLACK" : "text-neutral-500"}`}>
-          {readytocreate ? "CREATE PROJECT" : "FILL ALL STEPS"}
-        </Text>
-      </Pressable>
-
+<Text className="font-kanitBold text-xl color-BLACK mb-7">CREATE PROJECT</Text>
 
 
       <View className="w-[90%] min-h-[280px] bg-white border border-neutral-900 rounded-2xl mt-2 px-6 py-6 shadow-sm">
@@ -249,7 +238,7 @@ export default function CreateProject() {
 
             <Text className="font-kanitRegular color-BLACK mb-2">Assign (Email)</Text>
 
-            <View className="flex-row flex-wrap items-center border rounded-xl p-2 border-neutral-300 bg-white max-h-[90px]">
+            <View className="flex-row flex-wrap items-center border rounded-xl p-2 border-neutral-300 bg-white max-h-[60px]">
               <ScrollView
                 contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}
                 showsVerticalScrollIndicator={true}
@@ -295,6 +284,20 @@ export default function CreateProject() {
 
 
             <Text className="text-[10px] text-neutral-400 mt-1">* Enter to add email</Text>
+
+                  <Pressable
+        className={`mb-7 px-6 py-3 pt-2 h-[30px] mt-5 rounded-xl items-center ${readytocreate ? "bg-GREEN" : ""}`}
+        disabled={!readytocreate}
+        onPress={() => {
+          console.log("Create project:", project);
+          navigate('/homepage')
+        }}
+      >
+        <Text
+          className={`font-kanitBold text-[10px] ${readytocreate ? "text-BLACK" : "text-neutral-500"}`}>
+          {readytocreate ? "CREATE PROJECT" : ""}
+        </Text>
+      </Pressable>
           </View>
 
 
@@ -311,6 +314,6 @@ export default function CreateProject() {
 
 
     </View >
-
+</TouchableWithoutFeedback>
   );
 }
