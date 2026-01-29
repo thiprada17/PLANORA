@@ -27,7 +27,6 @@ export default function CreateProject() {
     KanitRegular: require("../../assets/fonts/KanitRegular.ttf"),
   });
 
-
   const [project, setProject] = useState({
     name: "",
     deadline: "",
@@ -260,8 +259,6 @@ export default function CreateProject() {
           <Image source={icons.back} className="w-4 h-4" />
         </Pressable>
       </View>
-
-
     </View >
 
   );

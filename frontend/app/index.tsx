@@ -10,6 +10,8 @@ export default function Index() {
 
       <Link href="/(home)/create_project">create project</Link>
       <Link href="/(authen)/login">LOGIN</Link>
+      <Link href="/(home)/homepage">HOMEPAGE</Link>
+
     </View>
     
   );

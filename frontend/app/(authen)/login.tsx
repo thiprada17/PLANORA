@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useRef, useState } from 'react';
 import { useFonts } from 'expo-font';
-import GoogleButton from './googleBtn';
+import GoogleButton from '../(authen)/googleBtn';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -21,7 +21,7 @@ export default function Index() {
 
     const openSignup = () => {
         Animated.timing(loginY, {
-            toValue: 320,
+            toValue: 360,
             duration: 300,
             useNativeDriver: true,
         }).start();
@@ -66,9 +66,41 @@ export default function Index() {
                     </Pressable>
 
                     {isSignupOpen && (
-                        <Text className="mt-6 text-xl font-kanitRegular">
-                            Sign up
-                        </Text>
+                        <View className="mt-6">
+                            <TextInput
+                                placeholder="Username"
+                                placeholderTextColor="#9CA3AF"
+                                autoCapitalize="none"
+                                className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+                            />
+                            <TextInput
+                                placeholder="Email"
+                                placeholderTextColor="#9CA3AF"
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                                className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+                            />
+                            <TextInput
+                                placeholder="Password"
+                                placeholderTextColor="#9CA3AF"
+                                secureTextEntry
+                                className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+                            />
+                            <Pressable className="rounded-xl bg-black py-3">
+                                <Text className="text-center font-kanitBold text-white">
+                                    Sign Up
+                                </Text>
+                            </Pressable>
+
+                            <View className="my-4 flex-row items-center">
+                                <View className="h-px flex-1 bg-gray-300" />
+                                <Text className="mx-2 font-kanitRegular text-sm text-gray-500">
+                                    or
+                                </Text>
+                                <View className="h-px flex-1 bg-gray-300" />
+                            </View>
+                            <GoogleButton onPress={() => console.log('Google signup')} />
+                        </View>
                     )}
                 </View>
 
@@ -97,10 +129,10 @@ export default function Index() {
                                 placeholder="Password"
                                 placeholderTextColor="#9CA3AF"
                                 secureTextEntry
-                                className="rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+                                className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"
                             />
 
-                            <Pressable className="mt-6 rounded-xl bg-black py-3">
+                            <Pressable className="rounded-xl bg-black py-3">
                                 <Text className="text-center font-kanitBold text-white">
                                     Login
                                 </Text>
