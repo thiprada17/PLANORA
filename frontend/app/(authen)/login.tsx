@@ -16,8 +16,9 @@ const screenHeight = Dimensions.get('window').height;
 export default function Index() {
     const [isSignupOpen, setIsSignupOpen] = useState(false);
     const loginY = useRef(new Animated.Value(0)).current;
-    const colorScheme = useColorScheme();
-    const isDark = colorScheme === 'dark';
+    const [username, setUsername] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
 
     const openSignup = () => {
         Animated.timing(loginY, {
@@ -43,6 +44,31 @@ export default function Index() {
 
     if (!fonts) return null;
 
+    //signup dtb
+    const handleSignup = async () => {
+    try {
+        // ตอนนี้มันต้องเปลี่ยน ip ที่จะ fetch ตาามเครื่องน้าา ยุ่งยากมาก
+        const res = await fetch('http://192.168.1.125:3000/api/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username,
+                email,
+                password
+            })
+        })
+        const data = await res.json()
+        if (!res.ok) {
+            alert(data.message || data.error)
+            return
+        }
+        alert('Signup success')
+    } catch (err) {
+        console.log(err)
+    }
+}
     return (
         <View className="flex-1 bg-white">
             <View
@@ -69,12 +95,16 @@ export default function Index() {
                         <View className="mt-6">
                             <TextInput
                                 placeholder="Username"
+                                value={username}
+                                onChangeText={setUsername}
                                 placeholderTextColor="#9CA3AF"
                                 autoCapitalize="none"
                                 className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"
                             />
                             <TextInput
                                 placeholder="Email"
+                                value={email}
+                                onChangeText={setEmail}
                                 placeholderTextColor="#9CA3AF"
                                 keyboardType="email-address"
                                 autoCapitalize="none"
@@ -82,11 +112,13 @@ export default function Index() {
                             />
                             <TextInput
                                 placeholder="Password"
+                                value={password}
+                                onChangeText={setPassword}
                                 placeholderTextColor="#9CA3AF"
                                 secureTextEntry
                                 className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"
                             />
-                            <Pressable className="rounded-xl bg-black py-3">
+                            <Pressable onPress={handleSignup} className="rounded-xl bg-black py-3">
                                 <Text className="text-center font-kanitBold text-white">
                                     Sign Up
                                 </Text>
