@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useRef, useState } from 'react';
 import { useFonts } from 'expo-font';
-import GoogleButton from './googleBtn';
+import GoogleButton from '../(authen)/googleBtn';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -58,7 +58,7 @@ export default function Index() {
 
             {/*Card*/}
             <View className="flex-1 items-center">
-                <View className="absolute -top-4 h-full w-[90%] rounded-t-[28px] bg-GREEN px-5 pt-4 shadow-lg">
+                <View className="absolute -top-4 h-full w-[90%] rounded-t-[28px] bg-GREEN px-5 pt-4 shadow-sm">
                     <Pressable className="py-3" onPress={openSignup}>
                         <Text className="font-kanitBold text-xl">
                             Sign Up
@@ -106,7 +106,7 @@ export default function Index() {
 
                 {/*login*/}
                 <Animated.View
-                    className="absolute top-14 h-full w-[90%] rounded-t-[28px] border border-black bg-GRAY px-5 pt-4 shadow-lg"
+                    className="absolute top-14 h-full w-[90%] rounded-t-[28px] border border-neutral-900 shadow-sm bg-GRAY px-5 pt-4 shadow-lg"
                     style={{ transform: [{ translateY: loginY }] }}
                 >
                     <Pressable className="py-3" onPress={openLogin}>
