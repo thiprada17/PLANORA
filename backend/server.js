@@ -34,11 +34,12 @@ app.post('/api/signup', async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 6)
+        const cleanEmail = email.trim().toLowerCase()
         const { data, error } = await supabase
             .from('user')
             .insert({
                 username,
-                email,
+                cleanEmail,
                 password: hashedPassword,
                 create_by: 'system'
             })
@@ -58,6 +59,54 @@ app.post('/api/signup', async (req, res) => {
     }
 })
 
+app.post('/create/post', async (req, res) => {
+    const { name, deadline, subject, assign } = req.body
+    console.log(name)
+
+    try {
+        const { data, error } = await supabase
+            .from('project')
+            .insert({
+                name,
+                deadline,
+                s
+            })
+    } catch (error) {
+        console.log(err);
+        res.status(500).json({ found: false });
+    }
+
+    res.json();
+
+})
+
+app.post('/search/member', async (req, res) => {
+    const email = req.body.email.trim().toLowerCase()
+
+    console.log(email)
+
+    try {
+        const { data, error } = await supabase
+            .from('user')
+            .select('user_id, username')
+            .eq('email', email)
+            .single()
+
+        if (error || !data) {
+            return res.json({ found: false })
+        }
+
+        res.json({
+            found: true,
+            user_id: data.user_id,
+            username: data.username
+        })
+    } catch (error) {
+        res.status(500).json({ found: false });
+    }
+
+})
+
 app.listen(3000, '0.0.0.0', () => {
-  console.log('Server running on port 3000')
+    console.log('Server running on port 3000')
 })
