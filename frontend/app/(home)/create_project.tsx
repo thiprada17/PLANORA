@@ -36,7 +36,7 @@ export default function CreateProject() {
 
 
   const [project, setProject] = useState({
-    name: "",
+    project_name: "",
     deadline: "",
     subject: "",
     member: [] as { id: number; name: string }[]
@@ -95,7 +95,7 @@ export default function CreateProject() {
     }
   };
 
-  const readytocreate = !(project.name.trim() == "") && project.deadline !== "" && project.subject !== "" && (project.member.length > 0)
+  const readytocreate = !(project.project_name.trim() == "") && project.deadline !== "" && project.subject !== "" && (project.member.length > 0)
 
   if (!fonts) return null;
 
@@ -153,6 +153,18 @@ export default function CreateProject() {
     }
   }
 
+const handleSubmit = async () => {
+  try {
+    await fetch('http://192.168.1.103:3000/create/post', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(project)
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View className="flex-1 bg-neutral-100 items-center pt-[50px]">
@@ -204,12 +216,12 @@ export default function CreateProject() {
                 <TextInput
                   placeholder="JerseyJamTU"
                   className="font-kanitRegular border rounded-xl px-4 py-3 color-neutral-700 border-neutral-300 w-[85%]"
-                  value={project.name}
+                  value={project.project_name}
                   onChangeText={(text) =>
-                    setProject({ ...project, name: text })
+                    setProject({ ...project, project_name: text })
                   }
                 />
-                <CheckButton nothaveinput={project.name.trim().length == 0} />
+                <CheckButton nothaveinput={project.project_name.trim().length == 0} />
               </View>
             </View>
 
@@ -330,6 +342,7 @@ export default function CreateProject() {
                 className={`mb-7 px-6 py-3 pt-2 h-[30px] mt-5 rounded-xl items-center ${readytocreate ? "bg-GREEN" : ""}`}
                 disabled={!readytocreate}
                 onPress={() => {
+                  handleSubmit()
                   console.log("Create project:", project);
                   navigate('/homepage')
                 }}

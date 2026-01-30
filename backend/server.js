@@ -60,24 +60,34 @@ app.post('/api/signup', async (req, res) => {
 })
 
 app.post('/create/post', async (req, res) => {
-    const { name, deadline, subject, assign } = req.body
-    console.log(name)
-
+    const { project_name, deadline, subject, member } = req.body
+    const create_at = Date.now
     try {
-        const { data, error } = await supabase
+        const { data: projectData, error: projectError } = await supabase
             .from('project')
-            .insert({
-                name,
-                deadline,
-                s
-            })
-    } catch (error) {
-        console.log(err);
-        res.status(500).json({ found: false });
+            .insert({ project_name, deadline, subject, create_at, created_by: 1 })
+            .select()
+            .single()
+
+        if (projectError) throw projectError
+
+        const project_id = projectData.project_id
+
+        for (const i of member) {
+            await supabase
+                .from('project_members')
+                .insert({
+                    project_id: project_id,
+                    user_id: i.id,
+                    username: i.name
+                })
+        }
+        res.json({ success: true })
+
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ success: false })
     }
-
-    res.json();
-
 })
 
 app.post('/search/member', async (req, res) => {
