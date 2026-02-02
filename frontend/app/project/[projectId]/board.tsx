@@ -26,6 +26,7 @@ const icons = {
   filter: require("../../../assets/icons/filter_list.png"),
   custom_pen: require("../../../assets/icons/ink_pen.png"),
   kanban: require("../../../assets/icons/view_kanban.png"),
+  menu: require("../../../assets/icons/menu.png"),
 };
 
 const Icon = ({
