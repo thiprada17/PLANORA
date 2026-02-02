@@ -12,6 +12,9 @@ import {
 } from "react-native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
+import { Pressable } from "react-native";
+import { useState } from "react";
+import CreateTaskModal from "@/components/task/create_task";
 
 // element: icons
 const icons = {
@@ -89,6 +92,7 @@ const Column = [
 const users = [1, 2, 3]; // mock
 
 export default function BoardScreen() {
+  const [modalVisible, setModalVisible] = useState(false);
   // element: fonts
   const [fontsLoaded] = useFonts({
     kanitMedium: require("../../../assets/fonts/Kanit-Medium.ttf"),
@@ -120,11 +124,22 @@ export default function BoardScreen() {
           />
           <Text style={styles.title}>Board</Text>
 
-          <TouchableOpacity style={styles.createBtn}>
-            <Icon name="add" size={spacing.md} style={styles.add} />
-            <Text style={styles.addTaskText}>Create Task</Text>
-          </TouchableOpacity>
+
+          <Pressable
+            onPress={() => setModalVisible(true)}
+            className="border border-black rounded-xl px-3 py-2 bg-white active:bg-gray-100"
+          >
+            <Text className="font-kanitRegular">+ Create Task</Text>
+          </Pressable>
+
+          <CreateTaskModal
+            visible={modalVisible}
+            onClose={() => setModalVisible(false)}
+          />
+
         </View>
+
+
 
         {/* Tab */}
         <View style={styles.tab}>
@@ -169,40 +184,40 @@ export default function BoardScreen() {
                 nestedScrollEnabled
                 style={{ flexGrow: 0 }}
               >
-              {col.tasks.map((_, i) => (
-                <View key={i} style={styles.cardWrapper}>
-                  <View style={styles.card}>
-                    <Text style={styles.cardTitle}>Task name</Text>
+                {col.tasks.map((_, i) => (
+                  <View key={i} style={styles.cardWrapper}>
+                    <View style={styles.card}>
+                      <Text style={styles.cardTitle}>Task name</Text>
 
-                    <View style={styles.dateRow}>
-                      <View style={styles.date_icon}>
-                        <Icon name="date" size={spacing.sm} />
+                      <View style={styles.dateRow}>
+                        <View style={styles.date_icon}>
+                          <Icon name="date" size={spacing.sm} />
+                        </View>
+                        <Text style={styles.dateText}>DD/MM/YY</Text>
                       </View>
-                      <Text style={styles.dateText}>DD/MM/YY</Text>
-                    </View>
 
-                    <Text style={styles.assignText}>Assign to</Text>
+                      <Text style={styles.assignText}>Assign to</Text>
 
-                    <View style={styles.avatarRow}>
-                      {users.map((u, i) => (
-                        <View
-                          key={i}
-                          style={[
-                            styles.avatar,
-                            i !== 0 && { marginLeft: -scale(10) },
-                          ]}
-                        />
-                      ))}
+                      <View style={styles.avatarRow}>
+                        {users.map((u, i) => (
+                          <View
+                            key={i}
+                            style={[
+                              styles.avatar,
+                              i !== 0 && { marginLeft: -scale(10) },
+                            ]}
+                          />
+                        ))}
+                      </View>
                     </View>
                   </View>
-                </View>
-              ))}
+                ))}
 
-              {/* Add task */}
-              <TouchableOpacity style={styles.addTask}>
-                <Icon name="add" size={scale(20)} style={styles.addTaskIcon} />
-                <Text style={styles.addTaskText2}>Add Task</Text>
-              </TouchableOpacity>
+                {/* Add task */}
+                <TouchableOpacity style={styles.addTask}>
+                  <Icon name="add" size={scale(20)} style={styles.addTaskIcon} />
+                  <Text style={styles.addTaskText2}>Add Task</Text>
+                </TouchableOpacity>
               </ScrollView>
             </View>
           ))}
