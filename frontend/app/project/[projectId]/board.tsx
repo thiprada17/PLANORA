@@ -104,452 +104,152 @@ export default function BoardScreen() {
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
-      <View
-        style={[
-          styles.container,
-          {
-            paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-          },
-        ]}
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.title_back}>
-            <Text style={styles.title_back}>Project</Text>
-          </TouchableOpacity>
 
-          <Icon
-            name="arrow_forward"
-            size={spacing.sm}
-            style={styles.arrow_forward}
-          />
-          <Text style={styles.title}>Board</Text>
+      {/* Header */}
+      <View className="flex-row items-center mx-6 mt-12">
+        <TouchableOpacity className="mr-3">
+          <Icon name="menu" size={24} />
+        </TouchableOpacity>
 
+        <Text className="flex-1 font-kanitMedium text-[36px] text-black">
+          Board
+        </Text>
 
-          <Pressable
-            onPress={() => setModalVisible(true)}
-            className="border border-black rounded-xl px-3 py-2 bg-white active:bg-gray-100"
-          >
-            <Text className="font-kanitRegular">+ Create Task</Text>
-          </Pressable>
-
-          <CreateTaskModal
-            visible={modalVisible}
-            onClose={() => setModalVisible(false)}
-          />
-
-        </View>
-
-
-
-        {/* Tab */}
-        <View style={styles.tab}>
-          <View style={styles.menu}>
-            <Icon name="kanban" size={spacing.md} style={styles.kanban} />
-            <Text style={styles.tabText}>Kanban</Text>
-          </View>
-
-          <TouchableOpacity style={styles.filterBtn}>
-            <Icon name="filter" size={scale(18)} />
-          </TouchableOpacity>
-        </View>
-
-        {/* Board */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.board}
+        <Pressable
+          onPress={() => setModalVisible(true)}
+          style={{
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 2,
+          }}
+          className="border-2 border-black rounded-lg px-3 py-2 mt bg-white active:bg-gray-100"
         >
-          {Column.map((col) => (
-            <View key={col.id} style={styles.column}>
-              {/* Column Header */}
-              <View style={styles.columnHeader}>
-                <Text style={styles.columnTitle}>{col.title}</Text>
+          <Text className="font-kanitMedium">+ Create Task</Text>
+        </Pressable>
 
-                <View style={styles.columnActions}>
-                  <TouchableOpacity style={styles.customBtn}>
-                    <Icon name="custom_pen" size={scale(20)} />
-                  </TouchableOpacity>
+        <CreateTaskModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+        />
+      </View>
 
-                  <TouchableOpacity style={styles.deleteBtn}>
-                    <Icon name="delete" size={scale(20)} />
-                  </TouchableOpacity>
-                </View>
+      {/* Tab */}
+      <View className="flex-row items-center justify-between mx-6 mt-2 mb-6 px-5 py-2 border-2 border-[#8E8E8E] rounded-xl bg-[#F0F0F0]">
+        <View className="flex-row items-center gap-2">
+          <Icon name="kanban" size={18} />
+          <Text className="font-kanitMedium text-xl">Kanban</Text>
+        </View>
+
+        <Pressable className="border-2 border-[#8E8E8E] rounded-2xl px-2 py-2 bg-[#F0F0F0]">
+          <Icon name="filter" size={17} />
+        </Pressable>
+      </View>
+
+      {/* Board */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={true}
+        contentContainerStyle={styles.board}
+      >
+        {Column.map((col) => (
+          <View
+            key={col.id}
+            style={{
+              shadowColor: "#000",
+              shadowOpacity: 0.5,
+              shadowRadius: 2,
+              shadowOffset: { width: 0, height: 2 },
+            }}
+            className="w-[250px] h-[550px] mr-7 mx p-4 rounded-2xl border border-black bg-[#CAEAD5]"
+          >
+            {/* Column Header */}
+            <View className="flex-row items-center justify-between mb pb-2">
+              <Text className="font-kanitMedium text-2xl">{col.title}</Text>
+
+              <View className="flex-row gap">
+                <TouchableOpacity className="border border-black rounded-md px-2 py-2 mx-1 my-1 mt-4 mb-4 bg-white">
+                  <Icon name="custom_pen" size={20} />
+                </TouchableOpacity>
+
+                <TouchableOpacity className="border border-black rounded-md px-2 py-2 mt-4 mb-4 bg-[#F07166]">
+                  <Icon name="delete" size={20} />
+                </TouchableOpacity>
               </View>
+            </View>
 
-              <View style={styles.divider} />
+            <View className="h-[2px] bg-black my-3 mt-2" />
 
-              {/* Cards */}
-              <ScrollView
-                showsVerticalScrollIndicator={false}
-                nestedScrollEnabled
-                style={{ flexGrow: 0 }}
-              >
-                {col.tasks.map((_, i) => (
-                  <View key={i} style={styles.cardWrapper}>
-                    <View style={styles.card}>
-                      <Text style={styles.cardTitle}>Task name</Text>
+            {/* Cards */}
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              nestedScrollEnabled
+              style={{ flexGrow: 0 }}
+            >
+              {col.tasks.map((_, i) => (
+                <View
+                  key={i}
+                  style={{
+                    shadowColor: "#000",
+                    shadowOpacity: 0.6,
+                    shadowRadius: 2,
+                    shadowOffset: { width: 0, height: 2 },
+                  }}
+                  className="mb-4 rounded-3xl border border-black bg-[#F0F0F0] pt-6 pb-2 px-2 "
+                >
+                  <View className="rounded-3xl border border-black bg-white p">
+                    <Text className="font-kanitMedium text-2xl mt-7 mx-2 px-2">
+                      Task name
+                    </Text>
 
-                      <View style={styles.dateRow}>
-                        <View style={styles.date_icon}>
-                          <Icon name="date" size={spacing.sm} />
-                        </View>
-                        <Text style={styles.dateText}>DD/MM/YY</Text>
+                    <View className="flex-row items-center gap-1 mb-7 mx-2 px-2 ">
+                      <View className="border border-black rounded-full p-1 bg-white">
+                        <Icon name="date" size={8} />
                       </View>
+                      <Text className="font-kanitRegular text-xs text-black">
+                        DD/MM/YY
+                      </Text>
+                    </View>
 
-                      <Text style={styles.assignText}>Assign to</Text>
+                    <Text className="font-kanitRegular text-xs text-black mx-2 mb-2 px-2">
+                      Assign to
+                    </Text>
 
-                      <View style={styles.avatarRow}>
-                        {users.map((u, i) => (
-                          <View
-                            key={i}
-                            style={[
-                              styles.avatar,
-                              i !== 0 && { marginLeft: -scale(10) },
-                            ]}
-                          />
-                        ))}
-                      </View>
+                    <View className="flex-row items-center mx-3 mb-5">
+                      {users.map((u, i) => (
+                        <View
+                          key={i}
+                          style={{
+                            shadowColor: "#000",
+                            shadowOpacity: 0.5,
+                            shadowRadius: 1.5,
+                            shadowOffset: { width: 0, height: 2.5 },
+                          }}
+                          className={`w-[30px] h-[30px] rounded-full bg-white ${
+                            i !== 0 ? "-ml-2.5" : ""
+                          }`}
+                        />
+                      ))}
                     </View>
                   </View>
-                ))}
+                </View>
+              ))}
 
-                {/* Add task */}
-                <TouchableOpacity style={styles.addTask}>
-                  <Icon name="add" size={scale(20)} style={styles.addTaskIcon} />
-                  <Text style={styles.addTaskText2}>Add Task</Text>
-                </TouchableOpacity>
-              </ScrollView>
-            </View>
-          ))}
-        </ScrollView>
-      </View>
+              {/* Add task */}
+              <TouchableOpacity className="flex-row items-center gap-2 mt-2">
+                <Text className="font-kanitMedium text-md">+ Add Task</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        ))}
+      </ScrollView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-
-  /* Header */
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-
-    marginHorizontal: spacing.lg,
-    marginTop: spacing.margin_horizontal,
-  },
-
-  title_back: {
-    fontFamily: "kanitMedium",
-    fontSize: scale(20),
-    color: "#7D7D7D",
-
-    paddingTop: scale(5),
-  },
-
-  arrow_forward: {
-    marginHorizontal: scale(5),
-    marginTop: scale(10),
-  },
-
-  title: {
-    fontFamily: "kanitMedium",
-    fontSize: scale(45),
-    color: "#000000",
-
-    flex: 1,
-  },
-
-  // ปุ่ม create
-  createBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-
-    borderWidth: scale(2),
-    borderRadius: scale(8),
-
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xxs,
-
-    backgroundColor: "#FFFFFF",
-    borderColor: "#222222",
-
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    shadowOffset: { width: 0, height: 2.5 },
-
-    // Android
-    elevation: 3,
-  },
-
-  addTaskText: {
-    fontFamily: "kanitMedium",
-    fontSize: spacing.md,
-    color: "#222222",
-
-    marginHorizontal: scale(2),
-  },
-
-  add: {
-    marginRight: scale(2),
-  },
-
-  /* Tab */
-  tab: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-
-    marginHorizontal: spacing.lg,
-    marginTop: spacing.xs,
-    marginBottom: spacing.lg,
-
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-
-    borderWidth: scale(1.5),
-    borderRadius: scale(14),
-
-    backgroundColor: "#F0F0F0",
-    borderColor: "#8E8E8E",
-  },
-
-  menu: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: scale(4),
-  },
-
-  tabText: {
-    fontFamily: "kanitMedium",
-    fontSize: scale(18),
-  },
-
-  kanban: {
-    marginLeft: scale(10),
-  },
-
-  // filter btn
-  filterBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-
-    borderWidth: scale(1.5),
-    borderRadius: scale(14),
-
-    marginLeft: scale(16),
-
-    paddingHorizontal: spacing.xxs,
-    paddingVertical: spacing.xxs,
-
-    backgroundColor: "#F0F0F0",
-    borderColor: "#8E8E8E",
-
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 1,
-    shadowOffset: { width: 0, height: 2 },
-  },
-
-  /* Board */
   board: {
     marginHorizontal: spacing.lg,
     alignItems: "flex-start",
   },
-
-  column: {
-    width: scale(300),
-    height: scale(500),
-
-    borderWidth: scale(1.5),
-    borderRadius: scale(15),
-
-    padding: spacing.md,
-    marginRight: scale(20),
-
-    backgroundColor: "#CAEAD5",
-    borderColor: "#222222",
-
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    shadowOffset: { width: 0, height: 2.5 },
-  },
-
-  columnHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-
-    marginBottom: spacing.xs,
-  },
-
-  columnTitle: {
-    fontFamily: "kanitMedium",
-    fontSize: scale(20),
-  },
-
-  customBtn: {
-    borderWidth: scale(1.5),
-    borderRadius: scale(8),
-
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xs,
-
-    marginHorizontal: scale(5),
-    marginVertical: spacing.xs,
-
-    backgroundColor: "#FFFFFF",
-    borderColor: "#222222",
-
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    shadowOffset: { width: 0, height: 2.5 },
-  },
-
-  deleteBtn: {
-    borderWidth: scale(1.5),
-    borderRadius: scale(8),
-
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xs,
-
-    marginHorizontal: scale(1),
-    marginVertical: spacing.xs,
-
-    backgroundColor: "#F07166",
-    borderColor: "#222222",
-
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    shadowOffset: { width: 0, height: 2.5 },
-  },
-
-  columnActions: {
-    flexDirection: "row",
-    gap: scale(3),
-  },
-
-  divider: {
-    height: scale(2),
-    backgroundColor: "#222222",
-    marginVertical: spacing.xs,
-    marginTop: scale(5),
-  },
-
-  /* Card */
-  cardWrapper: {
-    paddingTop: scale(40),
-    paddingHorizontal: spacing.xs,
-    paddingBottom: spacing.xs,
-
-    borderWidth: scale(1.5),
-    borderColor: "#222222",
-    borderRadius: scale(25),
-    backgroundColor: "#F0F0F0",
-    marginBottom: spacing.lg,
-
-    shadowColor: "#000",
-    shadowOpacity: 0.5,
-    shadowRadius: 2,
-    shadowOffset: { width: 0, height: 2.5 },
-  },
-
-  card: {
-    paddingBottom: scale(20),
-    backgroundColor: "#FFFFFF",
-    borderRadius: scale(25),
-    borderWidth: scale(1.5),
-    borderColor: "#222222",
-    padding: spacing.md,
-
-    shadowColor: "#000",
-    shadowOpacity: 0.5,
-    shadowRadius: 2,
-    shadowOffset: { width: 0, height: 2.5 },
-  },
-
-  cardTitle: {
-    fontFamily: "kanitMedium",
-    fontSize: scale(35),
-
-    marginTop: scale(20),
-    marginHorizontal: scale(10),
-  },
-
-  dateRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: scale(6),
-
-    marginBottom: spacing.xl,
-    marginHorizontal: scale(10),
-  },
-
-  dateText: {
-    fontFamily: "kanit",
-    fontSize: spacing.sm,
-    color: "#000000",
-  },
-
-  date_icon: {
-    borderWidth: scale(0.5),
-    borderRadius: scale(20),
-
-    padding: spacing.xxs,
-
-    backgroundColor: "#FFFFFF",
-    borderColor: "#222222",
-  },
-
-  assignText: {
-    fontFamily: "kanit",
-    fontSize: spacing.sm,
-    color: "#000000",
-
-    marginHorizontal: scale(10),
-    marginBottom: spacing.xs,
-  },
-
-  avatarRow: {
-    flexDirection: "row",
-    alignItems: "center",
-
-    marginHorizontal: scale(10),
-  },
-
-  avatar: {
-    width: scale(50),
-    height: scale(50),
-
-    borderRadius: scale(50),
-
-    backgroundColor: "#FFFFFF",
-
-    shadowColor: "#000",
-    shadowOpacity: 0.5,
-    shadowRadius: 1.5,
-    shadowOffset: { width: 0, height: 2.5 },
-  },
-
-  /* Add task */
-  addTask: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.xs,
-  },
-
-  addTaskText2: {
-    fontFamily: "kanit",
-    fontSize: spacing.sm,
-  },
-
-  addTaskIcon: {},
 });
