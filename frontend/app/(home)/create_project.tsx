@@ -139,7 +139,7 @@ export default function CreateProject() {
 
   const searchMember = async (email: string) => {
     try {
-      const res = await fetch('http://192.168.1.103:3000/search/member', {
+      const res = await fetch('http://172.20.10.3:3000/search/member', {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -154,8 +154,9 @@ export default function CreateProject() {
   }
 
 const handleSubmit = async () => {
+  console.log("yes")
   try {
-    await fetch('http://192.168.1.103:3000/create/post', {
+    await fetch('http://172.20.10.3:3000/create/post', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(project)
