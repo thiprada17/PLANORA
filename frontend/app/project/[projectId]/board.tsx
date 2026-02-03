@@ -135,13 +135,13 @@ export default function BoardScreen() {
       </View>
 
       {/* Tab */}
-      <View className="flex-row items-center justify-between mx-6 mt-2 mb-6 px-5 py-2 border-2 border-[#8E8E8E] rounded-xl bg-[#F0F0F0]">
+      <View className="flex-row items-center justify-between mx-6 mt-2 mb-6 px-5 py-2 border border-[#8E8E8E] rounded-xl bg-[#F0F0F0]">
         <View className="flex-row items-center gap-2">
           <Icon name="kanban" size={18} />
           <Text className="font-kanitMedium text-xl">Kanban</Text>
         </View>
 
-        <Pressable className="border-2 border-[#8E8E8E] rounded-2xl px-2 py-2 bg-[#F0F0F0]">
+        <Pressable className="border border-[#8E8E8E] rounded-2xl px-2 py-2 bg-[#F0F0F0]">
           <Icon name="filter" size={17} />
         </Pressable>
       </View>
