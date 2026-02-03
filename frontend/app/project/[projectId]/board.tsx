@@ -8,8 +8,7 @@ import {
   StatusBar,
   Platform,
   Image,
-  Dimensions,
-  Pressable,
+  Dimensions
 } from "react-native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -101,10 +100,6 @@ export default function BoardScreen() {
   });
 
   if (!fontsLoaded) return null;
-
-  function setModalVisible(arg0: boolean): void {
-    throw new Error("Function not implemented.");
-  }
 
   return (
     <>

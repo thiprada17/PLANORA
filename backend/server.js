@@ -59,6 +59,59 @@ app.post('/api/signup', async (req, res) => {
     }
 })
 
+//Login ยังไม่ 100% นะ
+app.post('/api/login', async (req, res) => {
+    const { email, password } = req.body
+
+    if (!email || !password) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'กรุณากรอกอีเมลและรหัสผ่าน' 
+        })
+    }
+
+    try {
+        const cleanEmail = email.trim().toLowerCase()
+
+        const { data: user, error } = await supabase
+            .from('user')
+            .select('*')
+            .eq('email', cleanEmail)
+            .single()
+        if (error || !user) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
+            })
+        }
+
+        const isPasswordMatch = await bcrypt.compare(password, user.password)
+        if (!isPasswordMatch) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' 
+            })
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'เข้าสู่ระบบสำเร็จ!',
+            user: {
+                id: user.user_id,
+                username: user.username,
+                email: user.email
+            }
+        })
+
+    } catch (err) {
+        console.error('Login Error:', err)
+        res.status(500).json({ 
+            success: false, 
+            message: 'เกิดข้อผิดพลาดภายใน Server' 
+        })
+    }
+})
+
 app.post('/create/post', async (req, res) => {
     const { project_name, deadline, subject, member } = req.body
     const create_at = Date.now
@@ -89,6 +142,21 @@ app.post('/create/post', async (req, res) => {
         res.status(500).json({ success: false })
     }
 })
+
+// Create project >> Homepage
+app.get('/display/projects', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('project')
+            .select('*')
+            .order('create_at', { ascending: false });
+
+        if (error) throw error;
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 app.post('/search/member', async (req, res) => {
     const email = req.body.email.trim().toLowerCase()

@@ -1,17 +1,42 @@
 import { View, Text, Pressable, Image, Modal, ScrollView } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { icons } from "@/constants/icons";
 import { useFonts } from "expo-font";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import DropDownPicker from "react-native-dropdown-picker";
 
+type Project = {
+  project_id: number;
+  project_name: string;
+  subject: string;
+};
+
 export default function HomePage() {
   const router = useRouter();
+
   const user = {
     name: "Pony",
     email: "pony@gmail.com",
   };
+
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  const fetchProjects = async () => {
+    try {
+      const response = await fetch("http://192.168.100.152:3000/display/projects");
+      const data = await response.json();
+      setProjects(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Fetch error:", error);
+      setProjects([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
   const [openFilter, setOpenFilter] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
   const [statusValue, setStatusValue] = useState("ALL");
@@ -20,8 +45,10 @@ export default function HomePage() {
     { label: "Status: ALL", value: "ALL" },
     { label: "Status: PROCESS", value: "PROCESS" },
     { label: "Status: COMPLETE", value: "COMPLETE" },];
+
   const [date, setDate] = useState<Date | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
+
   const [fontsLoaded] = useFonts({
     KanitBold: require("../../assets/fonts/KanitBold.ttf"),
     KanitRegular: require("../../assets/fonts/KanitRegular.ttf"),
@@ -47,20 +74,23 @@ export default function HomePage() {
         </View>
         <Pressable
           className="flex-row items-center mt-2"
-          onPress={() => router.replace("/login")}>
+          onPress={() => router.replace("/login")}
+        >
           <Image source={icons.door_open} className="w-5 h-5 mr-1" />
           <Text className="text-red-500 font-kanitRegular">Log out</Text>
         </Pressable>
       </View>
+
       <View className="flex-row items-baseline justify-between px-1 mt-2">
         <Text className="font-kanitBold text-[50px] leading-[56px] text-black">Planora</Text>
         <View className="flex-row items-center">
           <Image source={icons.home_garden} className="w-3.5 h-3.5 mr-1.5" />
           <Text className="font-kanitRegular text-sm text-black">
-            {user.name}'s Homepage
+            {user.name}&apos;s Homepage
           </Text>
         </View>
       </View>
+
       <View className="px-2 py-2 mb-3">
         <View className="flex-row justify-end items-center">
           <View style={{ width: 110, zIndex: 50, marginRight: 8 }}>
@@ -176,6 +206,7 @@ export default function HomePage() {
           </Pressable>
         </View>
       </View>
+
       <View className="flex-1 bg-white rounded-3xl p-0.5">
         <View className="flex-1 bg-gray-200 rounded-[22px] p-0.5">
           <View className="flex-1 bg-gray-100 rounded-[21px] overflow-hidden">
@@ -183,6 +214,23 @@ export default function HomePage() {
               contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
               showsVerticalScrollIndicator={false}
             >
+              <View className="flex-row flex-wrap justify-between">
+                <Pressable
+                  onPress={() => router.push("/(home)/create_project")}
+                  className="w-[150px] h-[150px] mt-4 rounded-3xl border-2 border-dashed border-neutral-400 bg-white items-center justify-center"
+                >
+                  <Text className="text-4xl text-neutral-400">+</Text>
+                </Pressable>
+                {projects.map((item) => (
+                  <Pressable
+                    key={item.project_id}
+                    className="w-[150px] h-[150px] mt-4 rounded-3xl bg-white p-4 shadow-sm items-center justify-center"
+                  >
+                    <Text className="font-kanitBold text-center">{item.project_name}</Text>
+                    <Text className="font-kanitRegular text-xs text-gray-500">{item.subject}</Text>
+                  </Pressable>
+                ))}
+              </View>
               <Pressable
                 onPress={() => router.push("/(home)/create_project")}
                 className="w-[150px] h-[150px] mt-4 rounded-3xl
