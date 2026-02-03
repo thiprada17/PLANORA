@@ -236,7 +236,7 @@ export default function BoardScreen() {
               ))}
 
               {/* Add task */}
-              <TouchableOpacity className="flex-row items-center gap-2 mt-2">
+              <TouchableOpacity className="flex-row items-center gap-2 mt-2" onPress={() => setModalVisible(true)}>
                 <Text className="font-kanitMedium text-md">+ Add Task</Text>
               </TouchableOpacity>
             </ScrollView>
