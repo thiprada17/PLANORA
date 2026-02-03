@@ -114,11 +114,12 @@ app.post('/api/login', async (req, res) => {
 
 app.post('/create/post', async (req, res) => {
     const { project_name, deadline, subject, member } = req.body
-    const create_at = Date.now
+const createก_at = new Date().toISOString();
+
     try {
         const { data: projectData, error: projectError } = await supabase
             .from('project')
-            .insert({ project_name, deadline, subject, create_at, created_by: 1 })
+            .insert({ project_name, deadline, subject, createก_at, created_by: 1 })
             .select()
             .single()
 

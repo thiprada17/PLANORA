@@ -139,7 +139,7 @@ export default function CreateProject() {
 
   const searchMember = async (email: string) => {
     try {
-      const res = await fetch('http://172.20.10.3:3000/search/member', {
+      const res = await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/search/member', {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -156,11 +156,13 @@ export default function CreateProject() {
 const handleSubmit = async () => {
   console.log("yes")
   try {
-    await fetch('http://172.20.10.3:3000/create/post', {
+    await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/create/post', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(project)
     })
+
+    alert('yayy')
   } catch (error) {
     console.log(error)
   }
@@ -345,7 +347,6 @@ const handleSubmit = async () => {
                 onPress={() => {
                   handleSubmit()
                   console.log("Create project:", project);
-                  navigate('/homepage')
                 }}
               >
                 <Text
