@@ -64,9 +64,9 @@ app.post('/api/login', async (req, res) => {
     const { email, password } = req.body
 
     if (!email || !password) {
-        return res.status(400).json({ 
-            success: false, 
-            message: 'กรุณากรอกอีเมลและรหัสผ่าน' 
+        return res.status(400).json({
+            success: false,
+            message: 'กรุณากรอกอีเมลและรหัสผ่าน'
         })
     }
 
@@ -79,17 +79,17 @@ app.post('/api/login', async (req, res) => {
             .eq('email', cleanEmail)
             .single()
         if (error || !user) {
-            return res.status(401).json({ 
-                success: false, 
+            return res.status(401).json({
+                success: false,
                 message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
             })
         }
 
         const isPasswordMatch = await bcrypt.compare(password, user.password)
         if (!isPasswordMatch) {
-            return res.status(401).json({ 
-                success: false, 
-                message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' 
+            return res.status(401).json({
+                success: false,
+                message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
             })
         }
 
@@ -105,16 +105,16 @@ app.post('/api/login', async (req, res) => {
 
     } catch (err) {
         console.error('Login Error:', err)
-        res.status(500).json({ 
-            success: false, 
-            message: 'เกิดข้อผิดพลาดภายใน Server' 
+        res.status(500).json({
+            success: false,
+            message: 'เกิดข้อผิดพลาดภายใน Server'
         })
     }
 })
 
 app.post('/create/post', async (req, res) => {
     const { project_name, deadline, subject, member } = req.body
-const createก_at = new Date().toISOString();
+    const createก_at = new Date().toISOString();
 
     try {
         const { data: projectData, error: projectError } = await supabase

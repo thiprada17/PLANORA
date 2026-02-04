@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import { Text, View } from "react-native";
-
+import Auth from "../components/Auth"
 export default function Index() {
   return (
    <View className="flex-1 items-center justify-center bg-white">
@@ -8,10 +8,11 @@ export default function Index() {
         Welcome to Nativewind!
       </Text>
 
-      <Link href="/(home)/create_project">create project</Link>
+      <Auth />
+      {/* <Link href="/(home)/create_project">create project</Link>
       <Link href="/(authen)/login">LOGIN</Link>
       <Link href="/(home)/homepage">HOMEPAGE</Link>
-      <Link href="/project/:projectId/board">board</Link>
+      <Link href="/project/:projectId/board">board</Link> */}
 
     </View>
     
