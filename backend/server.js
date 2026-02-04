@@ -114,7 +114,7 @@ app.post('/api/login', async (req, res) => {
 
 app.post('/create/post', async (req, res) => {
     const { project_name, deadline, subject, member } = req.body
-    const create_at = Date.now
+    const create_at = new Date();
     try {
         const { data: projectData, error: projectError } = await supabase
             .from('project')

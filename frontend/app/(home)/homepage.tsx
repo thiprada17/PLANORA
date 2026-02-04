@@ -5,6 +5,8 @@ import { icons } from "@/constants/icons";
 import { useFonts } from "expo-font";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import DropDownPicker from "react-native-dropdown-picker";
+import { useFocusEffect } from "expo-router";
+import { useCallback } from "react";
 
 type Project = {
   project_id: number;
@@ -24,7 +26,7 @@ export default function HomePage() {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch("http://192.168.100.152:3000/display/projects");
+      const response = await fetch("http://172.20.10.6:3000/display/projects");
       const data = await response.json();
       setProjects(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -36,6 +38,11 @@ export default function HomePage() {
   useEffect(() => {
     fetchProjects();
   }, []);
+
+  useFocusEffect(
+  useCallback(() => {
+    fetchProjects();
+  }, []));
 
   const [openFilter, setOpenFilter] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
