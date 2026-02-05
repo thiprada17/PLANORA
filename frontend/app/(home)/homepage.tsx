@@ -5,19 +5,24 @@ import { icons } from "@/constants/icons";
 import { useFonts } from "expo-font";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import DropDownPicker from "react-native-dropdown-picker";
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 type Project = {
   project_id: number;
   project_name: string;
   subject: string;
 };
-
+  
 export default function HomePage() {
+  const username = AsyncStorage.getItem('username')
+    const email = AsyncStorage.getItem('email')
+      const proflie = AsyncStorage.getItem('proflie')
   const router = useRouter();
 
   const user = {
-    name: "Pony",
-    email: "pony@gmail.com",
+    name: username,
+    email: email,
+    proflie: proflie
   };
 
   const [projects, setProjects] = useState<Project[]>([]);
