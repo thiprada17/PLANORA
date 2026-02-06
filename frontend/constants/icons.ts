@@ -11,6 +11,8 @@ import home_garden from "@/assets/icons/home_user.png";
 import filter from "@/assets/icons/filter.png";
 import door_open from "@/assets/icons/door_open.png";
 import arrow_down from "@/assets/icons/arrow_down.png";
+import forum from "@/assets/icons/forum.png";
+import send from "@/assets/icons/send.png";
 
 export const icons = {
   deadline,
@@ -26,4 +28,6 @@ export const icons = {
   filter,
   door_open,  
   arrow_down,
+  forum,
+  send,
 };

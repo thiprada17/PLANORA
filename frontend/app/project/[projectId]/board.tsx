@@ -15,19 +15,21 @@ import { Stack } from "expo-router";
 import { Pressable } from "react-native";
 import { useState } from "react";
 import CreateTaskModal from "@/components/task/create_task";
+import ProjectChatModal from "@/components/chat/project_chat";
+import { icons } from "@/constants/icons";
 
-// element: icons
-const icons = {
-  add: require("../../../assets/icons/add.png"),
-  arrow_forward: require("../../../assets/icons/arrow_forward.png"),
-  date: require("../../../assets/icons/date_range.png"),
-  delete: require("../../../assets/icons/delete.png"),
-  user: require("../../../assets/icons/face.png"),
-  filter: require("../../../assets/icons/filter_list.png"),
-  custom_pen: require("../../../assets/icons/ink_pen.png"),
-  kanban: require("../../../assets/icons/view_kanban.png"),
-  menu: require("../../../assets/icons/menu.png"),
-};
+// // element: icons
+// const icons = {
+//   add: require("../../../assets/icons/add.png"),
+//   arrow_forward: require("../../../assets/icons/arrow_forward.png"),
+//   date: require("../../../assets/icons/date_range.png"),
+//   delete: require("../../../assets/icons/delete.png"),
+//   user: require("../../../assets/icons/face.png"),
+//   filter: require("../../../assets/icons/filter_list.png"),
+//   custom_pen: require("../../../assets/icons/ink_pen.png"),
+//   kanban: require("../../../assets/icons/view_kanban.png"),
+//   menu: require("../../../assets/icons/menu.png"),
+// };
 
 const Icon = ({
   name,
