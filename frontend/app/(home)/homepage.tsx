@@ -1,6 +1,6 @@
 import { View, Text, Pressable, Image, Modal, ScrollView } from "react-native";
 import { useState, useEffect } from "react";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { icons } from "@/constants/icons";
 import { useFonts } from "expo-font";
 import DateTimePicker from "@react-native-community/datetimepicker";
