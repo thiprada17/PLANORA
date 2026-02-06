@@ -97,13 +97,11 @@ if (!fonts || pageLoading) {
             <Loading visible={isLoading} />
             <View
                 className="items-center justify-center"
-                style={{ height: screenHeight * 0.15 }}
+                style={{ height: screenHeight * 0.32 }}
             >
                 <Text className="font-kanitBold text-[30px]">
                     Plandora
                 </Text>
-
-
             </View>
 
             {/*Card*/}
