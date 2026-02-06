@@ -8,13 +8,14 @@ import DropDownPicker from "react-native-dropdown-picker";
 import { Stack } from "expo-router";
 import { Animated } from "react-native";
 import { useRef, useEffect } from "react";
-import { navigate } from "expo-router/build/global-state/routing";
 import { Keyboard, TouchableWithoutFeedback } from "react-native";
 import { SearchBar } from "react-native-screens";
+import { useRouter } from "expo-router";
 
 
 export default function CreateProject() {
   const [showPicker, setShowPicker] = useState(false);
+  const router = useRouter();
 
 
   const [open, setOpen] = useState(false);
@@ -90,10 +91,13 @@ export default function CreateProject() {
   const onDateChange = (event: any, selectedDate?: Date) => {
     setShowPicker(false);
     if (selectedDate) {
-      const formattedDate = `${selectedDate.getDate()}/${selectedDate.getMonth() + 1}/${selectedDate.getFullYear().toString().slice(-2)}`;
+      const year = selectedDate.getFullYear();
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+      const day = String(selectedDate.getDate()).padStart(2, '0');
+      const formattedDate = `${year}-${month}-${day}`;
       setProject({ ...project, deadline: formattedDate });
     }
-  };
+};
 
   const readytocreate = !(project.project_name.trim() == "") && project.deadline !== "" && project.subject !== "" && (project.member.length > 0)
 
