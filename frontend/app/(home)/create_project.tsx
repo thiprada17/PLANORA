@@ -176,8 +176,6 @@ const handleSubmit = async () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View className="flex-1 bg-neutral-100 items-center pt-[50px]">
 
-        <Stack.Screen options={{ headerShown: false }} />
-
         <Text className="font-kanitBold text-xl color-BLACK mb-7">CREATE PROJECT</Text>
 
 
