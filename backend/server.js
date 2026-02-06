@@ -24,7 +24,7 @@ app.post('/api/signup', async (req, res) => {
     try {
         //เช็กเมล
         const { data: existingUser } = await supabase
-            .from('user')
+            .from('user_profile')
             .select('user_id')
             .eq('email', email)
             .single()
@@ -35,13 +35,34 @@ app.post('/api/signup', async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 6)
         const cleanEmail = email.trim().toLowerCase()
-        const { data, error } = await supabase
-            .from('user')
+
+        const { data, error } = await supabase.auth.signUp({
+            email: cleanEmail,
+            password,
+            options: {
+                data: {
+                    full_name: username,   // 👈 ใส่ metadata ตั้งแต่ตอน signup เลย (ดีที่สุด)
+                },
+            },
+        })
+
+        const user = data.user
+
+        console.log(user)
+
+
+        if (error) {
+            console.log(error)
+            throw error
+        }
+
+        await supabase
+            .from('user_profile')
             .insert({
-                username,
-                cleanEmail,
-                password: hashedPassword,
-                create_by: 'system'
+                user_id: user.id,
+                username: username,
+                email: cleanEmail,
+                created_by: 'system'
             })
             .select()
 

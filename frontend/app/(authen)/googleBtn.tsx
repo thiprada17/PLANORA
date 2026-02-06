@@ -21,6 +21,8 @@ export default function GoogleLoginButton() {
 
       const result = await GoogleSignin.signIn()
 
+      console.log("test")
+
       if (result.type !== 'success') {
         throw new Error('Google sign in failed')
       }
@@ -63,7 +65,7 @@ export default function GoogleLoginButton() {
 
       await AsyncStorage.setItem("username", username)
       await AsyncStorage.setItem("email", email)
-            await AsyncStorage.setItem("proflie", avatar)
+            await AsyncStorage.setItem("profile", avatar)
       router.replace('/homepage')
 
     } catch (err) {

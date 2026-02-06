@@ -12,18 +12,37 @@ type Project = {
   project_name: string;
   subject: string;
 };
-  
+
 export default function HomePage() {
-  const username = AsyncStorage.getItem('username')
-    const email = AsyncStorage.getItem('email')
-      const proflie = AsyncStorage.getItem('proflie')
+
   const router = useRouter();
 
-  const user = {
-    name: username,
-    email: email,
-    proflie: proflie
-  };
+
+  const [user, setUser] = useState({
+    name: null as string | null,
+    email: null as string | null,
+    profile: null as string | null
+  });
+
+  useEffect(() => {
+    const loaduser = async () => {
+      const username = await AsyncStorage.getItem('username')
+      const email = await AsyncStorage.getItem('email')
+      const profile = await AsyncStorage.getItem('profile')
+
+      setUser({
+        name: username,
+        email : email,
+        profile : profile 
+
+      })
+
+      console.log(profile)
+    }
+
+loaduser()
+
+  }, [])
 
   const [projects, setProjects] = useState<Project[]>([]);
 
@@ -70,7 +89,8 @@ export default function HomePage() {
       <View className="flex-row justify-between items-start mb-2">
         <View className="flex-row items-center">
           <View className="w-12 h-12 rounded-full items-center justify-center">
-            <Image source={icons.profile} className="w-6 h-6 mr-2" />
+            <Image source={user.profile ? { uri: user.profile } : icons.profile} className={user.profile ?"w-12 h-12 rounded-full mr-2" : "w-6 h-6 mr-2"} />
+
           </View>
           <View>
             <Text className="font-kanitBold text-base leading-[17px] text-black">{user.name}</Text>
@@ -91,7 +111,7 @@ export default function HomePage() {
         <View className="flex-row items-center">
           <Image source={icons.home_garden} className="w-3.5 h-3.5 mr-1.5" />
           <Text className="font-kanitRegular text-sm text-black">
-            {user.name}&apos;s Homepage
+            Homepage
           </Text>
         </View>
       </View>
