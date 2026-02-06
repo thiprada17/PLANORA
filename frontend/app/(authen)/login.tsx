@@ -10,7 +10,8 @@ import {
 import { useRef, useState } from 'react';
 import { useFonts } from 'expo-font';
 import GoogleButton from '../(authen)/googleBtn';
-
+import Auth from "../../components/Auth"
+import { router } from 'expo-router';
 const screenHeight = Dimensions.get('window').height;
 
 export default function Index() {
@@ -48,10 +49,11 @@ export default function Index() {
     const handleSignup = async () => {
     try {
         // ตอนนี้มันต้องเปลี่ยน ip ที่จะ fetch ตาามเครื่องน้าา ยุ่งยากมาก
-        const res = await fetch('http://192.168.1.125:3000/api/signup', {
+        const res = await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/api/signup', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': '69420'
             },
             body: JSON.stringify({
                 username,
@@ -60,6 +62,10 @@ export default function Index() {
             })
         })
         const data = await res.json()
+
+        if(data.success == true){
+                 router.replace('/homepage')
+        }
         if (!res.ok) {
             alert(data.message || data.error)
             return
@@ -131,7 +137,7 @@ export default function Index() {
                                 </Text>
                                 <View className="h-px flex-1 bg-gray-300" />
                             </View>
-                            <GoogleButton onPress={() => console.log('Google signup')} />
+                            <GoogleButton />
                         </View>
                     )}
                 </View>
@@ -178,7 +184,7 @@ export default function Index() {
                                 </Text>
                                 <View className="h-px flex-1 bg-gray-300" />
                             </View>
-                            <GoogleButton onPress={() => console.log('Google login')} />
+                            <GoogleButton />
                         </View>
                     )}
                 </Animated.View>

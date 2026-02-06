@@ -3,7 +3,7 @@ import {
   GoogleSignin,
 } from '@react-native-google-signin/google-signin'
 
-import { supabase } from '../../src/lib/supabase'
+import { supabase } from '../src/lib/supabase'
 import { icons } from '@/constants/icons'
 import { router } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -20,8 +20,6 @@ export default function GoogleLoginButton() {
       await GoogleSignin.hasPlayServices()
 
       const result = await GoogleSignin.signIn()
-
-      console.log("test")
 
       if (result.type !== 'success') {
         throw new Error('Google sign in failed')
@@ -65,7 +63,7 @@ export default function GoogleLoginButton() {
 
       await AsyncStorage.setItem("username", username)
       await AsyncStorage.setItem("email", email)
-            await AsyncStorage.setItem("profile", avatar)
+            await AsyncStorage.setItem("proflie", avatar)
       router.replace('/homepage')
 
     } catch (err) {
