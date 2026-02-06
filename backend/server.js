@@ -39,7 +39,7 @@ app.post('/api/signup', async (req, res) => {
             .from('user')
             .insert({
                 username,
-                cleanEmail,
+                email: cleanEmail,
                 password: hashedPassword,
                 create_by: 'system'
             })
@@ -60,17 +60,26 @@ app.post('/api/signup', async (req, res) => {
 })
 
 app.post('/create/post', async (req, res) => {
+<<<<<<< Updated upstream
     const { project_name, deadline, subject, member } = req.body
     const create_at = Date.now
     try {
         const { data: projectData, error: projectError } = await supabase
             .from('project')
             .insert({ project_name, deadline, subject, create_at, created_by: 1 })
+=======
+    const { project_name, deadline, subject, member, owner_id} = req.body
+    const created_at = new Date().toISOString();
+
+    try {
+        const { data: projectData, error: projectError } = await supabase
+            .from('project')
+            .insert({ project_name, deadline, subject, created_at, create_by: owner_id })
+>>>>>>> Stashed changes
             .select()
             .single()
 
         if (projectError) throw projectError
-
         const project_id = projectData.project_id
 
         for (const i of member) {
@@ -90,6 +99,24 @@ app.post('/create/post', async (req, res) => {
     }
 })
 
+<<<<<<< Updated upstream
+=======
+// Create project >> Homepage
+app.get('/display/projects', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('project')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+>>>>>>> Stashed changes
 app.post('/search/member', async (req, res) => {
     const email = req.body.email.trim().toLowerCase()
 

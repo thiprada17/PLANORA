@@ -11,6 +11,12 @@ import { useRef, useEffect } from "react";
 import { navigate } from "expo-router/build/global-state/routing";
 import { Keyboard, TouchableWithoutFeedback } from "react-native";
 import { SearchBar } from "react-native-screens";
+<<<<<<< Updated upstream
+=======
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from "expo-router";
+>>>>>>> Stashed changes
+
 
 
 export default function CreateProject() {
