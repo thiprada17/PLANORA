@@ -12,10 +12,10 @@ import {
   Pressable,
 } from "react-native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
-import { Pressable } from "react-native";
 import { useState } from "react";
 import CreateTaskModal from "@/components/task/create_task";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Stack } from "expo-router";
 
 // element: icons
 const icons = {
@@ -56,7 +56,6 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const BASE_WIDTH = 393;
 
 const scale = (size: number) => (SCREEN_WIDTH / BASE_WIDTH) * size;
-
 const spacing = {
   xxs: scale(6),
   xs: scale(8),
@@ -102,16 +101,15 @@ export default function BoardScreen() {
 
   if (!fontsLoaded) return null;
 
-  function setModalVisible(arg0: boolean): void {
-    throw new Error("Function not implemented.");
-  }
+  // function setModalVisible(arg0: boolean): void {
+  //   throw new Error("Function not implemented.");
+  // }
 
   return (
-    <>
+    <SafeAreaView className="flex-1 bg-white">
       <Stack.Screen options={{ headerShown: false }} />
-
       {/* Header */}
-      <View className="flex-row items-center mx-6 mt-12">
+      <View className="flex-row items-center mx-6 pt-10">
         <TouchableOpacity className="mr-3">
           <Icon name="menu" size={24} />
         </TouchableOpacity>
@@ -140,8 +138,8 @@ export default function BoardScreen() {
       </View>
 
       {/* Tab */}
-      <View className="flex-row items-center justify-between mx-6 mt-2 mb-6 px-5 py-2 border border-[#8E8E8E] rounded-xl bg-[#F0F0F0]">
-        <View className="flex-row items-center gap-2">
+      <View className="flex-row items-center justify-between mx-6 mt-4 mb-6 px-5 py-2 border border-[#8E8E8E] rounded-xl bg-[#F0F0F0]">
+        <View className="flex-row items-center justify-center gap-2">
           <Icon name="kanban" size={18} />
           <Text className="font-kanitMedium text-xl">Kanban</Text>
         </View>
@@ -166,25 +164,23 @@ export default function BoardScreen() {
               shadowRadius: 2,
               shadowOffset: { width: 0, height: 2 },
             }}
-            className="w-[250px] h-[550px] mr-7 mx p-4 rounded-2xl border border-black bg-[#CAEAD5]"
-          >
-            {/* Column Header */}
-            <View className="flex-row items-center justify-between mb pb-2">
-              <Text className="font-kanitMedium text-2xl">{col.title}</Text>
+            className="w-[210px] h-[540px] mr-7 mx p-4 rounded-2xl border border-neutral-400 bg-[#CAEAD5]">
 
-              <View className="flex-row gap">
+            {/* Column Header */}
+            <View className="flex-row items-center justify-between">
+              <Text className="font-kanitMedium text-xl">{col.title}</Text>
+
+              <View className="flex-row gap-1">
                 <TouchableOpacity className="border border-black rounded-md px-2 py-2 mx-1 my-1 mt-4 mb-4 bg-white">
-                  <Icon name="custom_pen" size={20} />
+                  <Icon name="custom_pen" size={16} />
                 </TouchableOpacity>
 
                 <TouchableOpacity className="border border-black rounded-md px-2 py-2 mt-4 mb-4 bg-[#F07166]">
-                  <Icon name="delete" size={20} />
+                  <Icon name="delete" size={16} />
                 </TouchableOpacity>
               </View>
             </View>
-
-            <View className="h-[2px] bg-black my-3 mt-2" />
-
+            <View className="h-[1.5px] bg-black my-3 mt-2" />
             {/* Cards */}
             <ScrollView
               showsVerticalScrollIndicator={false}
@@ -200,14 +196,14 @@ export default function BoardScreen() {
                     shadowRadius: 2,
                     shadowOffset: { width: 0, height: 2 },
                   }}
-                  className="mb-4 rounded-3xl border border-black bg-[#F0F0F0] pt-6 pb-2 px-2 "
+                  className="mb-3 rounded-3xl border border-black bg-[#F0F0F0] pb-2 px-1 "
                 >
-                  <View className="rounded-3xl border border-black bg-white p">
-                    <Text className="font-kanitMedium text-2xl mt-7 mx-2 px-2">
+                  <View className="mt-4 rounded-3xl border border-black bg-white">
+                    <Text className="font-kanitMedium text-xl mt-7 mx-2 px-2">
                       Task name
                     </Text>
 
-                    <View className="flex-row items-center gap-1 mb-7 mx-2 px-2 ">
+                    <View className="flex-row items-center gap-1 mb-5 mx-2 px-2 ">
                       <View className="border border-black rounded-full p-1 bg-white">
                         <Icon name="date" size={8} />
                       </View>
@@ -230,9 +226,8 @@ export default function BoardScreen() {
                             shadowRadius: 1.5,
                             shadowOffset: { width: 0, height: 2.5 },
                           }}
-                          className={`w-[30px] h-[30px] rounded-full bg-white ${
-                            i !== 0 ? "-ml-2.5" : ""
-                          }`}
+                          className={`w-[20px] h-[10px] rounded-full bg-white ${i !== 0 ? "-ml-2.5" : ""
+                            }`}
                         />
                       ))}
                     </View>
@@ -248,7 +243,7 @@ export default function BoardScreen() {
           </View>
         ))}
       </ScrollView>
-    </>
+    </SafeAreaView>
   );
 }
 
