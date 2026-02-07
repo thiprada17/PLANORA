@@ -8,19 +8,15 @@ import DropDownPicker from "react-native-dropdown-picker";
 import { Stack } from "expo-router";
 import { Animated } from "react-native";
 import { useRef, useEffect } from "react";
-import { navigate } from "expo-router/build/global-state/routing";
 import { Keyboard, TouchableWithoutFeedback } from "react-native";
 import { SearchBar } from "react-native-screens";
-<<<<<<< Updated upstream
-=======
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
->>>>>>> Stashed changes
-
-
 
 export default function CreateProject() {
   const [showPicker, setShowPicker] = useState(false);
+  const router = useRouter();
 
 
   const [open, setOpen] = useState(false);
@@ -96,10 +92,13 @@ export default function CreateProject() {
   const onDateChange = (event: any, selectedDate?: Date) => {
     setShowPicker(false);
     if (selectedDate) {
-      const formattedDate = `${selectedDate.getDate()}/${selectedDate.getMonth() + 1}/${selectedDate.getFullYear().toString().slice(-2)}`;
+      const year = selectedDate.getFullYear();
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+      const day = String(selectedDate.getDate()).padStart(2, '0');
+      const formattedDate = `${year}-${month}-${day}`;
       setProject({ ...project, deadline: formattedDate });
     }
-  };
+};
 
   const readytocreate = !(project.project_name.trim() == "") && project.deadline !== "" && project.subject !== "" && (project.member.length > 0)
 
@@ -145,7 +144,7 @@ export default function CreateProject() {
 
   const searchMember = async (email: string) => {
     try {
-      const res = await fetch('http://192.168.1.103:3000/search/member', {
+      const res = await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/search/member', {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -160,12 +159,15 @@ export default function CreateProject() {
   }
 
 const handleSubmit = async () => {
+  console.log("yes")
   try {
-    await fetch('http://192.168.1.103:3000/create/post', {
+    await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/create/post', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(project)
     })
+
+    alert('yayy')
   } catch (error) {
     console.log(error)
   }
@@ -174,8 +176,6 @@ const handleSubmit = async () => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View className="flex-1 bg-neutral-100 items-center pt-[50px]">
-
-        <Stack.Screen options={{ headerShown: false }} />
 
         <Text className="font-kanitBold text-xl color-BLACK mb-7">CREATE PROJECT</Text>
 
@@ -350,7 +350,6 @@ const handleSubmit = async () => {
                 onPress={() => {
                   handleSubmit()
                   console.log("Create project:", project);
-                  navigate('/homepage')
                 }}
               >
                 <Text
