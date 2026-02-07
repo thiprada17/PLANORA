@@ -4,6 +4,29 @@ const bodyParser = require('body-parser')
 const { createClient } = require('@supabase/supabase-js')
 const bcrypt = require('bcrypt')
 
+const http = require("http")
+const { Server } = require("socket.io")
+
+const io = new Server(server, {
+  cors: {
+    origin: "*"
+  }
+})
+
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id)
+
+  socket.on("send_message", (data) => {
+    io.emit("receive_message", data)
+  })
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected")
+  })
+})
+
+const server = http.createServer(app)
+
 const app = express()
 
 app.use(cors())
@@ -135,12 +158,12 @@ app.post('/api/login', async (req, res) => {
 
 app.post('/create/post', async (req, res) => {
     const { project_name, deadline, subject, member } = req.body
-    const createก_at = new Date().toISOString();
+    const created_at = new Date().toISOString();
 
     try {
         const { data: projectData, error: projectError } = await supabase
             .from('project')
-            .insert({ project_name, deadline, subject, createก_at, created_by: 1 })
+            .insert({ project_name, deadline, subject, created_at, created_by: 1 })
             .select()
             .single()
 
@@ -174,6 +197,7 @@ app.get('/display/projects', async (req, res) => {
             .order('create_at', { ascending: false });
 
         if (error) throw error;
+
         res.json(data);
     } catch (err) {
         res.status(500).json({ error: err.message });
