@@ -8,7 +8,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.thiprada17.frontend"
     },
     "android": {
       "adaptiveIcon": {
@@ -26,14 +27,6 @@
       "favicon": "",
       "bundler": "metro"
     },
-    "plugins": [
-      [
-        "@react-native-google-signin/google-signin",
-        {
-          "iosUrlScheme": "com.googleusercontent.apps._some_id_here_"
-        }
-      ]
-    ],
     "plugins": [
       "expo-router",
       "expo-font",

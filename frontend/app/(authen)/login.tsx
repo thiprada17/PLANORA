@@ -7,12 +7,13 @@ import {
     useColorScheme,
     TextInput
 } from 'react-native';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useFonts } from 'expo-font';
 import GoogleButton from '../(authen)/googleBtn';
 import Auth from "../../components/Auth"
 import { router } from 'expo-router';
 const screenHeight = Dimensions.get('window').height;
+import Loading from '../../components/loading';
 
 export default function Index() {
     const [isSignupOpen, setIsSignupOpen] = useState(false);
@@ -20,6 +21,8 @@ export default function Index() {
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [isLoading, setIsLoading] = useState(false);
+    const [pageLoading, setPageLoading] = useState(true);
 
     const openSignup = () => {
         Animated.timing(loginY, {
@@ -43,49 +46,62 @@ export default function Index() {
         KanitRegular: require("../../assets/fonts/KanitRegular.ttf"),
     });
 
-    if (!fonts) return null;
+
+useEffect(() => {
+  const timer = setTimeout(() => {
+    setPageLoading(false);
+  }, 500);
+
+  return () => clearTimeout(timer);
+}, []);
+
+if (!fonts || pageLoading) {
+  return <Loading visible={true} />;
+}
 
     //signup dtb
     const handleSignup = async () => {
-    try {
-        // ตอนนี้มันต้องเปลี่ยน ip ที่จะ fetch ตาามเครื่องน้าา ยุ่งยากมาก
-        const res = await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/api/signup', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'ngrok-skip-browser-warning': '69420'
-            },
-            body: JSON.stringify({
-                username,
-                email,
-                password
+        try {
+            setIsLoading(true);
+            // ตอนนี้มันต้องเปลี่ยน ip ที่จะ fetch ตาามเครื่องน้าา ยุ่งยากมาก
+            const res = await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/api/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': '69420'
+                },
+                body: JSON.stringify({
+                    username,
+                    email,
+                    password
+                })
             })
-        })
-        const data = await res.json()
+            const data = await res.json()
 
-        if(data.success == true){
-                 router.replace('/homepage')
+            if (data.success == true) {
+                router.replace('/homepage')
+            }
+            if (!res.ok) {
+                alert(data.message || data.error)
+                return
+            }
+            alert('Signup success')
+        } catch (err) {
+            console.log(err)
+        } finally {
+            setIsLoading(false);
         }
-        if (!res.ok) {
-            alert(data.message || data.error)
-            return
-        }
-        alert('Signup success')
-    } catch (err) {
-        console.log(err)
     }
-}
     return (
         <View className="flex-1 bg-white">
+            <Loading visible={isLoading} />
             <View
                 className="items-center justify-center"
-                style={{ height: screenHeight * 0.15 }}
+                style={{ height: screenHeight * 0.32 }}
             >
                 <Text className="font-kanitBold text-[30px]">
                     Plandora
                 </Text>
-
-
             </View>
 
             {/*Card*/}
@@ -124,11 +140,12 @@ export default function Index() {
                                 secureTextEntry
                                 className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"
                             />
-                            <Pressable onPress={handleSignup} className="rounded-xl bg-black py-3">
+                            <Pressable onPress={handleSignup} disabled={isLoading} className={`rounded-xl py-3 ${isLoading ? 'bg-GRAY' : 'bg-black'}`}>
                                 <Text className="text-center font-kanitBold text-white">
-                                    Sign Up
+                                    {isLoading ? 'Loading....' : 'Sign Up'}
                                 </Text>
                             </Pressable>
+
 
                             <View className="my-4 flex-row items-center">
                                 <View className="h-px flex-1 bg-gray-300" />

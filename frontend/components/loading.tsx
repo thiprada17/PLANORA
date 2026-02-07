@@ -9,7 +9,7 @@ export default function Loading({ visible }: LoadingProps) {
   if (!visible) return null;
 
   return (
-    <View className="absolute inset-0 z-50 items-center justify-center bg-black/40">
+    <View className="absolute inset-0 z-50 items-center justify-center bg-white/60">
       <LottieView
         source={require('../assets/lottie/Star Loader 2.json')}
         autoPlay
