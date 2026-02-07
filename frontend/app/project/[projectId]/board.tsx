@@ -17,8 +17,9 @@ import ProjectChatModal from "@/components/chat/project_chat";
 import { icons } from "@/constants/icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
+import TabBar from "@/components/tabBar";
 
-// // element: icons
+// element: icons
 // const icons = {
 //   add: require("../../../assets/icons/add.png"),
 //   arrow_forward: require("../../../assets/icons/arrow_forward.png"),
@@ -95,7 +96,8 @@ const users = [1, 2, 3]; // mock
 
 export default function BoardScreen() {
   const [modalVisible, setModalVisible] = useState(false);
-  // element: fonts
+    const [tabBarVisible, setTabBarVisible] = useState(false);
+// element: fonts
   const [fontsLoaded] = useFonts({
     kanitMedium: require("../../../assets/fonts/Kanit-Medium.ttf"),
   });
@@ -106,12 +108,13 @@ export default function BoardScreen() {
   //   throw new Error("Function not implemented.");
   // }
 
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <Stack.Screen options={{ headerShown: false }} />
       {/* Header */}
       <View className="flex-row items-center mx-6 pt-10">
-        <TouchableOpacity className="mr-3">
+        <TouchableOpacity className="mr-3" onPress={() => setTabBarVisible(true)}>
           <Icon name="menu" size={24} />
         </TouchableOpacity>
 
@@ -244,7 +247,13 @@ export default function BoardScreen() {
           </View>
         ))}
       </ScrollView>
+      <TabBar
+  visible={tabBarVisible}
+  onClose={() => setTabBarVisible(false)}
+/>
+
     </SafeAreaView>
+
   );
 }
 
