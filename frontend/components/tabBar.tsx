@@ -10,6 +10,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { icons } from "@/constants/icons";
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useRouter } from "expo-router";
+
 
 const { width } = Dimensions.get("window");
 const TABBAR_WIDTH = width * 0.8;
@@ -34,6 +36,7 @@ type TabBarProps = {
 };
 
 export default function TabBar({ visible, onClose }: TabBarProps) {
+    const router = useRouter();
     const [user, setUser] = useState<{
         name: string | null;
         email: string | null;
@@ -104,7 +107,11 @@ export default function TabBar({ visible, onClose }: TabBarProps) {
                         </View>
                         {/* Menu */}
                         <View className="space-y-6">
-                            <Pressable className="flex-row items-center space-x-3 mb-3">
+                            <Pressable className="flex-row items-center space-x-3 mb-3" 
+                            onPress={() => {
+                                onClose();
+                                router.push("/(home)/homepage");
+                            }}>
                                 <Icon name="home_garden" size={23} />
                                 <Text className="text-[18px] font-kanitMedium ml-2">
                                     {user.name ?? "Guest"}'s Homepage
@@ -119,10 +126,23 @@ export default function TabBar({ visible, onClose }: TabBarProps) {
                                     </Text>
                                 </View>
                                 <View className="ml-0 mt-1.5">
-                                    <TreeItem icon="dashboard" label="Dashboard" />
-                                    <TreeItem icon="board" label="Board" />
-                                    <TreeItem icon="chat" label="Chat" />
-                                    <TreeItem icon="settings" label="Setting" isLast />
+                                    <TreeItem icon="dashboard" label="Dashboard" 
+                                    onPress={() => {
+                                onClose();
+                                router.push("/(home)/homepage");
+                            }} />
+                                    <TreeItem icon="board" label="Board" onPress={() => {
+                                onClose();
+                                router.push("/project/[projectId]/board");
+                            }}/>
+                                    <TreeItem icon="chat" label="Chat" onPress={() => {
+                                onClose();
+                                router.push("/(home)/homepage");
+                            }} />
+                                    <TreeItem icon="settings" label="Setting" isLast onPress={() => {
+                                onClose();
+                                router.push("/(home)/homepage");
+                            }} />
                                 </View>
                             </View>
                         </View>
@@ -154,13 +174,15 @@ export default function TabBar({ visible, onClose }: TabBarProps) {
 }
 
 function TreeItem({
-    icon,
-    label,
-    isLast = false,
+  icon,
+  label,
+  isLast = false,
+  onPress,
 }: {
-    icon: keyof typeof icons;
-    label: string;
-    isLast?: boolean;
+  icon: keyof typeof icons;
+  label: string;
+  isLast?: boolean;
+  onPress?: () => void;
 }) {
     return (
         <View className="flex-row h-10">
@@ -172,7 +194,7 @@ function TreeItem({
                 )}
                 <View className="absolute top-1/2 w-4 h-[2px] bg-GRAY left-1/2" />
             </View>
-            <Pressable className="flex-row items-center space-x-3 ml-2">
+            <Pressable className="flex-row items-center space-x-3 ml-2" onPress={onPress}>
                 <Icon name={icon} size={20} />
                 <Text className="text-[17px] font-kanitMedium pl-2">
                     {label}
