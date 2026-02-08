@@ -19,19 +19,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
 import TabBar from "@/components/tabBar";
 
-// element: icons
-// const icons = {
-//   add: require("../../../assets/icons/add.png"),
-//   arrow_forward: require("../../../assets/icons/arrow_forward.png"),
-//   date: require("../../../assets/icons/date_range.png"),
-//   delete: require("../../../assets/icons/delete.png"),
-//   user: require("../../../assets/icons/face.png"),
-//   filter: require("../../../assets/icons/filter_list.png"),
-//   custom_pen: require("../../../assets/icons/ink_pen.png"),
-//   kanban: require("../../../assets/icons/view_kanban.png"),
-//   menu: require("../../../assets/icons/menu.png"),
-// };
-
 const Icon = ({
   name,
   size = 18,
@@ -96,7 +83,9 @@ const users = [1, 2, 3]; // mock
 
 export default function BoardScreen() {
   const [modalVisible, setModalVisible] = useState(false);
-    const [tabBarVisible, setTabBarVisible] = useState(false);
+  const [tabBarVisible, setTabBarVisible] = useState(false);
+  const [chatVisible, setChatVisible] = useState(false);
+
 // element: fonts
   const [fontsLoaded] = useFonts({
     kanitMedium: require("../../../assets/fonts/Kanit-Medium.ttf"),
@@ -248,14 +237,30 @@ export default function BoardScreen() {
         ))}
       </ScrollView>
       <TabBar
-  visible={tabBarVisible}
-  onClose={() => setTabBarVisible(false)}
-/>
+      visible={tabBarVisible}
+      onClose={() => setTabBarVisible(false)}/>
 
+      <ProjectChatModal
+      visible={chatVisible}
+      onClose={() => setChatVisible(false)}/>
+
+      <Pressable
+      onPress={() => setChatVisible(true)}
+      style={{
+        position: "absolute",
+        right: 24,
+        bottom: 90,
+        shadowColor: "#000",
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 3 },
+      }}
+      className="w-[56px] h-[56px] rounded-full bg-white justify-center items-center">
+        <Image
+        source={icons.chat} style={{ width: 26, height: 26 }}/>
+      </Pressable>
     </SafeAreaView>
-
-  );
-}
+    );}
 
 const styles = StyleSheet.create({
   board: {
