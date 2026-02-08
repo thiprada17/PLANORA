@@ -13,7 +13,7 @@ export default function Index() {
       <Link href="/(authen)/login">LOGIN</Link>
       <Link href="/(home)/homepage">HOMEPAGE</Link>
       <Link href="/project/:projectId/board">board</Link>
-
+      <Link href="/project/:projectId/chat">chat</Link>
     </View>
     
   );
