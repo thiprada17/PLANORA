@@ -36,6 +36,31 @@ const supabaseUrl = 'https://qoxczgyeamhsuxmxhpzr.supabase.co'
 const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFveGN6Z3llYW1oc3V4bXhocHpyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTY4NDA1OSwiZXhwIjoyMDg1MjYwMDU5fQ.5_HoLWXUPAQn7IzgMwRmkUjFUpYaGd3d0s54_f7VMIU' // service key secret
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
+
+const http = require("http")
+const { Server } = require("socket.io")
+
+const server = http.createServer(app)
+
+
+const io = new Server(server, {
+  cors: { origin: "*" },
+  transports: ["websocket"]
+})
+
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id)
+
+  socket.on("send_message", (data) => {
+    io.emit("receive_message", data)
+  })
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected")
+  })
+})
+
+
 //signup hash แย้วจ้า
 app.post('/api/signup', async (req, res) => {
     const { username, email, password } = req.body
@@ -64,7 +89,7 @@ app.post('/api/signup', async (req, res) => {
             password,
             options: {
                 data: {
-                    full_name: username,   // 👈 ใส่ metadata ตั้งแต่ตอน signup เลย (ดีที่สุด)
+                    full_name: username,  
                 },
             },
         })
@@ -231,6 +256,6 @@ app.post('/search/member', async (req, res) => {
 
 })
 
-app.listen(3000, '0.0.0.0', () => {
+server.listen(3000, '0.0.0.0', () => {
     console.log('Server running on port 3000')
 })

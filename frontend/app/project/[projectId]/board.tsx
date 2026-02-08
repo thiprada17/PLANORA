@@ -5,8 +5,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  StatusBar,
-  Platform,
   Image,
   Dimensions, Pressable,
 } from "react-native";
@@ -43,7 +41,6 @@ const Icon = ({
 // responsive
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const BASE_WIDTH = 393;
-
 const scale = (size: number) => (SCREEN_WIDTH / BASE_WIDTH) * size;
 const spacing = {
   xxs: scale(6),
@@ -89,6 +86,7 @@ export default function BoardScreen() {
 // element: fonts
   const [fontsLoaded] = useFonts({
     kanitMedium: require("../../../assets/fonts/Kanit-Medium.ttf"),
+    kanitRegular: require("../../../assets/fonts/KanitRegular.ttf"),
   });
 
   if (!fontsLoaded) return null;
@@ -101,15 +99,14 @@ export default function BoardScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <Stack.Screen options={{ headerShown: false }} />
+      
       {/* Header */}
       <View className="flex-row items-center mx-6 pt-10">
         <TouchableOpacity className="mr-3" onPress={() => setTabBarVisible(true)}>
           <Icon name="menu" size={24} />
         </TouchableOpacity>
 
-        <Text className="flex-1 font-kanitMedium text-[36px] text-black">
-          Board
-        </Text>
+        <Text className="flex-1 font-kanitMedium text-[36px] text-black">Board</Text>
 
         <Pressable
           onPress={() => setModalVisible(true)}
@@ -119,21 +116,16 @@ export default function BoardScreen() {
             shadowOpacity: 0.3,
             shadowRadius: 2,
           }}
-          className="border-2 border-black rounded-lg px-3 py-2 mt bg-white active:bg-gray-100"
+          className="border-2 border-black rounded-lg px-3 py-2 bg-white active:bg-gray-100"
         >
           <Text className="font-kanitMedium">+ Create Task</Text>
         </Pressable>
-
-        <CreateTaskModal
-          visible={modalVisible}
-          onClose={() => setModalVisible(false)}
-        />
       </View>
 
       {/* Tab */}
       <View className="flex-row items-center justify-between mx-6 mt-4 mb-6 px-5 py-2 border border-[#8E8E8E] rounded-xl bg-[#F0F0F0]">
         <View className="flex-row items-center justify-center gap-2">
-          <Icon name="kanban" size={18} />
+          {/* <Icon name="kanban" size={18} /> */}
           <Text className="font-kanitMedium text-xl">Kanban</Text>
         </View>
 
@@ -206,7 +198,7 @@ export default function BoardScreen() {
 
                     <View className="flex-row items-center gap-1 mb-5 mx-2 px-2 ">
                       <View className="border border-black rounded-full p-1 bg-white">
-                        <Icon name="date" size={8} />
+                        {/* <Icon name="date" size={8} /> */}
                       </View>
                       <Text className="font-kanitRegular text-xs text-black">
                         DD/MM/YY
@@ -237,7 +229,9 @@ export default function BoardScreen() {
               ))}
 
               {/* Add task */}
-              <TouchableOpacity className="flex-row items-center gap-2 mt-2" onPress={() => setModalVisible(true)}>
+              <TouchableOpacity className="flex-row items-center gap-2 mt-2"
+              onPress={() => setModalVisible(true)}
+              >
                 <Text className="font-kanitMedium text-md">+ Add Task</Text>
               </TouchableOpacity>
             </ScrollView>
@@ -275,5 +269,14 @@ const styles = StyleSheet.create({
   board: {
     marginHorizontal: spacing.lg,
     alignItems: "flex-start",
+  },
+  fab: {
+    position: "absolute",
+    bottom: 24,
+    right: 24,
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
   },
 });
