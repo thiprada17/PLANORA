@@ -66,7 +66,7 @@ export default function GoogleLoginButton() {
       await AsyncStorage.setItem("username", username)
       await AsyncStorage.setItem("email", email)
             await AsyncStorage.setItem("profile", avatar)
-      router.replace('/homepage')
+      // router.replace('/homepage')
 
     } catch (err) {
       console.log('Google login error:', err)
