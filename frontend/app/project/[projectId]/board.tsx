@@ -164,12 +164,12 @@ export default function BoardScreen() {
               <Text className="font-kanitMedium text-xl">{col.title}</Text>
 
               <View className="flex-row gap-1">
-                <TouchableOpacity className="border border-black rounded-md px-2 py-2 mx-1 my-1 mt-4 mb-4 bg-white">
-                  <Icon name="custom_pen" size={16} />
+                <TouchableOpacity className="border border-black rounded-md px-2 py-2 mx-1 my-1 mt-4 mb-3 bg-white">
+                  <Icon name="custom_pen" size={15} />
                 </TouchableOpacity>
 
-                <TouchableOpacity className="border border-black rounded-md px-2 py-2 mt-4 mb-4 bg-[#F07166]">
-                  <Icon name="delete" size={16} />
+                <TouchableOpacity className="border border-black rounded-md px-2 py-2 mt-4 mb-3 bg-[#F07166]">
+                  <Icon name="delete" size={15} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -189,9 +189,17 @@ export default function BoardScreen() {
                     shadowRadius: 2,
                     shadowOffset: { width: 0, height: 2 },
                   }}
-                  className="mb-3 rounded-3xl border border-black bg-[#F0F0F0] pb-2 px-1 "
+                  className="mb-3 rounded-3xl border border-black bg-[#F0F0F0] pt-1.5 pb-1 px-1 "
                 >
-                  <View className="mt-4 rounded-3xl border border-black bg-white">
+                  <View
+                    style={{
+                      shadowColor: "#000",
+                      shadowOpacity: 0.25,
+                      shadowRadius: 4,
+                      shadowOffset: { width: 0, height: 3 },
+                      elevation: 4,
+                    }}
+                    className="mt-4 rounded-3xl border border-black bg-white">
                     <Text className="font-kanitMedium text-xl mt-7 mx-2 px-2">
                       Task name
                     </Text>
@@ -237,8 +245,9 @@ export default function BoardScreen() {
         ))}
       </ScrollView>
       <TabBar
-      visible={tabBarVisible}
-      onClose={() => setTabBarVisible(false)}/>
+        visible={tabBarVisible}
+        onClose={() => setTabBarVisible(false)}
+      />
 
       <ProjectChatModal
       visible={chatVisible}

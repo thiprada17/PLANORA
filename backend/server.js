@@ -4,6 +4,29 @@ const bodyParser = require('body-parser')
 const { createClient } = require('@supabase/supabase-js')
 const bcrypt = require('bcrypt')
 
+const http = require("http")
+const { Server } = require("socket.io")
+
+const io = new Server(server, {
+  cors: {
+    origin: "*"
+  }
+})
+
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id)
+
+  socket.on("send_message", (data) => {
+    io.emit("receive_message", data)
+  })
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected")
+  })
+})
+
+const server = http.createServer(app)
+
 const app = express()
 
 app.use(cors())
@@ -174,6 +197,7 @@ app.get('/display/projects', async (req, res) => {
             .order('create_at', { ascending: false });
 
         if (error) throw error;
+
         res.json(data);
     } catch (err) {
         res.status(500).json({ error: err.message });
