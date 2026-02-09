@@ -107,67 +107,76 @@ app.post('/api/signup', async (req, res) => {
     }
 })
 
-//Login ยังไม่ 100% นะ
+//Login
 app.post('/api/login', async (req, res) => {
-    const { email, password } = req.body
+  const { email, password } = req.body
 
-    if (!email || !password) {
-        return res.status(400).json({
-            success: false,
-            message: 'กรุณากรอกอีเมลและรหัสผ่าน'
-        })
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      message: 'กรุณากรอกอีเมลและรหัสผ่าน'
+    })
+  }
+
+  try {
+    const cleanEmail = email.trim().toLowerCase()
+
+    // login ด้วย Supabase Auth
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: cleanEmail,
+      password
+    })
+
+    if (error || !data.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
+      })
     }
 
-    try {
-        const cleanEmail = email.trim().toLowerCase()
+    const user = data.user
 
-        const { data: user, error } = await supabase
-            .from('user')
-            .select('*')
-            .eq('email', cleanEmail)
-            .single()
-        if (error || !user) {
-            return res.status(401).json({
-                success: false,
-                message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
-            })
-        }
+    // ดึงข้อมูลจาก user_profile
+    const { data: profile, error: profileError } = await supabase
+      .from('user_profile')
+      .select('user_id, username, email, avatar_url')
+      .eq('user_id', user.id)
+      .single()
 
-        const isPasswordMatch = await bcrypt.compare(password, user.password)
-        if (!isPasswordMatch) {
-            return res.status(401).json({
-                success: false,
-                message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
-            })
-        }
-
-        res.status(200).json({
-            success: true,
-            message: 'เข้าสู่ระบบสำเร็จ!',
-            user: {
-                id: user.user_id,
-                username: user.username,
-                email: user.email
-            }
-        })
-
-    } catch (err) {
-        console.error('Login Error:', err)
-        res.status(500).json({
-            success: false,
-            message: 'เกิดข้อผิดพลาดภายใน Server'
-        })
+    if (profileError || !profile) {
+      return res.status(404).json({
+        success: false,
+        message: 'ไม่พบข้อมูลผู้ใช้'
+      })
     }
+
+    // ส่งกลับให้ frontend
+    res.status(200).json({
+      success: true,
+      message: 'เข้าสู่ระบบสำเร็จ',
+      session: data.session,
+      user: profile
+    })
+
+  } catch (err) {
+    console.error('Login Error:', err)
+    res.status(500).json({
+      success: false,
+      message: 'เกิดข้อผิดพลาดภายใน Server'
+    })
+  }
 })
 
 app.post('/create/post', async (req, res) => {
-    const { project_name, deadline, subject, member } = req.body
+    const { project_name, deadline, subject, member, created_by } = req.body
     const created_at = new Date().toISOString();
 
     try {
         const { data: projectData, error: projectError } = await supabase
             .from('project')
-            .insert({ project_name, deadline, subject, created_at, created_by: 1 })
+            .insert({ project_name,
+                deadline, subject, 
+                created_at, created_by })
             .select()
             .single()
 
