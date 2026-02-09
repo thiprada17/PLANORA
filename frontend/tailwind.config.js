@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+
   // NOTE: Update this to include the paths to all files that contain Nativewind classes.
   content: [
     "./app/**/*.{js,jsx,ts,tsx}",
@@ -12,7 +13,8 @@ module.exports = {
         kanitBold: ["KanitBold"],
         kanitRegular: ["KanitRegular"],
         kanitLight: ["KanitLight"],
-        kanitMedium: ["kanitMedium"]
+        kanitMedium: ["kanitMedium"],
+        kanitSemiBold: ["kanitSemiBold"],
       },
 
       colors: {
