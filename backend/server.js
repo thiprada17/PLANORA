@@ -192,6 +192,7 @@ app.post('/create/post', async (req, res) => {
     }
 })
 
+
 // Create project >> Homepage
 app.get('/display/projects', async (req, res) => {
     try {

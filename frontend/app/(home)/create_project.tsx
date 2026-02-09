@@ -10,8 +10,9 @@ import { Animated } from "react-native";
 import { useRef, useEffect } from "react";
 import { Keyboard, TouchableWithoutFeedback } from "react-native";
 import { SearchBar } from "react-native-screens";
-import { useRouter } from "expo-router";
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from "expo-router";
 
 export default function CreateProject() {
   const [showPicker, setShowPicker] = useState(false);

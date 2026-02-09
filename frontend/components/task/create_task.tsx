@@ -1,5 +1,6 @@
 import {Modal, View, KeyboardAvoidingView, Platform,
-  TouchableWithoutFeedback, Keyboard} from "react-native";
+  TouchableWithoutFeedback, Keyboard,
+  Pressable} from "react-native";
 import TaskForm from "./taskForm";
 
 type CreateTaskModalProps = {
@@ -13,18 +14,24 @@ export default function CreateTaskModal({
 }: CreateTaskModalProps) {
   return (
     <Modal visible={visible} animationType="fade" transparent>
+      <Pressable onPress={onClose} style={{ flex: 1 }}>
       <View className="flex-1 bg-black/40">
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1 justify-center items-center px-4"
         >
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View className="bg-white rounded-[30px] p-6 w-full shadow-lg">
               <TaskForm onCancel={onClose} />
             </View>
           </TouchableWithoutFeedback>
-        </KeyboardAvoidingView>
+        </KeyboardAvoidingView> */}
+        <Pressable onPress={(e) => {e.stopPropagation(); Keyboard.dismiss();}} className="bg-white rounded-[30px] p-6 w-full shadow-lg"> 
+          <TaskForm onCancel={onClose} />
+        </Pressable>
+      </KeyboardAvoidingView>
       </View>
+      </Pressable>
     </Modal>
   );
 }
