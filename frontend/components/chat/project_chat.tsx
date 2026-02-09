@@ -9,7 +9,8 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  Pressable
+  Pressable,
+  Keyboard
 } from "react-native";
 import { icons } from "@/constants/icons";
 import io, { Socket } from "socket.io-client"
@@ -47,6 +48,7 @@ export default function ProjectChatModal({ visible, onClose }: { visible: boolea
     })
 
     setMessage("")
+    Keyboard.dismiss()
   }
 
   
@@ -111,6 +113,8 @@ export default function ProjectChatModal({ visible, onClose }: { visible: boolea
                 placeholder="Type a message..."
                 value={message}
                 onChangeText={setMessage}
+                onSubmitEditing={sendMessage}
+                returnKeyType="send"
               />
               <TouchableOpacity
                 onPress={sendMessage}

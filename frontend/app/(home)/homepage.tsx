@@ -50,7 +50,7 @@ export default function HomePage() {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch("http://172.20.10.6:3000/display/projects");
+      const response = await fetch("https://freddy-unseconded-kristan.ngrok-free.dev/display/projects");
       const data = await response.json();
       setProjects(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -119,7 +119,7 @@ export default function HomePage() {
           <View className="flex-row items-center">
             <Image source={icons.home_garden} className="w-3.5 h-3.5 mr-1.5" />
             <Text className="font-kanitRegular text-sm text-black">
-              {user.name}'s Homepage
+              Homepage
             </Text>
           </View>
         </View>
