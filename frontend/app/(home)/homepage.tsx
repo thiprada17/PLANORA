@@ -303,7 +303,6 @@ export default function HomePage() {
                         members={mockMembers}
                         onPress={() =>
                           router.push(`../project/${item.project_id}/board`)
-
                         }
                       />
                     </View>
