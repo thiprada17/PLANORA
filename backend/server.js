@@ -3,6 +3,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const { createClient } = require('@supabase/supabase-js')
 const bcrypt = require('bcrypt')
+
 const app = express()
 
 app.use(cors())
@@ -19,25 +20,65 @@ const server = http.createServer(app)
 
 // เชื่อมถุงเท้ากับเชิฟ
 const io = new Server(server, {
-  cors: { origin: "*" },
-  transports: ["websocket"]
+    cors: { origin: "*" },
+    transports: ["websocket"]
 })
 
 // client เชื่อม
 io.on("connection", (socket) => {
-  console.log("User connected:", socket.id)
+    console.log("User connected:", socket.id)
 
-  // รับข้อความ (data) จาก client (event "send_message")
-  socket.on("send_message", (data) => {
-    // ส่ง data ให้ทุกคนที่เชื่อมอยู่
-    io.emit("receive_message", data)
-  })
+    socket.on("join_project", (projectId) => {
+        const room = `project_${projectId}`
+        socket.join(room)
+        console.log(`${socket.id} joined ${room}`)
+    })
 
-  // ปิด
-  socket.on("disconnect", () => {
-    console.log("User disconnected")
-  })
+    // รับข้อความ (data) จาก client (event "send_message")
+    socket.on("send_message", async (data) => {
+
+
+        const room = `project_${data.projectId}`
+
+        const { error } = await supabase
+            .from('message')
+            .insert({
+                project_id: data.projectId,
+                sender_id: data.senderId,
+                name: data.name,
+                text: data.text,
+                time: data.time,
+                user_id: data.user_id
+            })
+
+        if (error) {
+            console.error(error);
+            return;
+        }
+
+        // ส่ง data ให้ทุกคนที่ใน room
+        io.to(room).emit("receive_message", data)
+    })
+
+    // ปิด
+    socket.on("disconnect", () => {
+        console.log("User disconnected")
+    })
 })
+
+app.get("/chat/history/:projectId", async (req, res) => {
+  const { projectId } = req.params;
+
+  const { data, error } = await supabase
+    .from("message")
+    .select("*")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: true });
+
+  if (error) return res.status(500).json(error);
+  res.json(data);
+});
+
 
 
 //signup hash แย้วจ้า
@@ -68,7 +109,7 @@ app.post('/api/signup', async (req, res) => {
             password,
             options: {
                 data: {
-                    full_name: username,  
+                    full_name: username,
                 },
             },
         })
@@ -162,7 +203,7 @@ app.post('/api/login', async (req, res) => {
 
 app.post('/create/post', async (req, res) => {
     const { project_name, deadline, subject, member } = req.body
-    const created_at = new Date().toISOString();
+    const createก_at = new Date().toISOString();
 
     try {
         const { data: projectData, error: projectError } = await supabase
@@ -202,9 +243,6 @@ app.get('/display/projects', async (req, res) => {
             .order('created_at', { ascending: false });
 
         if (error) throw error;
-
-        console.log(data)
-
         res.json(data);
     } catch (err) {
         res.status(500).json({ error: err.message });
