@@ -83,7 +83,7 @@ export default function BoardScreen() {
   // element: fonts
   const [fontsLoaded] = useFonts({
     kanitMedium: require("../../../assets/fonts/Kanit-Medium.ttf"),
-    kanitRegular: require("../../../assets/fonts/Kanit-Regular.ttf"),
+    kanitRegular: require("../../../assets/fonts/KanitRegular.ttf"),
   });
 
   if (!fontsLoaded) return null;
