@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { lazy, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -13,38 +13,60 @@ import {
 } from "react-native";
 import { icons } from "@/constants/icons";
 import io, { Socket } from "socket.io-client"
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
+// ต่อ back
 const socket = io("https://freddy-unseconded-kristan.ngrok-free.dev", {
   transports: ["websocket"],
   forceNew: true,
 })
 
 export default function ProjectChatModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState("")
   const [chat, setChat] = useState<any[]>([])
+    const [username, setUsername] = useState<string>("")
 
-useEffect(() => {
-  socket.on("receive_message", (data) => {
-    setChat(prev => [...prev, data])
-  })
+      useEffect(() => {
+    const loadUser = async () => {
+      const name = await AsyncStorage.getItem("username");
+      if (name) setUsername(name);
+    };
 
-  return () => {
-    socket.off("receive_message")
-  }
-}, [])
+    loadUser();
+  }, []);
 
+// ส่งข้อความ
   const sendMessage = () => {
     if (!message.trim()) return
-
+    // ส่งไป back
     socket.emit("send_message", {
       text: message,
-      user: "me",
-      isMe: true,
+      user: username,
+      senderId: socket.id,
       time: new Date().toLocaleTimeString()
     })
 
     setMessage("")
   }
+
+  
+// รับข้อความจากน้องถุงเท้า
+  useEffect(() => {
+
+    const GetMessage = (data: any) => {
+       setChat(prev => [...prev, { ...data, isMe: data.senderId === socket.id }])
+    }
+
+    console.log(chat)
+    // มีข้อความเข้าเรียก getMassage
+    socket.on("receive_message", GetMessage)
+    
+
+    return () => {
+      socket.off("receive_message", GetMessage)
+    }
+  }, [])
+
 
   return (
     <Modal animationType="fade" transparent visible={visible} onRequestClose={onClose}>
