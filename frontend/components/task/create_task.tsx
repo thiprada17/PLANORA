@@ -12,6 +12,7 @@ export default function CreateTaskModal({
   visible,
   onClose,
 }: CreateTaskModalProps) {
+    
   return (
     <Modal visible={visible} animationType="fade" transparent>
       <Pressable onPress={onClose} style={{ flex: 1 }}>

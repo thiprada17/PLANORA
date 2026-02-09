@@ -6,12 +6,14 @@ const bcrypt = require('bcrypt')
 
 const app = express()
 
+app.use(express.json());
 app.use(cors())
 app.use(bodyParser.json())
 
 const supabaseUrl = 'https://qoxczgyeamhsuxmxhpzr.supabase.co'
 const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFveGN6Z3llYW1oc3V4bXhocHpyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTY4NDA1OSwiZXhwIjoyMDg1MjYwMDU5fQ.5_HoLWXUPAQn7IzgMwRmkUjFUpYaGd3d0s54_f7VMIU' // service key secret
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
 
 //signup hash แย้วจ้า
 app.post('/api/signup', async (req, res) => {
@@ -206,6 +208,13 @@ app.post('/search/member', async (req, res) => {
         res.status(500).json({ found: false });
     }
 
+})
+
+app.post('/create/task', async (req, res) => {
+    const{ name, deadline} = req.body
+    console.log("hello" + name + deadline)
+    
+    res.json("")
 })
 
 app.listen(3000, '0.0.0.0', () => {

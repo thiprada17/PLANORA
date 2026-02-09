@@ -1,4 +1,11 @@
-import {View, Text, TextInput, Pressable, Image, Platform} from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  Image,
+  Platform,
+} from "react-native";
 import { useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { icons } from "@/constants/icons";
@@ -14,7 +21,6 @@ export default function TaskForm({ onCancel }: TaskFormProps) {
   const [task, setTask] = useState({
     name: "",
     deadline: "",
-    assign: "",
   });
 
   const [fonts] = useFonts({
@@ -34,6 +40,24 @@ export default function TaskForm({ onCancel }: TaskFormProps) {
     }
   };
 
+  const handleCreateTask = async () => {
+    console.log(task);
+    try {
+      await fetch(
+        "https://freddy-unseconded-kristan.ngrok-free.dev/create/task",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(task),
+        },
+      );
+
+      alert("yayy");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <View className="gap-4">
       <View className="items-center mb-2">
@@ -43,9 +67,9 @@ export default function TaskForm({ onCancel }: TaskFormProps) {
       {/* Task name */}
       <View>
         <View className="flex-row items-center gap-2 mb-2">
-          <Image 
-            source={icons.label} 
-            className="w-5 h-5" 
+          <Image
+            source={icons.label}
+            className="w-5 h-5"
             resizeMode="contain"
           />
           <Text className="font-kanitBold text-black">Task name</Text>
@@ -61,14 +85,14 @@ export default function TaskForm({ onCancel }: TaskFormProps) {
       {/* End date */}
       <View>
         <View className="flex-row items-center gap-2 mb-2">
-          <Image 
-            source={icons.calendar} 
-            className="w-5 h-5" 
+          <Image
+            source={icons.calendar}
+            className="w-5 h-5"
             resizeMode="contain"
           />
           <Text className="font-kanitBold text-black">End date</Text>
         </View>
-        
+
         <Pressable
           onPress={() => setShowPicker(true)}
           className="border border-neutral-400 rounded-xl px-4 py-3 bg-white"
@@ -95,9 +119,9 @@ export default function TaskForm({ onCancel }: TaskFormProps) {
       {/* Assign */}
       <View>
         <View className="flex-row items-center gap-2 mb-2">
-          <Image 
-            source={icons.person_add} 
-            className="w-5 h-5" 
+          <Image
+            source={icons.person_add}
+            className="w-5 h-5"
             resizeMode="contain"
           />
           <Text className="font-kanitBold text-black">Assign</Text>
@@ -106,21 +130,20 @@ export default function TaskForm({ onCancel }: TaskFormProps) {
       </View>
 
       <View className="flex-row justify-end mt-2">
-        <Pressable 
-            onPress={() => {
-                console.log("Task Created:", task);
-                onCancel();
-            }}
-            className="bg-[#A8D5BA] border border-black rounded-lg p-2 w-10 h-10 items-center justify-center shadow-sm"
+        <Pressable
+          onPress={() => {
+            handleCreateTask();
+            console.log("Task Created:", task);
+          }}
+          className="bg-[#A8D5BA] border border-black rounded-lg p-2 w-10 h-10 items-center justify-center shadow-sm"
         >
-          <Image 
-            source={icons.check} 
+          <Image
+            source={icons.check}
             className="w-5 h-5"
             resizeMode="contain"
           />
         </Pressable>
       </View>
-
     </View>
   );
 }
