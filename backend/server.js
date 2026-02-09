@@ -37,7 +37,6 @@ io.on("connection", (socket) => {
     // รับข้อความ (data) จาก client (event "send_message")
     socket.on("send_message", async (data) => {
 
-        console.log(data)
 
         const room = `project_${data.projectId}`
 
@@ -48,7 +47,8 @@ io.on("connection", (socket) => {
                 sender_id: data.senderId,
                 name: data.name,
                 text: data.text,
-                time: data.time
+                time: data.time,
+                user_id: data.user_id
             })
 
         if (error) {
@@ -208,7 +208,7 @@ app.post('/create/post', async (req, res) => {
     try {
         const { data: projectData, error: projectError } = await supabase
             .from('project')
-            .insert({ project_name, deadline, subject, createก_at, created_by: 1 })
+            .insert({ project_name, deadline, subject, created_at, created_by: 1 })
             .select()
             .single()
 
@@ -243,9 +243,6 @@ app.get('/display/projects', async (req, res) => {
             .order('created_at', { ascending: false });
 
         if (error) throw error;
-
-        console.log(data)
-
         res.json(data);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -279,6 +276,6 @@ app.post('/search/member', async (req, res) => {
 
 })
 
-app.listen(3000, '0.0.0.0', () => {
+server.listen(3000, '0.0.0.0', () => {
     console.log('Server running on port 3000')
 })
