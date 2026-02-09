@@ -74,7 +74,7 @@ export default function ProjectChatModal({ visible, onClose }: { visible: boolea
     <Modal animationType="fade" transparent visible={visible} onRequestClose={onClose}>
       <Pressable className="flex-1 bg-black/40 justify-center items-center px-6" onPress={onClose}>
         <Pressable
-          className="w-full h-[65%] bg-white rounded-[40px] p-6 shadow-xl"
+          className="w-full h-[65%] bg-white rounded-[40px] p-6 shadow-xl pb-10"
           onPress={(e) => e.stopPropagation()}
         >
           {/* Header */}

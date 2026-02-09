@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useFocusEffect } from "expo-router";
 import { useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Link } from "expo-router";
 
 type Project = {
   project_id: number;
@@ -255,19 +256,33 @@ export default function HomePage() {
                     <Text className="text-4xl text-neutral-400">+</Text>
                   </Pressable>
                   {projects.map((item) => (
-                    <Pressable
+                    <Link
                       key={item.project_id}
-                      className="w-[150px] h-[150px] mt-4 rounded-3xl bg-white p-4 shadow-sm items-center justify-center"
+                      href={`../project/${item.project_id}/board`}
+                      asChild
                     >
-                      <Text className="font-kanitBold text-center">{item.project_name}</Text>
-                      <Text className="font-kanitRegular text-xs text-gray-500">{item.subject}</Text>
-                    </Pressable>
+                      <Pressable
+                        className="w-[150px] h-[150px] mt-4 rounded-3xl bg-white p-4 shadow-sm items-center justify-center"
+                      >
+                        <Text className="font-kanitBold text-center">
+                          {item.project_name}
+                        </Text>
+                        <Text className="font-kanitRegular text-xs text-gray-500">
+                          {item.subject}
+                        </Text>
+                      </Pressable>
+                    </Link>
                   ))}
+
                 </View>
               </ScrollView>
             </View>
           </View>
         </View>
+
+
+
+
         <Modal transparent animationType="slide" visible={openFilter}>
           <Pressable
             className="flex-1 bg-black/30"
