@@ -13,6 +13,74 @@ const supabaseUrl = 'https://qoxczgyeamhsuxmxhpzr.supabase.co'
 const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFveGN6Z3llYW1oc3V4bXhocHpyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTY4NDA1OSwiZXhwIjoyMDg1MjYwMDU5fQ.5_HoLWXUPAQn7IzgMwRmkUjFUpYaGd3d0s54_f7VMIU' // service key secret
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
+// สร้าง server ให้น้องถุงเท้า
+const http = require("http")
+const { Server } = require("socket.io")
+const server = http.createServer(app)
+
+// เชื่อมถุงเท้ากับเชิฟ
+const io = new Server(server, {
+    cors: { origin: "*" },
+    transports: ["websocket"]
+})
+
+// client เชื่อม
+io.on("connection", (socket) => {
+    console.log("User connected:", socket.id)
+
+    socket.on("join_project", (projectId) => {
+        const room = `project_${projectId}`
+        socket.join(room)
+        console.log(`${socket.id} joined ${room}`)
+    })
+
+    // รับข้อความ (data) จาก client (event "send_message")
+    socket.on("send_message", async (data) => {
+
+        console.log(data)
+
+        const room = `project_${data.projectId}`
+
+        const { error } = await supabase
+            .from('message')
+            .insert({
+                project_id: data.projectId,
+                sender_id: data.senderId,
+                name: data.name,
+                text: data.text,
+                time: data.time
+            })
+
+        if (error) {
+            console.error(error);
+            return;
+        }
+
+        // ส่ง data ให้ทุกคนที่ใน room
+        io.to(room).emit("receive_message", data)
+    })
+
+    // ปิด
+    socket.on("disconnect", () => {
+        console.log("User disconnected")
+    })
+})
+
+app.get("/chat/history/:projectId", async (req, res) => {
+  const { projectId } = req.params;
+
+  const { data, error } = await supabase
+    .from("message")
+    .select("*")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: true });
+
+  if (error) return res.status(500).json(error);
+  res.json(data);
+});
+
+
+
 //signup hash แย้วจ้า
 app.post('/api/signup', async (req, res) => {
     const { username, email, password } = req.body
@@ -41,7 +109,7 @@ app.post('/api/signup', async (req, res) => {
             password,
             options: {
                 data: {
-                    full_name: username,   // 👈 ใส่ metadata ตั้งแต่ตอน signup เลย (ดีที่สุด)
+                    full_name: username,
                 },
             },
         })

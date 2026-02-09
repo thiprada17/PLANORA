@@ -9,11 +9,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useFocusEffect } from "expo-router";
 import { useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import ProjectCard from "@/components/projectCard";
 
 type Project = {
   project_id: number;
   project_name: string;
   subject: string;
+  deadline: Date | null;
+  members: number[];
 };
 
 export default function HomePage() {
@@ -47,12 +50,27 @@ export default function HomePage() {
   }, [])
 
   const [projects, setProjects] = useState<Project[]>([]);
+  //ชั่วคราว
+  const mockMembers = [
+    { id: 1 },
+    { id: 2 },
+    { id: 3 },
+  ];
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch("http://172.20.10.6:3000/display/projects");
+      const response = await fetch("https://freddy-unseconded-kristan.ngrok-free.dev/display/projects");
       const data = await response.json();
-      setProjects(Array.isArray(data) ? data : []);
+      setProjects(Array.isArray(data) ?
+        // data : []);
+        data.map((p) => ({
+          ...p,
+          deadline: p.deadline
+            ? new Date(p.deadline + "T00:00:00") //ตอนดึงมามันแสดงแบบไม่ถุกต้อง
+            : null,
+        }))
+        : []
+      );
     } catch (error) {
       console.error("Fetch error:", error);
       setProjects([]);
@@ -119,7 +137,7 @@ export default function HomePage() {
           <View className="flex-row items-center">
             <Image source={icons.home_garden} className="w-3.5 h-3.5 mr-1.5" />
             <Text className="font-kanitRegular text-sm text-black">
-              {user.name}'s Homepage
+              Homepage
             </Text>
           </View>
         </View>
@@ -254,20 +272,52 @@ export default function HomePage() {
                   >
                     <Text className="text-4xl text-neutral-400">+</Text>
                   </Pressable>
-                  {projects.map((item) => (
+                  {/* {projects.map((item) => (
                     <Pressable
                       key={item.project_id}
-                      className="w-[150px] h-[150px] mt-4 rounded-3xl bg-white p-4 shadow-sm items-center justify-center"
+                      href={`../project/${item.project_id}/board`}
+                      asChild
                     >
                       <Text className="font-kanitBold text-center">{item.project_name}</Text>
                       <Text className="font-kanitRegular text-xs text-gray-500">{item.subject}</Text>
+                      <ProjectCard
+                        key={item.project_id}
+                        name={item.project_name}
+                        subject={item.subject}
+                        deadline={item.deadline}
+                        members={item.members}
+                      onPress={() => router.push()}ยังไม่ทราบว่าจะยังอไรรยังไง
+                      />
                     </Pressable>
+                  ))} */}
+                  {projects.map((item) => (
+                    <View
+                      key={item.project_id}
+                      className="w-[150px] h-[150px] mt-4"
+                    >
+                      <ProjectCard
+                        name={item.project_name}
+                        subject={item.subject}
+                        deadline={item.deadline}
+                        // members={item.members ?? []}
+                        members={mockMembers}
+                        onPress={() =>
+                          router.push(`../project/${item.project_id}/board`)
+
+                        }
+                      />
+                    </View>
                   ))}
+
                 </View>
               </ScrollView>
             </View>
           </View>
         </View>
+
+
+
+
         <Modal transparent animationType="slide" visible={openFilter}>
           <Pressable
             className="flex-1 bg-black/30"

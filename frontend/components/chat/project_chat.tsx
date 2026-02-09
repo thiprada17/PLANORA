@@ -1,190 +1,164 @@
-import React, { useEffect, useState } from "react";
+import React, { lazy, useEffect, useState } from "react";
 import {
   View,
   Text,
   Modal,
   TouchableOpacity,
   TextInput,
+  ScrollView,
   Image,
-  Pressable,
+  KeyboardAvoidingView,
   Platform,
+  Pressable,
+  Keyboard
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import io from "socket.io-client";
 import { icons } from "@/constants/icons";
+import io, { Socket } from "socket.io-client"
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-/* socket ของท่าน (ไม่แตะ) */
+// ต่อ back
 const socket = io("https://freddy-unseconded-kristan.ngrok-free.dev", {
   transports: ["websocket"],
   forceNew: true,
-});
-
-type ChatMessage = {
-  text: string;
-  user: string;
-  senderId: string;
-  time?: string;
-  isMe?: boolean;
-};
+})
 
 export default function ProjectChatModal({
   visible,
   onClose,
+  projectId,
 }: {
   visible: boolean;
   onClose: () => void;
+  projectId: number;
 }) {
-  const [message, setMessage] = useState("");
-  const [chat, setChat] = useState<ChatMessage[]>([]);
-  const [username, setUsername] = useState("");
+  const [message, setMessage] = useState("")
+  const [chat, setChat] = useState<any[]>([])
+  const [username, setUsername] = useState<string>("")
 
-  /* load username */
+  // console.log('chat connect ' + projectId)
+
+  useEffect(() => {
+    if (!projectId) return
+
+    socket.emit("join_project", projectId)
+
+    return () => {
+      socket.off("receive_message")
+    }
+  }, [projectId])
+
   useEffect(() => {
     const loadUser = async () => {
       const name = await AsyncStorage.getItem("username");
       if (name) setUsername(name);
     };
+
     loadUser();
   }, []);
 
-  /* receive message */
-  useEffect(() => {
-    const onReceiveMessage = (data: ChatMessage) => {
-      setChat((prev) => [
-        ...prev,
-        { ...data, isMe: data.senderId === socket.id },
-      ]);
-    };
-
-    socket.on("receive_message", onReceiveMessage);
-    return () => {
-      socket.off("receive_message", onReceiveMessage);
-    };
-  }, []);
-
-  /* send message */
+  // ส่งข้อความ
   const sendMessage = () => {
-    if (!message.trim()) return;
-
+    if (!message.trim()) return
+    // ส่งไป back
     socket.emit("send_message", {
-      text: message,
-      user: username,
-      senderId: socket.id,
-      time: new Date().toLocaleTimeString(),
-    });
+    text: message,
+    user: username,
+    senderId: socket.id,
+    projectId: projectId,
+    time: new Date().toLocaleTimeString()
+    })
 
-    setMessage("");
-  };
+    setMessage("")
+    Keyboard.dismiss()
+  }
 
-return (
-  <Modal transparent animationType="fade" visible={visible} onRequestClose={onClose}>
-  {/* backdrop */}
-  <Pressable className="flex-1 bg-black/40 px-6" onPress={onClose}>
-    <View className="flex-1 justify-center items-center">
-      <Pressable
-        onPress={(e) => e.stopPropagation()}
-        className="w-full bg-white rounded-[32px] overflow-hidden"
-        style={{ height: 520 }}
-      >
-        {/* header */}
-        <LinearGradient
-          colors={["#CAEAD5", "#FFFFFF"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={{ paddingTop: 20, paddingBottom: 12 }}
+
+  // รับข้อความจากน้องถุงเท้า
+  useEffect(() => {
+
+    const GetMessage = (data: any) => {
+      setChat(prev => [...prev, { ...data, isMe: data.senderId === socket.id }])
+    }
+
+    console.log(chat)
+    // มีข้อความเข้าเรียก getMassage
+    socket.on("receive_message", GetMessage)
+
+
+    return () => {
+      socket.off("receive_message", GetMessage)
+    }
+  }, [])
+
+  useEffect(() => {
+    if(!visible || !projectId) return;
+
+    const chatHistory = async () => {
+      const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/chat/history/${projectId}`)
+        const data = await res.json()
+        setChat(data);
+    }
+
+    chatHistory()
+  })
+
+
+  return (
+    <Modal animationType="fade" transparent visible={visible} onRequestClose={onClose}>
+      <Pressable className="flex-1 bg-black/40 justify-center items-center px-6" onPress={onClose}>
+        <Pressable
+          className="w-full h-[65%] bg-white rounded-[40px] p-6 shadow-xl pb-10"
+          onPress={(e) => e.stopPropagation()}
         >
-          <Text className="font-kanitMedium text-center text-[16px] tracking-widest text-gray-600">
+          {/* Header */}
+          <Text className="font-kanitMedium text-center text-[16px] mb-6 tracking-widest text-gray-600">
             PROJECT NAME CHAT
           </Text>
-        </LinearGradient>
 
-        {/* 👇 ตัวเดียว จบ */}
-        <KeyboardAwareScrollView
-          enableOnAndroid
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          extraScrollHeight={Platform.OS === "ios" ? 20 : 80}
-          contentContainerStyle={{
-            flexGrow: 1,
-            paddingHorizontal: 24,
-            paddingTop: 16,
-            paddingBottom: 16,
-          }}
-        >
-          {/* message area */}
-          {chat.map((msg, index) => (
-            <View
-              key={`${msg.time}-${index}`}
-              style={{
-                marginBottom: 16,
-                alignItems: msg.isMe ? "flex-end" : "flex-start",
-              }}
-            >
-              <Text style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 4 }}>
-                {msg.user}
-              </Text>
-
+          {/* Chat Messages */}
+          <ScrollView className="flex-1 mb-4" showsVerticalScrollIndicator={false}>
+            {chat.map((msg, index) => (
               <View
-                style={{
-                  paddingHorizontal: 16,
-                  paddingVertical: 12,
-                  borderRadius: 20,
-                  maxWidth: "85%",
-                  backgroundColor: msg.isMe ? "#FFFFFF" : "#D7EFE0",
-                  borderWidth: 1,
-                  borderColor: "rgba(0,0,0,0.05)",
-                }}
+                key={index}
+                className={`mb-4 ${msg.isMe ? "items-end" : "items-start"}`}
               >
-                <Text style={{ fontSize: 14 }}>{msg.text}</Text>
+                <Text className="text-gray-400 text-[10px] mb-1 ml-1">
+                  {msg.user}
+                </Text>
+
+                <View
+                  className={`px-4 py-3 rounded-[20px] max-w-[85%] border border-black/5 ${msg.isMe ? "bg-white" : "bg-[#D7EFE0]"
+                    }`}
+                >
+                  <Text className="font-kanitRegular text-black text-[14px]">
+                    {msg.text}
+                  </Text>
+                </View>
               </View>
-            </View>
-          ))}
+            ))}
+          </ScrollView>
 
-          {/* input area ต้องอยู่ข้างใน */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 8,
-              marginTop: "auto",
-            }}
-          >
-            <TextInput
-              placeholder="Type a message..."
-              value={message}
-              onChangeText={setMessage}
-              style={{
-                flex: 1,
-                height: 50,
-                backgroundColor: "#D7EFE0",
-                borderRadius: 16,
-                paddingHorizontal: 16,
-                fontSize: 14,
-              }}
-            />
-
-            <TouchableOpacity
-              onPress={sendMessage}
-              style={{
-                width: 50,
-                height: 50,
-                borderRadius: 16,
-                backgroundColor: "#B4B4FF",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Image
-                source={icons.send}
-                style={{ width: 24, height: 24, tintColor: "white" }}
+          {/* Input Box */}
+          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
+            <View className="flex-row items-center gap-2">
+              <TextInput
+                className="flex-1 bg-[#D7EFE0] rounded-2xl px-4 py-3 font-kanitRegular h-[50px]"
+                placeholder="Type a message..."
+                value={message}
+                onChangeText={setMessage}
+                onSubmitEditing={sendMessage}
+                returnKeyType="send"
               />
-            </TouchableOpacity>
-          </View>
-        </KeyboardAwareScrollView>
+              <TouchableOpacity
+                onPress={sendMessage}
+                className="bg-[#B4B4FF] w-[50px] h-[50px] rounded-2xl justify-center items-center"
+              >
+                <Image source={icons.send} style={{ width: 24, height: 24, tintColor: "white" }} />
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
+        </Pressable>
       </Pressable>
-    </View>
-  </Pressable>
-</Modal>
-);}
+    </Modal>
+  );
+}
