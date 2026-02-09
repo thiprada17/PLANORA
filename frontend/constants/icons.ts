@@ -28,6 +28,7 @@ import custom_pen from "@/assets/icons/ink_pen.png";
 import kanban from "@/assets/icons/view_kanban.png";
 import menu from "@/assets/icons/menu.png";
 import label from "@/assets/icons/label.png";
+import face from "@/assets/icons/face.png";
 
 export const icons = {
   deadline,
@@ -59,4 +60,5 @@ export const icons = {
   kanban,
   menu,
   label,
+  face,
 };
