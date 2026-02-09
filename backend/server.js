@@ -3,7 +3,6 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const { createClient } = require('@supabase/supabase-js')
 const bcrypt = require('bcrypt')
-
 const app = express()
 
 app.use(express.json());
@@ -13,6 +12,33 @@ app.use(bodyParser.json())
 const supabaseUrl = 'https://qoxczgyeamhsuxmxhpzr.supabase.co'
 const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFveGN6Z3llYW1oc3V4bXhocHpyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTY4NDA1OSwiZXhwIjoyMDg1MjYwMDU5fQ.5_HoLWXUPAQn7IzgMwRmkUjFUpYaGd3d0s54_f7VMIU' // service key secret
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
+// สร้าง server ให้น้องถุงเท้า
+const http = require("http")
+const { Server } = require("socket.io")
+const server = http.createServer(app)
+
+// เชื่อมถุงเท้ากับเชิฟ
+const io = new Server(server, {
+  cors: { origin: "*" },
+  transports: ["websocket"]
+})
+
+// client เชื่อม
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id)
+
+  // รับข้อความ (data) จาก client (event "send_message")
+  socket.on("send_message", (data) => {
+    // ส่ง data ให้ทุกคนที่เชื่อมอยู่
+    io.emit("receive_message", data)
+  })
+
+  // ปิด
+  socket.on("disconnect", () => {
+    console.log("User disconnected")
+  })
+})
 
 
 //signup hash แย้วจ้า
@@ -43,7 +69,7 @@ app.post('/api/signup', async (req, res) => {
             password,
             options: {
                 data: {
-                    full_name: username,   // 👈 ใส่ metadata ตั้งแต่ตอน signup เลย (ดีที่สุด)
+                    full_name: username,  
                 },
             },
         })
@@ -174,9 +200,12 @@ app.get('/display/projects', async (req, res) => {
         const { data, error } = await supabase
             .from('project')
             .select('*')
-            .order('create_at', { ascending: false });
+            .order('created_at', { ascending: false });
 
         if (error) throw error;
+
+        console.log(data)
+
         res.json(data);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -190,7 +219,7 @@ app.post('/search/member', async (req, res) => {
 
     try {
         const { data, error } = await supabase
-            .from('user')
+            .from('user_profile')
             .select('user_id, username')
             .eq('email', email)
             .single()
@@ -217,6 +246,7 @@ app.post('/create/task', async (req, res) => {
     res.json("")
 })
 
-app.listen(3000, '0.0.0.0', () => {
+
+server.listen(3000, '0.0.0.0', () => {
     console.log('Server running on port 3000')
 })

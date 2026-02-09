@@ -329,7 +329,7 @@ const handleSubmit = async () => {
 
                   <TextInput
                     placeholder={project.member.length === 0 ? "example@mail.com" : ""}
-                    className="font-kanitRegular color-neutral-700 flex-1 min-w-[100px] h-8"
+                    className="font-kanitRegular color-neutral-700 flex-1 min-w-[100px]"
                     value={emailInput}
                     onChangeText={setEmailInput}
                     autoCapitalize="none"

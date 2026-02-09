@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { lazy, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,35 +9,72 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  Pressable
+  Pressable,
+  Keyboard
 } from "react-native";
 import { icons } from "@/constants/icons";
+import io, { Socket } from "socket.io-client"
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+// ต่อ back
+const socket = io("https://freddy-unseconded-kristan.ngrok-free.dev", {
+  transports: ["websocket"],
+  forceNew: true,
+})
 
 export default function ProjectChatModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState("")
+  const [chat, setChat] = useState<any[]>([])
+    const [username, setUsername] = useState<string>("")
 
-  const messages = [
-    { id: 1, user: "user 1", text: "hello สวัสดีจ้า", isMe: false },
-    { 
-      id: 2, 
-      user: "user 2", 
-      text: "hello สวัสดีจ้า hello สวัสดีจ้า hello สวัสดีจ้า hello สวัสดีจ้า hello สวัสดีจ้า hello สวัสดีจ้า hello สวัสดีจ้า hello สวัสดีจ้า", 
-      isMe: true 
-    },
-    { 
-      id: 3, 
-      user: "user 3", 
-      text: "hello สวัสดีจ้า hello สวัสดีจ้า hello สวัสดีจ้า hello สวัสดีจ้า hello สวัสดีจ้า hello สวัสดีจ้า", 
-      isMe: false 
-    },
-    { id: 4, user: "user 3", text: "hello สวัสดีจ้า hello สวัสดีจ้า", isMe: false },
-  ];
+      useEffect(() => {
+    const loadUser = async () => {
+      const name = await AsyncStorage.getItem("username");
+      if (name) setUsername(name);
+    };
+
+    loadUser();
+  }, []);
+
+// ส่งข้อความ
+  const sendMessage = () => {
+    if (!message.trim()) return
+    // ส่งไป back
+    socket.emit("send_message", {
+      text: message,
+      user: username,
+      senderId: socket.id,
+      time: new Date().toLocaleTimeString()
+    })
+
+    setMessage("")
+    Keyboard.dismiss()
+  }
+
+  
+// รับข้อความจากน้องถุงเท้า
+  useEffect(() => {
+
+    const GetMessage = (data: any) => {
+       setChat(prev => [...prev, { ...data, isMe: data.senderId === socket.id }])
+    }
+
+    console.log(chat)
+    // มีข้อความเข้าเรียก getMassage
+    socket.on("receive_message", GetMessage)
+    
+
+    return () => {
+      socket.off("receive_message", GetMessage)
+    }
+  }, [])
+
 
   return (
     <Modal animationType="fade" transparent visible={visible} onRequestClose={onClose}>
       <Pressable className="flex-1 bg-black/40 justify-center items-center px-6" onPress={onClose}>
-        <Pressable 
-          className="w-full h-[65%] bg-white rounded-[40px] p-6 shadow-xl" 
+        <Pressable
+          className="w-full h-[65%] bg-white rounded-[40px] p-6 shadow-xl pb-10"
           onPress={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -47,15 +84,22 @@ export default function ProjectChatModal({ visible, onClose }: { visible: boolea
 
           {/* Chat Messages */}
           <ScrollView className="flex-1 mb-4" showsVerticalScrollIndicator={false}>
-            {messages.map((msg) => (
-              <View key={msg.id} className={`mb-4 ${msg.isMe ? "items-end" : "items-start"}`}>
-                <Text className="text-gray-400 text-[10px] mb-1 ml-1">{msg.user}</Text>
+            {chat.map((msg, index) => (
+              <View
+                key={index}
+                className={`mb-4 ${msg.isMe ? "items-end" : "items-start"}`}
+              >
+                <Text className="text-gray-400 text-[10px] mb-1 ml-1">
+                  {msg.user}
+                </Text>
+
                 <View
-                  className={`px-4 py-3 rounded-[20px] max-w-[85%] border border-black/5 ${
-                    msg.isMe ? "bg-white" : "bg-[#D7EFE0]"
-                  }`}
+                  className={`px-4 py-3 rounded-[20px] max-w-[85%] border border-black/5 ${msg.isMe ? "bg-white" : "bg-[#D7EFE0]"
+                    }`}
                 >
-                  <Text className="font-kanitRegular text-black text-[14px]">{msg.text}</Text>
+                  <Text className="font-kanitRegular text-black text-[14px]">
+                    {msg.text}
+                  </Text>
                 </View>
               </View>
             ))}
@@ -69,9 +113,14 @@ export default function ProjectChatModal({ visible, onClose }: { visible: boolea
                 placeholder="Type a message..."
                 value={message}
                 onChangeText={setMessage}
+                onSubmitEditing={sendMessage}
+                returnKeyType="send"
               />
-              <TouchableOpacity className="bg-[#B4B4FF] w-[50px] h-[50px] rounded-2xl justify-center items-center">
-                <Image source={icons.send} style={{ width: 24, height: 24, tintColor: 'white' }} />
+              <TouchableOpacity
+                onPress={sendMessage}
+                className="bg-[#B4B4FF] w-[50px] h-[50px] rounded-2xl justify-center items-center"
+              >
+                <Image source={icons.send} style={{ width: 24, height: 24, tintColor: "white" }} />
               </TouchableOpacity>
             </View>
           </KeyboardAvoidingView>
