@@ -199,7 +199,7 @@ app.get('/display/projects', async (req, res) => {
         const { data, error } = await supabase
             .from('project')
             .select('*')
-            .order('create_at', { ascending: false });
+            .order('created_at', { ascending: false });
 
         if (error) throw error;
 
