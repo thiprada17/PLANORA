@@ -129,6 +129,10 @@ console.log("projectID =", projectID);
         >
           <Text className="font-kanitMedium">+ Create Task</Text>
         </Pressable>
+        <CreateTaskModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+        />
       </View>
 
       {/* Tab */}

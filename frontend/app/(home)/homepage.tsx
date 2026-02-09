@@ -273,13 +273,24 @@ export default function HomePage() {
                     <Text className="text-4xl text-neutral-400">+</Text>
                   </Pressable>
                   {/* {projects.map((item) => (
+                  {/* {projects.map((item) => (
                     <Pressable
                       key={item.project_id}
+                      href={`../project/${item.project_id}/board`}
+                      asChild
                       href={`../project/${item.project_id}/board`}
                       asChild
                     >
                       <Text className="font-kanitBold text-center">{item.project_name}</Text>
                       <Text className="font-kanitRegular text-xs text-gray-500">{item.subject}</Text>
+                      <ProjectCard
+                        key={item.project_id}
+                        name={item.project_name}
+                        subject={item.subject}
+                        deadline={item.deadline}
+                        members={item.members}
+                      onPress={() => router.push()}ยังไม่ทราบว่าจะยังอไรรยังไง
+                      />
                       <ProjectCard
                         key={item.project_id}
                         name={item.project_name}

@@ -233,15 +233,19 @@ app.post('/create/post', async (req, res) => {
     }
 })
 
+
 // Create project >> Homepage
 app.get('/display/projects', async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('project')
             .select('*')
-            .order('create_at', { ascending: false });
+            .order('created_at', { ascending: false });
 
         if (error) throw error;
+
+        console.log(data)
+
         res.json(data);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -255,7 +259,7 @@ app.post('/search/member', async (req, res) => {
 
     try {
         const { data, error } = await supabase
-            .from('user')
+            .from('user_profile')
             .select('user_id, username')
             .eq('email', email)
             .single()
