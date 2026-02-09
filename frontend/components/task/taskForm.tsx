@@ -18,8 +18,8 @@ export default function TaskForm({ onCancel }: TaskFormProps) {
   });
 
   const [fonts] = useFonts({
-    KanitBold: require("../../assets/fonts/KanitBold.ttf"),
-    KanitRegular: require("../../assets/fonts/KanitRegular.ttf"),
+    KanitBold: require("@/assets/fonts/KanitBold.ttf"),
+    KanitRegular: require("@/assets/fonts/KanitRegular.ttf"),
   });
 
   if (!fonts) return null;
@@ -44,7 +44,7 @@ export default function TaskForm({ onCancel }: TaskFormProps) {
       <View>
         <View className="flex-row items-center gap-2 mb-2">
           <Image 
-            source={icons.topic} 
+            source={icons.label} 
             className="w-5 h-5" 
             resizeMode="contain"
           />
