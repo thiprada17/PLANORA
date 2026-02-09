@@ -12,13 +12,14 @@
       "bundleIdentifier": "com.thiprada17.frontend"
     },
     "android": {
+      "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "",
         "backgroundImage": "",
         "monochromeImage": ""
       },
-      "edgeToEdgeEnabled": true,
+      "edgeToEdgeEnabled": false,
       "predictiveBackGestureEnabled": false,
       "package": "com.thiprada17.frontend"
     },

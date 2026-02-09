@@ -17,6 +17,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
 import TabBar from "@/components/tabBar";
 
+import { useLocalSearchParams } from "expo-router";
+
+
 const Icon = ({
   name,
   size = 18,
@@ -79,11 +82,17 @@ const Column = [
 const users = [1, 2, 3]; // mock
 
 export default function BoardScreen() {
+const { projectId } = useLocalSearchParams<{ projectId: string }>();
+
+const projectID = Number(projectId);
+
+console.log("projectID =", projectID);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [tabBarVisible, setTabBarVisible] = useState(false);
   const [chatVisible, setChatVisible] = useState(false);
 
-// element: fonts
+  // element: fonts
   const [fontsLoaded] = useFonts({
     kanitMedium: require("../../../assets/fonts/Kanit-Medium.ttf"),
     kanitRegular: require("../../../assets/fonts/KanitRegular.ttf"),
@@ -99,7 +108,7 @@ export default function BoardScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <Stack.Screen options={{ headerShown: false }} />
-      
+
       {/* Header */}
       <View className="flex-row items-center mx-6 pt-10">
         <TouchableOpacity className="mr-3" onPress={() => setTabBarVisible(true)}>
@@ -234,7 +243,7 @@ export default function BoardScreen() {
 
               {/* Add task */}
               <TouchableOpacity className="flex-row items-center gap-2 mt-2"
-              onPress={() => setModalVisible(true)}
+                onPress={() => setModalVisible(true)}
               >
                 <Text className="font-kanitMedium text-md">+ Add Task</Text>
               </TouchableOpacity>
@@ -248,26 +257,28 @@ export default function BoardScreen() {
       />
 
       <ProjectChatModal
-      visible={chatVisible}
-      onClose={() => setChatVisible(false)}/>
+        visible={chatVisible}
+        projectId ={projectID}
+        onClose={() => setChatVisible(false)} />
 
       <Pressable
-      onPress={() => setChatVisible(true)}
-      style={{
-        position: "absolute",
-        right: 24,
-        bottom: 90,
-        shadowColor: "#000",
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        shadowOffset: { width: 0, height: 3 },
-      }}
-      className="w-[56px] h-[56px] rounded-full bg-white justify-center items-center">
+        onPress={() => setChatVisible(true)}
+        style={{
+          position: "absolute",
+          right: 24,
+          bottom: 90,
+          shadowColor: "#000",
+          shadowOpacity: 0.3,
+          shadowRadius: 4,
+          shadowOffset: { width: 0, height: 3 },
+        }}
+        className="w-[56px] h-[56px] rounded-full bg-white justify-center items-center">
         <Image
-        source={icons.chat} style={{ width: 26, height: 26 }}/>
+          source={icons.chat} style={{ width: 26, height: 26 }} />
       </Pressable>
     </SafeAreaView>
-    );}
+  );
+}
 
 const styles = StyleSheet.create({
   board: {

@@ -12,6 +12,7 @@ import {
   Pressable,
   Keyboard
 } from "react-native";
+import { useRef } from "react";
 import { icons } from "@/constants/icons";
 import io, { Socket } from "socket.io-client"
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -22,28 +23,55 @@ const socket = io("https://freddy-unseconded-kristan.ngrok-free.dev", {
   forceNew: true,
 })
 
-export default function ProjectChatModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
+export default function ProjectChatModal({
+  visible,
+  onClose,
+  projectId,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  projectId: number;
+}) {
   const [message, setMessage] = useState("")
   const [chat, setChat] = useState<any[]>([])
-    const [username, setUsername] = useState<string>("")
+  const [username, setUsername] = useState<string>("")
+  const [userId, setUserId] = useState<string | null>(null);
 
-      useEffect(() => {
+  // console.log('chat connect ' + projectId)
+  const scrollRef = useRef<ScrollView>(null);
+
+  useEffect(() => {
+    if (!projectId) return
+
+    socket.emit("join_project", projectId)
+
+    return () => {
+      socket.off("receive_message")
+    }
+  }, [projectId])
+
+  useEffect(() => {
     const loadUser = async () => {
       const name = await AsyncStorage.getItem("username");
       if (name) setUsername(name);
+      const user_id = await AsyncStorage.getItem("user_id");
+      if (user_id) setUserId(user_id);
+
     };
 
     loadUser();
   }, []);
 
-// ส่งข้อความ
+  // ส่งข้อความ
   const sendMessage = () => {
     if (!message.trim()) return
     // ส่งไป back
     socket.emit("send_message", {
       text: message,
-      user: username,
+      name: username,
       senderId: socket.id,
+      projectId: projectId,
+      user_id: userId,
       time: new Date().toLocaleTimeString()
     })
 
@@ -51,23 +79,43 @@ export default function ProjectChatModal({ visible, onClose }: { visible: boolea
     Keyboard.dismiss()
   }
 
-  
-// รับข้อความจากน้องถุงเท้า
+
+  // รับข้อความจากน้องถุงเท้า
   useEffect(() => {
 
     const GetMessage = (data: any) => {
-       setChat(prev => [...prev, { ...data, isMe: data.senderId === socket.id }])
+      setChat(prev => [...prev, { ...data, isMe: data.user_id === userId }])
     }
 
-    console.log(chat)
     // มีข้อความเข้าเรียก getMassage
     socket.on("receive_message", GetMessage)
-    
+
 
     return () => {
       socket.off("receive_message", GetMessage)
     }
-  }, [])
+  }, [userId])
+
+
+
+  useEffect(() => {
+    if (!visible || !projectId) return;
+
+    const chatHistory = async () => {
+      const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/chat/history/${projectId}`)
+      const data = await res.json()
+
+      setChat(data.map((msg: any) => ({
+        ...msg,
+        isMe: msg.user_id === userId
+      })));
+    }
+    chatHistory()
+  }, [visible, projectId, userId])
+
+
+
+
 
 
   return (
@@ -83,14 +131,21 @@ export default function ProjectChatModal({ visible, onClose }: { visible: boolea
           </Text>
 
           {/* Chat Messages */}
-          <ScrollView className="flex-1 mb-4" showsVerticalScrollIndicator={false}>
+          <ScrollView
+            ref={scrollRef}
+            className="flex-1 mb-4"
+            showsVerticalScrollIndicator={false}
+            onContentSizeChange={() => {
+              scrollRef.current?.scrollToEnd({ animated: true });
+            }}
+          >
             {chat.map((msg, index) => (
               <View
                 key={index}
                 className={`mb-4 ${msg.isMe ? "items-end" : "items-start"}`}
               >
                 <Text className="text-gray-400 text-[10px] mb-1 ml-1">
-                  {msg.user}
+                  {msg.name}
                 </Text>
 
                 <View
@@ -115,6 +170,7 @@ export default function ProjectChatModal({ visible, onClose }: { visible: boolea
                 onChangeText={setMessage}
                 onSubmitEditing={sendMessage}
                 returnKeyType="send"
+                blurOnSubmit={false}
               />
               <TouchableOpacity
                 onPress={sendMessage}
