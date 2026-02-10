@@ -41,7 +41,7 @@ export default function CreateProject() {
     project_name: "",
     deadline: "",
     subject: "",
-    member: [] as { id: number; name: string }[]
+    member: [] as { id: number; name: string, email: string }[]
   });
 
   const [step, setStep] = useState(1);
@@ -130,7 +130,8 @@ export default function CreateProject() {
         ...prev.member,
         {
           id: memsearch.user_id,
-          name: memsearch.username
+          name: memsearch.username,
+          email: memsearch.email
         }
       ]
     }));
@@ -160,6 +161,7 @@ export default function CreateProject() {
 
 const handleSubmit = async () => {
   console.log("yes")
+  const userId = await AsyncStorage.getItem('userId');
   try {
     await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/create/post', {
       method: "POST",

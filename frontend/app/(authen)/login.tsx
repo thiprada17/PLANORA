@@ -93,11 +93,12 @@ if (!fonts || pageLoading) {
         }
     }
     return (
+
         <View className="flex-1 bg-white">
             <Loading visible={isLoading} />
             <View
                 className="items-center justify-center"
-                style={{ height: screenHeight * 0.32 }}
+                style={{ height: screenHeight * 0.26 }}
             >
                 <Text className="font-kanitBold text-[30px]">
                     Plandora

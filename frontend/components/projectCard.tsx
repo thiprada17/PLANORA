@@ -2,21 +2,22 @@ import { View, Text, Pressable, Image } from "react-native";
 import { icons } from "@/constants/icons";
 
 type Member = {
-    id: number;
+    id: string;
     avatar?: string | null;
 };
 
 type Props = {
-    name: string;
-    subject: string;
-    deadline?: Date | null;
-    members: Member[]; //number[] อันนี้เอาไว้เทส
+    project_id: string;
+  project_name: string;
+  subject: string;
+  deadline: Date | null;
+  members: Member[]; //number[] อันนี้เอาไว้เทส
     onPress?: () => void;
 };
 
 
 export default function ProjectCard({
-    name,
+    project_name,
     subject,
     deadline,
     members,
@@ -25,7 +26,7 @@ export default function ProjectCard({
     return (
         <Pressable
             onPress={onPress}
-            className="w-[155px] h-[150px] rounded-3xl bg-GREEN p-4 border border-black"
+            className="w-[155px] h-[150px] relative"
             style={{
                 shadowColor: "#000",
                 shadowOpacity: 0.25,
@@ -33,8 +34,19 @@ export default function ProjectCard({
                 shadowOffset: { width: 0, height: 3 },
             }}
         >
-            <View className="self-start bg-white px-3 py-1 rounded-full mb-2 flex-row items-center">
-                <Image source={icons.calendar} className="w-3 h-3 mr-1" />
+            <View className="absolute inset-0 rounded-3xl bg-black" />
+            <View className="absolute top-0 left-0 right-0 h-[135px] rounded-3xl bg-GREEN p-3 border border-black">
+
+            <View className="self-start bg-white px-3 rounded-full mb-2 flex-row items-center"
+                style={{
+                    shadowColor: '#bfbfbf',
+                    shadowOpacity: 0.3,
+                    shadowRadius: 3.5,
+                    shadowOffset: { width: 0, height: 4 },
+                    elevation: 4,
+                }}
+            >
+                <Image source={icons.deadline} className="w-4 h-4 mr-1" />
                 <Text className="text-[11px] font-kanitRegular text-black">
                     {deadline
                         ? deadline.toLocaleDateString("en-GB", {
@@ -45,8 +57,8 @@ export default function ProjectCard({
                         : "No deadline"}
                 </Text>
             </View>
-            <Text className="font-kanitBold text-xl text-black mb-1" numberOfLines={1}>
-                {name}
+            <Text className="font-kanitBold text-2xl text-black mb-1" numberOfLines={1}>
+                {project_name}
             </Text>
             <View className="self-start border border-black/40 rounded-full px-3 py-0.5 mb-3">
                 <Text className="text-[9px] font-kanitRegular text-black/60">
@@ -58,12 +70,12 @@ export default function ProjectCard({
                     {members.slice(0, 4).map((m, i) => (
                         <View
                             key={m.id}
-                            className={`w-8 h-8 rounded-full bg-white border border-black/30 items-center justify-center ${i !== 0 ? "-ml-2" : ""
+                            className={`w-8 h-8 rounded-full bg-white border border-black/30 items-center justify-center ${i !== 0 ? "-ml-4" : ""
                                 }`}
                         >
                             <Image
                                 source={m.avatar ? { uri: m.avatar } : icons.face}
-                                className={m.avatar ? "w-8 h-8 rounded-full" : "w-5 h-5"}
+                                className={m.avatar ? "w-7 h-7 rounded-full" : "w-5 h-5"}
                                 resizeMode="cover"
                             />
                         </View>
@@ -77,6 +89,7 @@ export default function ProjectCard({
                         Details
                     </Text>
                 </Pressable>
+            </View>
             </View>
         </Pressable>
     );
