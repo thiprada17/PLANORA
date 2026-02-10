@@ -161,6 +161,7 @@ export default function CreateProject() {
 
 const handleSubmit = async () => {
   console.log("yes")
+  const userId = await AsyncStorage.getItem('userId');
   try {
     await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/create/post', {
       method: "POST",

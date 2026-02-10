@@ -11,12 +11,17 @@ import { useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ProjectCard from "@/components/projectCard";
 
+type Member = {
+  id: string;
+  avatar?: string | null;
+};
+
 type Project = {
-  project_id: number;
+  project_id: string;
   project_name: string;
   subject: string;
   deadline: Date | null;
-  members: number[];
+  members: Member[];
 };
 
 export default function HomePage() {
@@ -51,31 +56,44 @@ export default function HomePage() {
 
   const [projects, setProjects] = useState<Project[]>([]);
   //ชั่วคราว
-  const mockMembers = [
-    { id: 1 },
-    { id: 2 },
-    { id: 3 },
-  ];
+  // const mockMembers = [
+  //   { id: 1 },
+  //   { id: 2 },
+  //   { id: 3 },
+  // ];
 
   const fetchProjects = async () => {
+    const userId = await AsyncStorage.getItem("user_id")
     try {
-      const response = await fetch("https://freddy-unseconded-kristan.ngrok-free.dev/display/projects");
+      const response = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`);
       const data = await response.json();
-      setProjects(Array.isArray(data) ?
-        // data : []);
-        data.map((p) => ({
-          ...p,
-          deadline: p.deadline
-            ? new Date(p.deadline + "T00:00:00") //ตอนดึงมามันแสดงแบบไม่ถุกต้อง
-            : null,
-        }))
-        : []
-      );
+  //     setProjects(Array.isArray(data) ?
+  //       data : []);
+  //       data.map((p) => ({
+  //         ...p,
+  //         deadline: p.deadline
+  //           ? new Date(p.deadline + "T00:00:00") //ตอนดึงมามันแสดงแบบไม่ถุกต้อง
+  //           : null,
+  //       }))
+  //       : []
+  //     );
+  //   } catch (error) {
+  //     console.error("Fetch error:", error);
+  //     setProjects([]);
+  //   }
+  // };
+const formattedProjects = Array.isArray(data) ? data.map((p) => ({
+        ...p,
+        deadline: p.deadline ? new Date(p.deadline + "T00:00:00") : null,
+      })) : [];
+      
+      setProjects(formattedProjects);
     } catch (error) {
       console.error("Fetch error:", error);
       setProjects([]);
     }
   };
+
 
   useEffect(() => {
     fetchProjects();
@@ -85,6 +103,32 @@ export default function HomePage() {
     useCallback(() => {
       fetchProjects();
     }, []));
+
+  // const mockProjects: Project[] = [
+  //   {
+  //     project_id: "1",
+  //     project_name: "test1",
+  //     subject: "CN321",
+  //     deadline: new Date("2026-02-11"),
+  //     members: [{ id: "u1" }, { id: "u2" }, { id: "u3" }],
+  //   },
+  //   {
+  //     project_id: "2",
+  //     project_name: "test2",
+  //     subject: "CN334",
+  //     deadline: new Date("2026-03-01"),
+  //     members: [{ id: "u1" }, { id: "u4" }],
+  //   },
+  //   {
+  //     project_id: "3",
+  //     project_name: "test3",
+  //     subject: "SF231",
+  //     deadline: null,
+  //     members: [{ id: "u2" }, { id: "u3" }, { id: "u4" }, { id: "u5" }],
+  //   },
+  // ];
+
+  // const projects = mockProjects;
 
   const [openFilter, setOpenFilter] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
@@ -307,14 +351,13 @@ export default function HomePage() {
                       className="w-[150px] h-[150px] mt-4"
                     >
                       <ProjectCard
-                        name={item.project_name}
+                        project_id={item.project_id}
+                        project_name={item.project_name}
                         subject={item.subject}
                         deadline={item.deadline}
-                        // members={item.members ?? []}
-                        members={mockMembers}
-                        onPress={() =>
-                          router.push(`../project/${item.project_id}/board`)
-                        }
+                        members={item.members}
+                      // onPress={() => router.push()ยังไม่ทราบว่าจะยังอไรรยังไง}
+                      // members={item.members ?? []}
                       />
                     </View>
                   ))}
