@@ -21,7 +21,79 @@ export default function TaskForm({ onCancel }: TaskFormProps) {
   const [task, setTask] = useState({
     name: "",
     deadline: "",
+    member: [] as { id: number; name: string }[]
   });
+
+  const [emailInput, setEmailInput] = useState("");
+
+  const handleAddMember = async () => {
+    const email = emailInput.trim();
+    if (!email) return;
+
+    console.log("test " + email)
+
+    try {
+      const memsearch = await searchMember(email);
+
+      if (!memsearch?.found) {
+        alert("user not found");
+        return;
+      }
+
+      const user_id = memsearch.user_id;
+
+      if (task.member.some((m) => m.id === user_id)) {
+        setEmailInput("");
+        return;
+      }
+
+      setTask((prev) => ({
+        ...prev,
+        member: [
+          ...prev.member,
+          {
+            id: memsearch.user_id,
+            name: memsearch.username,
+          },
+        ],
+      }));
+
+      setEmailInput("");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const searchMember = async (email: string) => {
+    try {
+      const res = await fetch(
+        "http://172.20.10.2:3000/assign/member",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        },
+      );
+
+      return await res.json();
+    } catch (error) {}
+  };
+  const handleCreateTask = async () => {
+    console.log("yes");
+    try {
+      await fetch("http://172.20.10.2:3000/create/task", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(task),
+      });
+
+      alert("yayy");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const [fonts] = useFonts({
     KanitBold: require("@/assets/fonts/KanitBold.ttf"),
@@ -37,24 +109,6 @@ export default function TaskForm({ onCancel }: TaskFormProps) {
         selectedDate.getMonth() + 1
       }/${selectedDate.getFullYear().toString().slice(-2)}`;
       setTask({ ...task, deadline: formattedDate });
-    }
-  };
-
-  const handleCreateTask = async () => {
-    console.log(task);
-    try {
-      await fetch(
-        "https://freddy-unseconded-kristan.ngrok-free.dev/create/task",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(task),
-        },
-      );
-
-      alert("yayy");
-    } catch (error) {
-      console.log(error);
     }
   };
 
@@ -126,8 +180,42 @@ export default function TaskForm({ onCancel }: TaskFormProps) {
           />
           <Text className="font-kanitBold text-black">Assign</Text>
         </View>
-        <View className="border border-neutral-400 rounded-xl px-4 py-3 h-[50px] bg-white" />
+
+        <View className="border border-neutral-400 rounded-xl px-2 h-[50px] bg-white" >
+
+          {task.member.map((mail, index) => (
+            <View
+              key={index}
+              className="flex-row items-center bg-[#EBEBEB] px-2 py-1 rounded-md mr-2 my-1"
+            >
+            <Text className="font-kanitRegular text-[10px] mr-1 ">
+              {mail.name}
+            </Text>
+            <Pressable
+              onPress={() =>
+                setTask({
+                  ...task,
+                  member: task.member.filter((_, i) => i !== index),
+                })
+              }
+            >
+              <Text className="text-red-500 font-bold ml-1">×</Text>
+            </Pressable>
+          </View>
+        ))}
+
+        <TextInput
+          placeholder={task.member.length === 0 ? "example@mail.com" : ""}
+          className="font-kanitRegular color-neutral-700 flex-1 min-w-[100px] "
+          value={emailInput}
+          onChangeText={setEmailInput}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          onSubmitEditing={handleAddMember}
+          blurOnSubmit={false}
+        />
       </View>
+    </View>
 
       <View className="flex-row justify-end mt-2">
         <Pressable

@@ -240,12 +240,57 @@ app.post('/search/member', async (req, res) => {
 })
 
 app.post('/create/task', async (req, res) => {
-    const{ name, deadline} = req.body
-    console.log("hello" + name + deadline)
-    
-    res.json("")
+   const { name, deadline } = req.body
+
+    console.log('Client calling /test endpoint')
+
+    const { task: setTask, error: projectError } = await supabase
+            .from('task')
+            .insert({ name, deadline, assign: 1 })
+            .select()
+            .single()
+
+    try {
+        console.log("Data received:", name, deadline)
+        
+        res.status(200).json({ 
+            success: true, 
+            message: "Server received data successfully",
+            data: { name, deadline }
+        });
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, error: error.message });
+    }
+
 })
 
+app.post('/assign/member', async (req, res) => {
+    const email = req.body.email.trim().toLowerCase()
+
+    console.log("task : " + email)
+
+    try {
+        const { data, error } = await supabase
+            .from('project_member')
+            .select('user_id, username')
+            .eq('email', email)
+            .single()
+        
+        if (error || !data) {
+            return res.json({ found: false })
+        }
+
+        res.json({
+            found: true,
+            user_id: data.user_id,
+            username: data.username
+        })
+    } catch (error) {
+        res.status(500).json({ found: false });
+    }
+
+})
 
 server.listen(3000, '0.0.0.0', () => {
     console.log('Server running on port 3000')
