@@ -184,11 +184,12 @@ app.post('/api/login', async (req, res) => {
 app.post('/create/post', async (req, res) => {
     const { project_name, deadline, subject, member } = req.body
 
+    console.log(project_name)
 
     try {
         const { data: projectData, error: projectError } = await supabase
             .from('project')
-            .insert({ project_name, deadline, subject, created_by: null})
+            .insert({ project_name, deadline, subject, created_by: null })
             .select()
             .single()
 
