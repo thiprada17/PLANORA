@@ -249,6 +249,64 @@ app.get('/display/projects', async (req, res) => {
     }
 });
 
+// edit project
+app.put('/api/project/:project_id', async (req, res) => {
+  const { project_id } = req.params
+  const { project_name, deadline, subject } = req.body
+
+  try {
+    const { data, error } = await supabase
+      .from('project')
+      .update({
+        project_name,
+        deadline,
+        subject
+      })
+      .eq('project_id', project_id)
+      .select()
+      .single()
+
+    if (error) throw error
+
+    res.json({ success: true, project: data })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ success: false })
+  }
+})
+
+// delete project
+app.delete('/api/project/:project_id', async (req, res) => {
+  const { project_id } = req.params
+
+  try {
+    // ลบ message
+    await supabase.from('message').delete().eq('project_id', project_id)
+
+    // ลบ members
+    await supabase.from('project_members').delete().eq('project_id', project_id)
+
+    // ถ้ามี task ก็ลบๆไปซะ
+    await supabase.from('task').delete().eq('project_id', project_id)
+
+    // ลบ project
+    const { error } = await supabase
+      .from('project')
+      .delete()
+      .eq('project_id', project_id)
+
+    if (error) throw error
+
+    res.json({ success: true })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ success: false })
+  }
+})
+
+// filter: sucject
+
+
 app.post('/search/member', async (req, res) => {
     const email = req.body.email.trim().toLowerCase()
 

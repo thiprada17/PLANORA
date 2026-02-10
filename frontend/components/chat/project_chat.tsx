@@ -113,11 +113,6 @@ export default function ProjectChatModal({
     chatHistory()
   }, [visible, projectId, userId])
 
-
-
-
-
-
   return (
     <Modal animationType="fade" transparent visible={visible} onRequestClose={onClose}>
       <Pressable className="flex-1 bg-black/40 justify-center items-center px-6" onPress={onClose}>
