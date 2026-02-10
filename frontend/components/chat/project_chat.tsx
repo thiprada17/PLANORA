@@ -13,6 +13,7 @@ import {
   Keyboard
 } from "react-native";
 import { useRef } from "react";
+import { LinearGradient } from "expo-linear-gradient";
 import { icons } from "@/constants/icons";
 import io, { Socket } from "socket.io-client"
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -113,75 +114,87 @@ export default function ProjectChatModal({
     chatHistory()
   }, [visible, projectId, userId])
 
-
-
-
-
-
   return (
+    (
     <Modal animationType="fade" transparent visible={visible} onRequestClose={onClose}>
       <Pressable className="flex-1 bg-black/40 justify-center items-center px-6" onPress={onClose}>
-        <Pressable
-          className="w-full h-[65%] bg-white rounded-[40px] p-6 shadow-xl pb-10"
-          onPress={(e) => e.stopPropagation()}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          className="w-full h-[65%]"
         >
-          {/* Header */}
-          <Text className="font-kanitMedium text-center text-[16px] mb-6 tracking-widest text-gray-600">
-            PROJECT NAME CHAT
-          </Text>
-
-          {/* Chat Messages */}
-          <ScrollView
-            ref={scrollRef}
-            className="flex-1 mb-4"
-            showsVerticalScrollIndicator={false}
-            onContentSizeChange={() => {
-              scrollRef.current?.scrollToEnd({ animated: true });
-            }}
-          >
-            {chat.map((msg, index) => (
-              <View
-                key={index}
-                className={`mb-4 ${msg.isMe ? "items-end" : "items-start"}`}
+          <Pressable className="flex-1 bg-white rounded-[40px] shadow-xl overflow-hidden">
+            <View className="overflow-hidden rounded-t-[40px]">
+              <LinearGradient
+                colors={[
+                  "#E6F5ED",
+                  "rgba(230,245,237,0.6)",
+                  "rgba(255,255,255,0)",
+                ]}
+                locations={[0, 0.6, 1]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                style={{ paddingTop: 32, paddingBottom: 40 }}
               >
-                <Text className="text-gray-400 text-[10px] mb-1 ml-1">
-                  {msg.name}
+                <Text className="font-kanitMedium text-center text-[16px] tracking-widest text-gray-700">
+                  PROJECT NAME CHAT
                 </Text>
-
-                <View
-                  className={`px-4 py-3 rounded-[20px] max-w-[85%] border border-black/5 ${msg.isMe ? "bg-white" : "bg-[#D7EFE0]"
-                    }`}
-                >
-                  <Text className="font-kanitRegular text-black text-[14px]">
-                    {msg.text}
-                  </Text>
-                </View>
-              </View>
-            ))}
-          </ScrollView>
-
-          {/* Input Box */}
-          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
-            <View className="flex-row items-center gap-2">
-              <TextInput
-                className="flex-1 bg-[#D7EFE0] rounded-2xl px-4 py-3 font-kanitRegular h-[50px]"
-                placeholder="Type a message..."
-                value={message}
-                onChangeText={setMessage}
-                onSubmitEditing={sendMessage}
-                returnKeyType="send"
-                blurOnSubmit={false}
-              />
-              <TouchableOpacity
-                onPress={sendMessage}
-                className="bg-[#B4B4FF] w-[50px] h-[50px] rounded-2xl justify-center items-center"
-              >
-                <Image source={icons.send} style={{ width: 24, height: 24, tintColor: "white" }} />
-              </TouchableOpacity>
+              </LinearGradient>
             </View>
-          </KeyboardAvoidingView>
-        </Pressable>
+
+            <ScrollView
+              ref={scrollRef}
+              className="flex-1 px-4"
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+              onContentSizeChange={() =>
+                scrollRef.current?.scrollToEnd({ animated: true })
+              }
+            >
+              {chat.map((msg, index) => (
+                <View
+                  key={index}
+                  className={`mb-4 ${msg.isMe ? "items-end" : "items-start"}`}
+                >
+                  <Text className="text-gray-400 text-[10px] mb-1 ml-1">
+                    {msg.name}
+                  </Text>
+                  <View
+                    className={`px-4 py-3 rounded-[20px] max-w-[85%] border border-black/5 ${
+                      msg.isMe ? "bg-white" : "bg-[#D7EFE0]"
+                    }`}
+                  >
+                    <Text className="font-kanitRegular text-black text-[14px]">
+                      {msg.text}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </ScrollView>
+
+            <View className="p-6 pb-8 bg-white">
+              <View className="flex-row items-center gap-2">
+                <TextInput
+                  className="flex-1 bg-[#D7EFE0] rounded-2xl px-4 py-3 font-kanitRegular h-[50px]"
+                  placeholder="Type a message..."
+                  value={message}
+                  onChangeText={setMessage}
+                  onSubmitEditing={sendMessage}
+                  returnKeyType="send"
+                />
+                <TouchableOpacity
+                  onPress={sendMessage}
+                  className="bg-[#B4B4FF] w-[50px] h-[50px] rounded-2xl justify-center items-center"
+                >
+                  <Image
+                    source={icons.send}
+                    style={{ width: 24, height: 24, tintColor: "white" }}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Pressable>
+        </KeyboardAvoidingView>
       </Pressable>
     </Modal>
-  );
+  ))
 }
