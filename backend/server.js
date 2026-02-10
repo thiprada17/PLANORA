@@ -221,6 +221,7 @@ app.post('/create/post', async (req, res) => {
 // Create project >> Homepage
 app.get('/display/projects/:userId', async (req, res) => {
     const {userId} = req.params;
+            console.log(userId)
     try {
         const { data, error } = await supabase
             .from('project_members')
@@ -236,6 +237,7 @@ app.get('/display/projects/:userId', async (req, res) => {
             .eq('user_id', userId)
             .order('created_at', { ascending: false })
         if (error) throw error;
+        console.log(data)
         res.json(data);
     } catch (err) {
         res.status(500).json({ error: err.message });
