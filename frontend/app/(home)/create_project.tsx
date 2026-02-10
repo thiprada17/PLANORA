@@ -130,7 +130,8 @@ export default function CreateProject() {
         ...prev.member,
         {
           id: memsearch.user_id,
-          name: memsearch.username
+          name: memsearch.username,
+          email: memsearch.email
         }
       ]
     }));

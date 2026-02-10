@@ -16,6 +16,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey)
 // สร้าง server ให้น้องถุงเท้า
 const http = require("http")
 const { Server } = require("socket.io")
+const { create } = require('domain')
 const server = http.createServer(app)
 
 // เชื่อมถุงเท้ากับเชิฟ
@@ -28,36 +29,10 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
     console.log("User connected:", socket.id)
 
-    socket.on("join_project", (projectId) => {
-        const room = `project_${projectId}`
-        socket.join(room)
-        console.log(`${socket.id} joined ${room}`)
-    })
-
     // รับข้อความ (data) จาก client (event "send_message")
-    socket.on("send_message", async (data) => {
-
-
-        const room = `project_${data.projectId}`
-
-        const { error } = await supabase
-            .from('message')
-            .insert({
-                project_id: data.projectId,
-                sender_id: data.senderId,
-                name: data.name,
-                text: data.text,
-                time: data.time,
-                user_id: data.user_id
-            })
-
-        if (error) {
-            console.error(error);
-            return;
-        }
-
-        // ส่ง data ให้ทุกคนที่ใน room
-        io.to(room).emit("receive_message", data)
+    socket.on("send_message", (data) => {
+        // ส่ง data ให้ทุกคนที่เชื่อมอยู่
+        io.emit("receive_message", data)
     })
 
     // ปิด
@@ -207,15 +182,13 @@ app.post('/api/login', async (req, res) => {
 })
 
 app.post('/create/post', async (req, res) => {
-    const { project_name, deadline, subject, member, created_by } = req.body
-    const created_at = new Date().toISOString();
+    const { project_name, deadline, subject, member } = req.body
+
 
     try {
         const { data: projectData, error: projectError } = await supabase
             .from('project')
-            .insert({ project_name,
-                deadline, subject, 
-                created_at, created_by })
+            .insert({ project_name, deadline, subject, created_by: null})
             .select()
             .single()
 
@@ -229,7 +202,8 @@ app.post('/create/post', async (req, res) => {
                 .insert({
                     project_id: project_id,
                     user_id: i.id,
-                    username: i.name
+                    username: i.name,
+                    email: i.email
                 })
         }
         res.json({ success: true })
@@ -241,13 +215,22 @@ app.post('/create/post', async (req, res) => {
 })
 
 // Create project >> Homepage
-app.get('/display/projects', async (req, res) => {
+app.get('/display/projects/:userId', async (req, res) => {
+    const {userId} = req.params;
     try {
         const { data, error } = await supabase
-            .from('project')
-            .select('*')
-            .order('created_at', { ascending: false });
-
+            .from('project_members')
+            .select(`
+                project:project_id (
+                project_id,
+                project_name,
+                subject,
+                deadline,
+                created_at
+                )
+            `)
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false })
         if (error) throw error;
         res.json(data);
     } catch (err) {
@@ -318,7 +301,7 @@ app.post('/search/member', async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('user_profile')
-            .select('user_id, username')
+            .select('user_id, username , email')
             .eq('email', email)
             .single()
 
@@ -329,7 +312,8 @@ app.post('/search/member', async (req, res) => {
         res.json({
             found: true,
             user_id: data.user_id,
-            username: data.username
+            username: data.username,
+            email: data.email
         })
     } catch (error) {
         res.status(500).json({ found: false });
