@@ -3,6 +3,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const { createClient } = require('@supabase/supabase-js')
 const bcrypt = require('bcrypt')
+
 const app = express()
 
 app.use(express.json());
@@ -20,26 +21,80 @@ const server = http.createServer(app)
 
 // เชื่อมถุงเท้ากับเชิฟ
 const io = new Server(server, {
-  cors: { origin: "*" },
-  transports: ["websocket"]
+    cors: { origin: "*" },
+    transports: ["websocket"]
 })
 
 // client เชื่อม
 io.on("connection", (socket) => {
-  console.log("User connected:", socket.id)
+    console.log("User connected:", socket.id)
 
-  // รับข้อความ (data) จาก client (event "send_message")
-  socket.on("send_message", (data) => {
-    // ส่ง data ให้ทุกคนที่เชื่อมอยู่
-    io.emit("receive_message", data)
-  })
+    socket.on("join_project", (projectId) => {
+        const room = `project_${projectId}`
+        socket.join(room)
+        console.log(`${socket.id} joined ${room}`)
+    })
 
-  // ปิด
-  socket.on("disconnect", () => {
-    console.log("User disconnected")
-  })
+    // รับข้อความ (data) จาก client (event "send_message")
+    socket.on("send_message", async (data) => {
+
+        console.log(data)
+
+        const room = `project_${data.projectId}`
+
+        const { error } = await supabase
+            .from('message')
+            .insert({
+                project_id: data.projectId,
+                sender_id: data.senderId,
+                name: data.name,
+                text: data.text,
+                time: data.time,
+                user_id: data.user_id
+            })
+
+        if (error) {
+            console.error(error);
+            return;
+        }
+
+        // ส่ง data ให้ทุกคนที่ใน room
+        io.to(room).emit("receive_message", data)
+    })
+
+    // ปิด
+    socket.on("disconnect", () => {
+        console.log("User disconnected")
+    })
 })
 
+
+app.get("/chat/history/:projectId", async (req, res) => {
+    const { projectId } = req.params;
+
+    const { data, error } = await supabase
+        .from("message")
+        .select("*")
+        .eq("project_id", projectId)
+        .order("created_at", { ascending: true });
+
+    if (error) return res.status(500).json(error);
+    res.json(data);
+});
+
+app.get("/project/name/:projectId", async (req, res) => {
+        const { projectId } = req.params;
+
+       
+
+    const { data, error } = await supabase
+        .from("project")
+        .select("project_name")
+        .eq("project_id", projectId)
+        .single()
+    if (error) return res.status(500).json(error);
+    res.json(data);
+});
 
 //signup hash แย้วจ้า
 app.post('/api/signup', async (req, res) => {
@@ -69,7 +124,7 @@ app.post('/api/signup', async (req, res) => {
             password,
             options: {
                 data: {
-                    full_name: username,  
+                    full_name: username,
                 },
             },
         })
@@ -108,7 +163,7 @@ app.post('/api/signup', async (req, res) => {
     }
 })
 
-//Login ยังไม่ 100% นะ
+//Login
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body
 
@@ -122,34 +177,41 @@ app.post('/api/login', async (req, res) => {
     try {
         const cleanEmail = email.trim().toLowerCase()
 
-        const { data: user, error } = await supabase
-            .from('user')
-            .select('*')
-            .eq('email', cleanEmail)
+        // login ด้วย Supabase Auth
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: cleanEmail,
+            password
+        })
+
+        if (error || !data.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
+            })
+        }
+
+        const user = data.user
+
+        // ดึงข้อมูลจาก user_profile
+        const { data: profile, error: profileError } = await supabase
+            .from('user_profile')
+            .select('user_id, username, email, avatar_url')
+            .eq('user_id', user.id)
             .single()
-        if (error || !user) {
-            return res.status(401).json({
+
+        if (profileError || !profile) {
+            return res.status(404).json({
                 success: false,
-                message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
+                message: 'ไม่พบข้อมูลผู้ใช้'
             })
         }
 
-        const isPasswordMatch = await bcrypt.compare(password, user.password)
-        if (!isPasswordMatch) {
-            return res.status(401).json({
-                success: false,
-                message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
-            })
-        }
-
+        // ส่งกลับให้ frontend
         res.status(200).json({
             success: true,
-            message: 'เข้าสู่ระบบสำเร็จ!',
-            user: {
-                id: user.user_id,
-                username: user.username,
-                email: user.email
-            }
+            message: 'เข้าสู่ระบบสำเร็จ',
+            session: data.session,
+            user: profile
         })
 
     } catch (err) {
@@ -163,12 +225,13 @@ app.post('/api/login', async (req, res) => {
 
 app.post('/create/post', async (req, res) => {
     const { project_name, deadline, subject, member } = req.body
-    const created_at = new Date().toISOString();
+
+    console.log(project_name)
 
     try {
         const { data: projectData, error: projectError } = await supabase
             .from('project')
-            .insert({ project_name, deadline, subject, created_at, created_by: 1 })
+            .insert({ project_name, deadline, subject, created_by: null })
             .select()
             .single()
 
@@ -176,15 +239,20 @@ app.post('/create/post', async (req, res) => {
 
         const project_id = projectData.project_id
 
-        for (const i of member) {
-            await supabase
-                .from('project_members')
-                .insert({
-                    project_id: project_id,
-                    user_id: i.id,
-                    username: i.name
-                })
-        }
+        console.log(member)
+
+        const membersData = member.map(i => ({
+            project_id,
+            user_id: i.id,
+            username: i.name,
+            email: i.email
+        }))
+
+        const { error } = await supabase
+            .from('project_members')
+            .insert(membersData)
+
+        if (error) throw error
         res.json({ success: true })
 
     } catch (err) {
@@ -193,24 +261,113 @@ app.post('/create/post', async (req, res) => {
     }
 })
 
-
 // Create project >> Homepage
-app.get('/display/projects', async (req, res) => {
+app.get('/display/projects/:userId', async (req, res) => {
+    const { userId } = req.params;
+    console.log(userId)
     try {
         const { data, error } = await supabase
-            .from('project')
-            .select('*')
-            .order('created_at', { ascending: false });
-
+            .from('project_members')
+            .select(`
+                project:project_id (
+                project_id,
+                project_name,
+                subject,
+                deadline,
+                members:project_members!inner (
+                    user_id,
+                    user_profile (
+                    username,
+                    avatar_url
+                    )
+                )
+                )
+            `)
+            .eq('user_id', userId)
         if (error) throw error;
+        const projects = data.map(item => {
+            const rawMembers = item.project.members
 
-        console.log(data)
+            const membersArray = Array.isArray(rawMembers)
+                ? rawMembers
+                : rawMembers
+                    ? [rawMembers]
+                    : []
 
-        res.json(data);
+            return {
+                project_id: item.project.project_id,
+                project_name: item.project.project_name,
+                subject: item.project.subject,
+                deadline: item.project.deadline,
+                members: membersArray.map(m => ({
+                    id: m.user_id,
+                    avatar: m.user_profile?.avatar_url ?? null
+                }))
+            }
+        })
+        res.json(projects)
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
+
+// edit project
+app.put('/api/project/:project_id', async (req, res) => {
+    const { project_id } = req.params
+    const { project_name, deadline, subject } = req.body
+
+    try {
+        const { data, error } = await supabase
+            .from('project')
+            .update({
+                project_name,
+                deadline,
+                subject
+            })
+            .eq('project_id', project_id)
+            .select()
+            .single()
+
+        if (error) throw error
+
+        res.json({ success: true, project: data })
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ success: false })
+    }
+})
+
+// delete project
+app.delete('/api/project/:project_id', async (req, res) => {
+    const { project_id } = req.params
+
+    try {
+        // ลบ message
+        await supabase.from('message').delete().eq('project_id', project_id)
+
+        // ลบ members
+        await supabase.from('project_members').delete().eq('project_id', project_id)
+
+        // ถ้ามี task ก็ลบๆไปซะ
+        await supabase.from('task').delete().eq('project_id', project_id)
+
+        // ลบ project
+        const { error } = await supabase
+            .from('project')
+            .delete()
+            .eq('project_id', project_id)
+
+        if (error) throw error
+
+        res.json({ success: true })
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ success: false })
+    }
+})
+
+// filter: sucject
+
 
 app.post('/search/member', async (req, res) => {
     const email = req.body.email.trim().toLowerCase()
@@ -220,10 +377,9 @@ app.post('/search/member', async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('user_profile')
-            .select('user_id, username')
+            .select('user_id, username, email')
             .eq('email', email)
             .single()
-
         if (error || !data) {
             return res.json({ found: false })
         }
@@ -231,7 +387,8 @@ app.post('/search/member', async (req, res) => {
         res.json({
             found: true,
             user_id: data.user_id,
-            username: data.username
+            username: data.username,
+            email: data.email
         })
     } catch (error) {
         res.status(500).json({ found: false });

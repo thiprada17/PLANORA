@@ -11,12 +11,19 @@ import { useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ProjectCard from "@/components/projectCard";
 
+
+
+type Member = {
+  id: string;
+  avatar?: string | null;
+};
+
 type Project = {
-  project_id: number;
+  project_id: string;
   project_name: string;
   subject: string;
   deadline: Date | null;
-  members: number[];
+  members: Member[];
 };
 
 export default function HomePage() {
@@ -51,26 +58,33 @@ export default function HomePage() {
 
   const [projects, setProjects] = useState<Project[]>([]);
   //ชั่วคราว
-  const mockMembers = [
-    { id: 1 },
-    { id: 2 },
-    { id: 3 },
-  ];
+  // const mockMembers = [
+  //   { id: 1 },
+  //   { id: 2 },
+  //   { id: 3 },
+  // ];
 
   const fetchProjects = async () => {
+    const userId = await AsyncStorage.getItem("user_id")
     try {
-      const response = await fetch("https://freddy-unseconded-kristan.ngrok-free.dev/display/projects");
-      const data = await response.json();
-      setProjects(Array.isArray(data) ?
-        // data : []);
-        data.map((p) => ({
-          ...p,
-          deadline: p.deadline
-            ? new Date(p.deadline + "T00:00:00") //ตอนดึงมามันแสดงแบบไม่ถุกต้อง
-            : null,
-        }))
-        : []
-      );
+      const response = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`);
+      // const response = await fetch(`http://172.20.10.3:3000/display/projects/${userId}`);
+      const text = await response.text()
+      console.log("RAW RESPONSE:", text)
+      const data = JSON.parse(text)
+      const formattedProjects = Array.isArray(data) ? data.map((p) => ({
+        ...p,
+        deadline: p.deadline ? new Date(p.deadline + "T00:00:00") : null,
+        members: p.members ?? []
+
+      })) : [];
+
+      // deadline: p.deadline ? new Date(p.deadline) : null,
+      //     members: []
+      //   }))
+      // : []
+
+      setProjects(formattedProjects);
     } catch (error) {
       console.error("Fetch error:", error);
       setProjects([]);
@@ -85,6 +99,8 @@ export default function HomePage() {
     useCallback(() => {
       fetchProjects();
     }, []));
+
+  // const projects = mockProjects;
 
   const [openFilter, setOpenFilter] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
@@ -273,13 +289,24 @@ export default function HomePage() {
                     <Text className="text-4xl text-neutral-400">+</Text>
                   </Pressable>
                   {/* {projects.map((item) => (
+                  {/* {projects.map((item) => (
                     <Pressable
                       key={item.project_id}
+                      href={`../project/${item.project_id}/board`}
+                      asChild
                       href={`../project/${item.project_id}/board`}
                       asChild
                     >
                       <Text className="font-kanitBold text-center">{item.project_name}</Text>
                       <Text className="font-kanitRegular text-xs text-gray-500">{item.subject}</Text>
+                      <ProjectCard
+                        key={item.project_id}
+                        name={item.project_name}
+                        subject={item.subject}
+                        deadline={item.deadline}
+                        members={item.members}
+                      onPress={() => router.push()}ยังไม่ทราบว่าจะยังอไรรยังไง
+                      />
                       <ProjectCard
                         key={item.project_id}
                         name={item.project_name}
@@ -296,12 +323,15 @@ export default function HomePage() {
                       className="w-[150px] h-[150px] mt-4"
                     >
                       <ProjectCard
-                        name={item.project_name}
+                        project_id={item.project_id}
+                        project_name={item.project_name}
                         subject={item.subject}
                         deadline={item.deadline}
-                        // members={item.members ?? []}
-                        members={mockMembers}
-                      // onPress={() => router.push()ยังไม่ทราบว่าจะยังอไรรยังไง}
+                        members={item.members}
+                                    onPress={() =>
+                          router.push(`../project/${item.project_id}/board`)
+
+                        }
                       />
                     </View>
                   ))}
