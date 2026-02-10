@@ -81,6 +81,20 @@ app.get("/chat/history/:projectId", async (req, res) => {
     res.json(data);
 });
 
+app.get("/project/name/:projectId", async (req, res) => {
+        const { projectId } = req.params;
+
+       
+
+    const { data, error } = await supabase
+        .from("project")
+        .select("project_name")
+        .eq("project_id", projectId)
+        .single()
+    if (error) return res.status(500).json(error);
+    res.json(data);
+});
+
 //signup hash แย้วจ้า
 app.post('/api/signup', async (req, res) => {
     const { username, email, password } = req.body

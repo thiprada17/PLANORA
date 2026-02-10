@@ -37,6 +37,8 @@ export default function ProjectChatModal({
   const [chat, setChat] = useState<any[]>([])
   const [username, setUsername] = useState<string>("")
   const [userId, setUserId] = useState<string | null>(null);
+ const [pjName, setPjName] = useState<string | null>(null);
+  
 
   // console.log('chat connect ' + projectId)
   const scrollRef = useRef<ScrollView>(null);
@@ -74,12 +76,19 @@ export default function ProjectChatModal({
     })
 
     setMessage("")
-    Keyboard.dismiss()
+  Keyboard.dismiss()
+
+
+  setTimeout(() => {
+    scrollRef.current?.scrollToEnd({ animated: true })
+  }, 50)
   }
 
 
   // รับข้อความจากน้องถุงเท้า
   useEffect(() => {
+
+
 
     const GetMessage = (data: any) => {
       setChat(prev => [...prev, { ...data, isMe: data.user_id === userId }])
@@ -96,11 +105,18 @@ export default function ProjectChatModal({
 
 
 
+
   useEffect(() => {
     if (!visible || !projectId) return;
 
     const chatHistory = async () => {
 
+        
+        const ress = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/project/name/${projectId}`)
+      const project_name = await ress.json()
+        console.log("สิ่งนี้คือ" + project_name.project_name)
+      
+        setPjName(project_name.project_name)
       
       const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/chat/history/${projectId}`)
       const data = await res.json()
@@ -142,7 +158,7 @@ export default function ProjectChatModal({
                 style={{ paddingTop: 32, paddingBottom: 40 }}
               >
                 <Text className="font-kanitMedium text-center text-[16px] tracking-widest text-gray-700">
-                  PROJECT NAME CHAT
+                 {pjName} CHAT
                 </Text>
               </LinearGradient>
             </View>
@@ -150,7 +166,7 @@ export default function ProjectChatModal({
 
               <ScrollView
             ref={scrollRef}
-            className="flex-1 px-4"
+            className="flex-1 px-6"
             showsVerticalScrollIndicator={false}
                     keyboardShouldPersistTaps="handled"
             onContentSizeChange={() => {
