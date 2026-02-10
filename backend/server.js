@@ -19,24 +19,24 @@ const server = http.createServer(app)
 
 // เชื่อมถุงเท้ากับเชิฟ
 const io = new Server(server, {
-  cors: { origin: "*" },
-  transports: ["websocket"]
+    cors: { origin: "*" },
+    transports: ["websocket"]
 })
 
 // client เชื่อม
 io.on("connection", (socket) => {
-  console.log("User connected:", socket.id)
+    console.log("User connected:", socket.id)
 
-  // รับข้อความ (data) จาก client (event "send_message")
-  socket.on("send_message", (data) => {
-    // ส่ง data ให้ทุกคนที่เชื่อมอยู่
-    io.emit("receive_message", data)
-  })
+    // รับข้อความ (data) จาก client (event "send_message")
+    socket.on("send_message", (data) => {
+        // ส่ง data ให้ทุกคนที่เชื่อมอยู่
+        io.emit("receive_message", data)
+    })
 
-  // ปิด
-  socket.on("disconnect", () => {
-    console.log("User disconnected")
-  })
+    // ปิด
+    socket.on("disconnect", () => {
+        console.log("User disconnected")
+    })
 })
 
 
@@ -68,7 +68,7 @@ app.post('/api/signup', async (req, res) => {
             password,
             options: {
                 data: {
-                    full_name: username,  
+                    full_name: username,
                 },
             },
         })
@@ -161,13 +161,13 @@ app.post('/api/login', async (req, res) => {
 })
 
 app.post('/create/post', async (req, res) => {
-    const { project_name, deadline, subject, member } = req.body
+    const { userId, project_name, deadline, subject, member } = req.body
     const created_at = new Date().toISOString();
 
     try {
         const { data: projectData, error: projectError } = await supabase
             .from('project')
-            .insert({ project_name, deadline, subject, created_at, created_by: 1 })
+            .insert({ project_name, deadline, subject, created_at, created_by: userId })
             .select()
             .single()
 
@@ -175,15 +175,27 @@ app.post('/create/post', async (req, res) => {
 
         const project_id = projectData.project_id
 
-        for (const i of member) {
-            await supabase
-                .from('project_members')
-                .insert({
-                    project_id: project_id,
-                    user_id: i.id,
-                    username: i.name
-                })
-        }
+        // for (const i of member) {
+        //     await supabase
+        //         .from('project_members')
+        //         .insert({
+        //             project_id: project_id,
+        //             user_id: i.id,
+        //             username: i.name
+        //         })
+        // }
+        const membersToInsert = member.map(i => ({
+      project_id,
+      user_id: i.user_id,       //ใช้ยัยUUID (หรือใช้ id มั้ง)
+      username: i.name,
+    }))
+
+    const { error: memberError } = await supabase
+      .from('project_members')
+      .insert(membersToInsert)
+
+    if (memberError) throw memberError
+
         res.json({ success: true })
 
     } catch (err) {
@@ -194,13 +206,22 @@ app.post('/create/post', async (req, res) => {
 
 
 // Create project >> Homepage
-app.get('/display/projects', async (req, res) => {
+app.get('/display/projects/:userId', async (req, res) => {
+    const {userId} = req.params;
     try {
         const { data, error } = await supabase
-            .from('project')
-            .select('*')
-            .order('created_at', { ascending: false });
-
+            .from('project_members')
+            .select(`
+                project:project_id (
+                project_id,
+                project_name,
+                subject,
+                deadline,
+                created_at
+                )
+            `)
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false })
         if (error) throw error;
 
         console.log(data)
