@@ -114,11 +114,6 @@ export default function ProjectChatModal({
     chatHistory()
   }, [visible, projectId, userId])
 
-
-
-
-
-
   return (
     (
     <Modal animationType="fade" transparent visible={visible} onRequestClose={onClose}>
