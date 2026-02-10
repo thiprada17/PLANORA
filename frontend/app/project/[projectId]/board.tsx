@@ -107,8 +107,6 @@ console.log("projectID =", projectID);
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <Stack.Screen options={{ headerShown: false }} />
-
       {/* Header */}
       <View className="flex-row items-center mx-6 pt-10">
         <TouchableOpacity className="mr-3" onPress={() => setTabBarVisible(true)}>
