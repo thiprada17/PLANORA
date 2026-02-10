@@ -68,16 +68,16 @@ io.on("connection", (socket) => {
 })
 
 app.get("/chat/history/:projectId", async (req, res) => {
-  const { projectId } = req.params;
+    const { projectId } = req.params;
 
-  const { data, error } = await supabase
-    .from("message")
-    .select("*")
-    .eq("project_id", projectId)
-    .order("created_at", { ascending: true });
+    const { data, error } = await supabase
+        .from("message")
+        .select("*")
+        .eq("project_id", projectId)
+        .order("created_at", { ascending: true });
 
-  if (error) return res.status(500).json(error);
-  res.json(data);
+    if (error) return res.status(500).json(error);
+    res.json(data);
 });
 
 
@@ -224,16 +224,20 @@ app.post('/create/post', async (req, res) => {
 
         const project_id = projectData.project_id
 
-        for (const i of member) {
-            await supabase
-                .from('project_members')
-                .insert({
-                    project_id: project_id,
-                    user_id: i.id,
-                    username: i.name,
-                    email: i.email
-                })
-        }
+        console.log(member)
+
+        const membersData = member.map(i => ({
+            project_id,
+            user_id: i.id,
+            username: i.name,
+            email: i.email
+        }))
+
+        const { error } = await supabase
+            .from('project_members')
+            .insert(membersData)
+
+        if (error) throw error
         res.json({ success: true })
 
     } catch (err) {
@@ -266,7 +270,7 @@ app.post('/search/member', async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('user_profile')
-            .select('user_id, username , email')
+            .select('user_id, username, email')
             .eq('email', email)
             .single()
 

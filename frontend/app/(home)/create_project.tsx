@@ -41,7 +41,7 @@ export default function CreateProject() {
     project_name: "",
     deadline: "",
     subject: "",
-    member: [] as { id: number; name: string }[]
+    member: [] as { id: number; name: string, email: string }[]
   });
 
   const [step, setStep] = useState(1);
