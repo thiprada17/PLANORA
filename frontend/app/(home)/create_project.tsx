@@ -41,7 +41,7 @@ export default function CreateProject() {
     project_name: "",
     deadline: "",
     subject: "",
-    member: [] as { id: number; name: string }[]
+    member: [] as { id: string; name: string }[]
   });
 
   const [step, setStep] = useState(1);
@@ -161,11 +161,12 @@ export default function CreateProject() {
 
 const handleSubmit = async () => {
   console.log("yes")
+  const userId = await AsyncStorage.getItem('userId');
   try {
     await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/create/post', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(project)
+      body: JSON.stringify({project, userId})
     })
 
     alert('yayy')
