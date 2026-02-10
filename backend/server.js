@@ -16,6 +16,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey)
 // สร้าง server ให้น้องถุงเท้า
 const http = require("http")
 const { Server } = require("socket.io")
+const { create } = require('domain')
 const server = http.createServer(app)
 
 // เชื่อมถุงเท้ากับเชิฟ
@@ -209,15 +210,13 @@ app.post('/api/login', async (req, res) => {
 })
 
 app.post('/create/post', async (req, res) => {
-    const { project_name, deadline, subject, member, created_by } = req.body
-    const created_at = new Date().toISOString();
+    const { project_name, deadline, subject, member } = req.body
+
 
     try {
         const { data: projectData, error: projectError } = await supabase
             .from('project')
-            .insert({ project_name,
-                deadline, subject, 
-                created_at, created_by })
+            .insert({ project_name, deadline, subject, created_by: null})
             .select()
             .single()
 
@@ -231,7 +230,8 @@ app.post('/create/post', async (req, res) => {
                 .insert({
                     project_id: project_id,
                     user_id: i.id,
-                    username: i.name
+                    username: i.name,
+                    email: i.email
                 })
         }
         res.json({ success: true })
@@ -266,7 +266,7 @@ app.post('/search/member', async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('user_profile')
-            .select('user_id, username')
+            .select('user_id, username , email')
             .eq('email', email)
             .single()
 
@@ -277,7 +277,8 @@ app.post('/search/member', async (req, res) => {
         res.json({
             found: true,
             user_id: data.user_id,
-            username: data.username
+            username: data.username,
+            email: data.email
         })
     } catch (error) {
         res.status(500).json({ found: false });
