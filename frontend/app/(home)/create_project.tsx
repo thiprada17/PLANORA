@@ -148,7 +148,8 @@ export default function CreateProject() {
       const res = await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/search/member', {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "69420"
         },
         body: JSON.stringify({ email })
       })

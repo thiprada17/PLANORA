@@ -11,6 +11,8 @@ import { useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ProjectCard from "@/components/projectCard";
 
+
+
 type Member = {
   id: string;
   avatar?: string | null;
@@ -326,8 +328,10 @@ export default function HomePage() {
                         subject={item.subject}
                         deadline={item.deadline}
                         members={item.members}
-                      // onPress={() => router.push()ยังไม่ทราบว่าจะยังอไรรยังไง}
-                      // members={item.members ?? []}
+                                    onPress={() =>
+                          router.push(`../project/${item.project_id}/board`)
+
+                        }
                       />
                     </View>
                   ))}
