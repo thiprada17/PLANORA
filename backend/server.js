@@ -16,7 +16,6 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey)
 // สร้าง server ให้น้องถุงเท้า
 const http = require("http")
 const { Server } = require("socket.io")
-const { create } = require('domain')
 const server = http.createServer(app)
 
 // เชื่อมถุงเท้ากับเชิฟ
@@ -29,10 +28,37 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
     console.log("User connected:", socket.id)
 
+    socket.on("join_project", (projectId) => {
+        const room = `project_${projectId}`
+        socket.join(room)
+        console.log(`${socket.id} joined ${room}`)
+    })
+
     // รับข้อความ (data) จาก client (event "send_message")
-    socket.on("send_message", (data) => {
-        // ส่ง data ให้ทุกคนที่เชื่อมอยู่
-        io.emit("receive_message", data)
+    socket.on("send_message", async (data) => {
+
+        console.log(data)
+
+        const room = `project_${data.projectId}`
+
+        const { error } = await supabase
+            .from('message')
+            .insert({
+                project_id: data.projectId,
+                sender_id: data.senderId,
+                name: data.name,
+                text: data.text,
+                time: data.time,
+                user_id: data.user_id
+            })
+
+        if (error) {
+            console.error(error);
+            return;
+        }
+
+        // ส่ง data ให้ทุกคนที่ใน room
+        io.to(room).emit("receive_message", data)
     })
 
     // ปิด
@@ -40,6 +66,7 @@ io.on("connection", (socket) => {
         console.log("User disconnected")
     })
 })
+
 
 app.get("/chat/history/:projectId", async (req, res) => {
     const { projectId } = req.params;

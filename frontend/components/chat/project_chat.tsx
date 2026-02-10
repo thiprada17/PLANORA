@@ -46,16 +46,13 @@ export default function ProjectChatModal({
 
     socket.emit("join_project", projectId)
 
-    return () => {
-      socket.off("receive_message")
-    }
   }, [projectId])
 
   useEffect(() => {
     const loadUser = async () => {
       const name = await AsyncStorage.getItem("username");
       if (name) setUsername(name);
-      const user_id = await AsyncStorage.getItem("user_id");
+  const user_id = await AsyncStorage.getItem("user_id");
       if (user_id) setUserId(user_id);
 
     };
@@ -103,13 +100,22 @@ export default function ProjectChatModal({
     if (!visible || !projectId) return;
 
     const chatHistory = async () => {
+
+      
       const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/chat/history/${projectId}`)
       const data = await res.json()
+
+        data.forEach((msg: any) => {
+    console.log("history msg user_id:", msg.user_id, typeof msg.user_id);
+    console.log("my userId:", userId, typeof userId);
+  });
 
       setChat(data.map((msg: any) => ({
         ...msg,
         isMe: msg.user_id === userId
+        
       })));
+      
     }
     chatHistory()
   }, [visible, projectId, userId])
@@ -141,15 +147,16 @@ export default function ProjectChatModal({
               </LinearGradient>
             </View>
 
-            <ScrollView
-              ref={scrollRef}
-              className="flex-1 px-4"
-              showsVerticalScrollIndicator={false}
-              keyboardShouldPersistTaps="handled"
-              onContentSizeChange={() =>
-                scrollRef.current?.scrollToEnd({ animated: true })
-              }
-            >
+
+              <ScrollView
+            ref={scrollRef}
+            className="flex-1 px-4"
+            showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+            onContentSizeChange={() => {
+              scrollRef.current?.scrollToEnd({ animated: true });
+            }}
+          >
               {chat.map((msg, index) => (
                 <View
                   key={index}
