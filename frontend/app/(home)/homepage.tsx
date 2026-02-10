@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Image, Modal, ScrollView } from "react-native";
+import { View, Text, Pressable, Image, Modal, ScrollView, Alert } from "react-native";
 import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { icons } from "@/constants/icons";
@@ -111,15 +111,21 @@ export default function HomePage() {
     { label: "Status: PROCESS", value: "PROCESS" },
     { label: "Status: COMPLETE", value: "COMPLETE" },];
 
-  const [date, setDate] = useState<Date | null>(null);
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showDeadlineCard, setShowDeadlineCard] = useState(false);
+  const [activePicker, setActivePicker] = useState<"from" | "to" | null>(null);
 
-  const [fontsLoaded] = useFonts({
-    KanitBold: require("../../assets/fonts/KanitBold.ttf"),
-    KanitRegular: require("../../assets/fonts/KanitRegular.ttf"),
-  });
+  const [fromDate, setFromDate] = useState<Date | null>(null);
+  const [toDate, setToDate] = useState<Date | null>(null);
+  const [appliedFromDate, setAppliedFromDate] = useState<Date | null>(null);
+  const [appliedToDate, setAppliedToDate] = useState<Date | null>(null);
 
-  if (!fontsLoaded) return null;
+
+  const deadlineLabel =
+    appliedFromDate && appliedToDate
+      ? `${appliedFromDate.toLocaleDateString()} - ${appliedToDate.toLocaleDateString()}`
+      : "Any";
+
+
 
   const FILTER_HEIGHT = 30;
   const FILTER_RADIUS = 11;
@@ -158,9 +164,10 @@ export default function HomePage() {
           </View>
         </View>
 
-        <View className="px-2 py-2 mb-3">
+        <View className="px-2 py-2 mb-3 relative">
           <View className="flex-row justify-end items-center">
-            <View style={{ width: 110, zIndex: 50, marginRight: 8 }}>
+
+            <View className="mr-1" style={{ width: 110, zIndex: 50 }}>
               <DropDownPicker
                 open={statusOpen}
                 value={statusValue}
@@ -168,9 +175,7 @@ export default function HomePage() {
                 setOpen={setStatusOpen}
                 setValue={setStatusValue}
                 listMode="SCROLLVIEW"
-                containerStyle={{
-                  height: FILTER_HEIGHT,
-                }}
+                containerStyle={{ height: FILTER_HEIGHT }} 
                 style={{
                   height: FILTER_HEIGHT,
                   minHeight: FILTER_HEIGHT,       // มันชอบอ้วน ต้องดักทาง
@@ -178,16 +183,10 @@ export default function HomePage() {
                   borderColor: "#D1D5DB",
                   paddingHorizontal: 10,
                   backgroundColor: "#fff",
-                  alignItems: "center",
-                  justifyContent: "center",
                 }}
                 textStyle={{
                   fontSize: FILTER_TEXT_SIZE,
                   lineHeight: FILTER_TEXT_SIZE + 1,
-                  color: "#000000",
-                }}
-                labelStyle={{
-                  fontSize: FILTER_TEXT_SIZE,
                 }}
                 ArrowDownIconComponent={() => (
                   <Image source={icons.arrow_down} className="w-3 h-3" />
@@ -200,57 +199,83 @@ export default function HomePage() {
                 }}
               />
             </View>
-            <View className="h-[30px] w-[110px] rounded-[11px] border border-gray-300 px-2.5 flex-row items-center bg-white mr-2">
+
+            <View className="relative mr-1">
               <Pressable
-                style={{ flex: 1 }}
-                onPress={() => setShowDatePicker(true)}>
+                onPress={() => setShowDeadlineCard((prev) => !prev)}
+                className="h-[30px] px-3 rounded-[11px] border border-gray-300 flex-row items-center bg-white"
+              >
+                <Text className="text-[9px] mr-1">Deadline:</Text>
                 <Text
-                  style={{ fontSize: FILTER_TEXT_SIZE, color: "#000" }}
-                  numberOfLines={1}>
-                  <Text
-                    style={{
-                      fontSize: FILTER_TEXT_SIZE,
-                      color: date ? "#000" : "#6B7280",
-                    }}
-                    numberOfLines={1}>
-                    {date ? date.toLocaleDateString() : "Deadline"}
-                  </Text>
-                </Text>
-              </Pressable>
-              {date && (
-                <Pressable onPress={() => setDate(null)}>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      color: "#6B7280",
-                      marginHorizontal: 4,
-                    }}>
-                    Any
-                  </Text>
-                </Pressable>
-              )}
-              <Image source={icons.arrow_down} className="w-3 h-3" />
-              {showDatePicker && (
-                <View
-                  style={{
-                    position: "absolute",
-                    top: FILTER_HEIGHT + 8,
-                    right: 0,
-                    backgroundColor: "#E5E7EB",
-                    borderRadius: 16,
-                    padding: 8,
-                    zIndex: 100,
-                  }}
+                  className={`text-[9px] ${deadlineLabel === "Any" ? "text-gray-400" : "text-black"
+                    }`}
                 >
-                  <DateTimePicker
-                    value={date ?? new Date()}
-                    mode="date"
-                    display="default"
-                    onChange={(_, selectedDate) => {
-                      setShowDatePicker(false);
-                      if (selectedDate) setDate(selectedDate);
-                    }}
-                  />
+                  {deadlineLabel}
+                </Text>
+                <Image source={icons.arrow_down} className="w-3 h-3 ml-1" />
+              </Pressable>
+
+              {/* ไอการ์ดกรอกวัน */}
+              {showDeadlineCard && (
+                <View className="absolute right-0 top-[38px] z-50 w-[230px] bg-white rounded-2xl p-4 border border-gray-300 shadow">
+                  <Text className="font-kanitBold text-sm mb-3">
+                    Deadline range
+                  </Text>
+
+                  {/* แบบฟอร์มกรอกวันคับ ขอเปนสีพื้นๆไปก่อนเน้อ อันนี้น้องจากวันนที่*/}
+                  <Pressable
+                    onPress={() => setActivePicker("from")}
+                    className="border rounded-lg px-3 py-2 mb-2"
+                  >
+                    <Text className="text-xs">
+                      From: {fromDate ? fromDate.toLocaleDateString() : "Select date"}
+                    </Text>
+                  </Pressable>
+
+                  {/* ถึงวันที่ */}
+                  <Pressable
+                    onPress={() => setActivePicker("to")}
+                    className="border rounded-lg px-3 py-2 mb-4"
+                  >
+                    <Text className="text-xs">
+                      To: {toDate ? toDate.toLocaleDateString() : "Select date"}
+                    </Text>
+                  </Pressable>
+
+                  <View className="flex-row justify-between space-x-2">
+                    <Pressable
+                      onPress={() => {
+                        setFromDate(null);
+                        setToDate(null);
+                        setAppliedFromDate(null);
+                        setAppliedToDate(null);
+                        setShowDeadlineCard(false);
+                      }}
+                      className="flex-1 bg-gray-100 rounded-lg py-2"
+                    >
+                      <Text className="text-center text-xs text-gray-600">
+                        Clear
+                      </Text>
+                    </Pressable>
+
+                    <Pressable
+                      onPress={() => {
+                        if (!fromDate || !toDate) {
+                          Alert.alert("Incomplete", "Please select both dates");
+                          return;
+                        }
+
+                        setAppliedFromDate(fromDate);
+                        setAppliedToDate(toDate);
+                        setShowDeadlineCard(false);
+                      }}
+                      className="flex-1 bg-black rounded-lg py-2"
+                    >
+                      <Text className="text-center text-xs text-white">
+                        Apply
+                      </Text>
+                    </Pressable>
+                  </View>
                 </View>
               )}
             </View>
@@ -267,13 +292,36 @@ export default function HomePage() {
                 backgroundColor: "#fff",
               }}
             >
-              <View className="pt-1">
-                <Image source={icons.filter} className="w-6 h-6" />
-              </View>
+              <Image source={icons.filter} className="w-6 h-6" />
             </Pressable>
           </View>
-        </View>
 
+          {/*datepic */}
+          {activePicker && (
+            <DateTimePicker
+              value={
+                activePicker === "from"
+                  ? fromDate ?? new Date()
+                  : toDate ?? new Date()
+              }
+              mode="date"
+              onChange={(_, date) => {
+                if (!date) return setActivePicker(null);
+
+                if (activePicker === "to" && fromDate && date < fromDate) {
+                  Alert.alert("error date", "To date must be after From date");
+                  return setActivePicker(null);
+                }
+                activePicker === "from"
+                  ? setFromDate(date)
+                  : setToDate(date);
+
+                setActivePicker(null);
+              }}
+            />
+          )}
+
+        </View>
         <View className="flex-1 bg-white rounded-3xl p-0.5">
           <View className="flex-1 bg-gray-200 rounded-[22px] p-0.5">
             <View className="flex-1 bg-gray-100 rounded-[21px] overflow-hidden">
@@ -328,7 +376,7 @@ export default function HomePage() {
                         subject={item.subject}
                         deadline={item.deadline}
                         members={item.members}
-                                    onPress={() =>
+                        onPress={() =>
                           router.push(`../project/${item.project_id}/board`)
 
                         }
@@ -340,21 +388,18 @@ export default function HomePage() {
               </ScrollView>
             </View>
           </View>
+
+          <Modal transparent animationType="slide" visible={openFilter}>
+            <Pressable
+              className="flex-1 bg-black/30"
+              onPress={() => setOpenFilter(false)}>
+              <View className="absolute bottom-0 w-full bg-white rounded-t-3xl p-6 h-[250px]">
+                <Text className="font-kanitBold text-lg mb-2">Filter</Text>
+                <Text className="text-neutral-500">ยังไม่มีอะไรจ้า</Text>
+              </View>
+            </Pressable>
+          </Modal>
         </View>
-
-
-
-
-        <Modal transparent animationType="slide" visible={openFilter}>
-          <Pressable
-            className="flex-1 bg-black/30"
-            onPress={() => setOpenFilter(false)}>
-            <View className="absolute bottom-0 w-full bg-white rounded-t-3xl p-6 h-[250px]">
-              <Text className="font-kanitBold text-lg mb-2">Filter</Text>
-              <Text className="text-neutral-500">ยังไม่มีอะไรจ้า</Text>
-            </View>
-          </Pressable>
-        </Modal>
       </View>
     </SafeAreaView>
   );
