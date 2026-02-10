@@ -123,62 +123,62 @@ app.post('/api/signup', async (req, res) => {
 
 //Login
 app.post('/api/login', async (req, res) => {
-  const { email, password } = req.body
+    const { email, password } = req.body
 
-  if (!email || !password) {
-    return res.status(400).json({
-      success: false,
-      message: 'กรุณากรอกอีเมลและรหัสผ่าน'
-    })
-  }
-
-  try {
-    const cleanEmail = email.trim().toLowerCase()
-
-    // login ด้วย Supabase Auth
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: cleanEmail,
-      password
-    })
-
-    if (error || !data.user) {
-      return res.status(401).json({
-        success: false,
-        message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
-      })
+    if (!email || !password) {
+        return res.status(400).json({
+            success: false,
+            message: 'กรุณากรอกอีเมลและรหัสผ่าน'
+        })
     }
 
-    const user = data.user
+    try {
+        const cleanEmail = email.trim().toLowerCase()
 
-    // ดึงข้อมูลจาก user_profile
-    const { data: profile, error: profileError } = await supabase
-      .from('user_profile')
-      .select('user_id, username, email, avatar_url')
-      .eq('user_id', user.id)
-      .single()
+        // login ด้วย Supabase Auth
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: cleanEmail,
+            password
+        })
 
-    if (profileError || !profile) {
-      return res.status(404).json({
-        success: false,
-        message: 'ไม่พบข้อมูลผู้ใช้'
-      })
+        if (error || !data.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
+            })
+        }
+
+        const user = data.user
+
+        // ดึงข้อมูลจาก user_profile
+        const { data: profile, error: profileError } = await supabase
+            .from('user_profile')
+            .select('user_id, username, email, avatar_url')
+            .eq('user_id', user.id)
+            .single()
+
+        if (profileError || !profile) {
+            return res.status(404).json({
+                success: false,
+                message: 'ไม่พบข้อมูลผู้ใช้'
+            })
+        }
+
+        // ส่งกลับให้ frontend
+        res.status(200).json({
+            success: true,
+            message: 'เข้าสู่ระบบสำเร็จ',
+            session: data.session,
+            user: profile
+        })
+
+    } catch (err) {
+        console.error('Login Error:', err)
+        res.status(500).json({
+            success: false,
+            message: 'เกิดข้อผิดพลาดภายใน Server'
+        })
     }
-
-    // ส่งกลับให้ frontend
-    res.status(200).json({
-      success: true,
-      message: 'เข้าสู่ระบบสำเร็จ',
-      session: data.session,
-      user: profile
-    })
-
-  } catch (err) {
-    console.error('Login Error:', err)
-    res.status(500).json({
-      success: false,
-      message: 'เกิดข้อผิดพลาดภายใน Server'
-    })
-  }
 })
 
 app.post('/create/post', async (req, res) => {
@@ -221,8 +221,8 @@ app.post('/create/post', async (req, res) => {
 
 // Create project >> Homepage
 app.get('/display/projects/:userId', async (req, res) => {
-    const {userId} = req.params;
-            console.log(userId)
+    const { userId } = req.params;
+    console.log(userId)
     try {
         const { data, error } = await supabase
             .from('project_members')
@@ -232,14 +232,38 @@ app.get('/display/projects/:userId', async (req, res) => {
                 project_name,
                 subject,
                 deadline,
-                created_at
+                members:project_members!inner (
+                    user_id,
+                    user_profile (
+                    username,
+                    avatar_url
+                    )
+                )
                 )
             `)
             .eq('user_id', userId)
-            .order('created_at', { ascending: false })
         if (error) throw error;
-        console.log(data)
-        res.json(data);
+        const projects = data.map(item => {
+            const rawMembers = item.project.members
+
+            const membersArray = Array.isArray(rawMembers)
+                ? rawMembers
+                : rawMembers
+                    ? [rawMembers]
+                    : []
+
+            return {
+                project_id: item.project.project_id,
+                project_name: item.project.project_name,
+                subject: item.project.subject,
+                deadline: item.project.deadline,
+                members: membersArray.map(m => ({
+                    id: m.user_id,
+                    avatar: m.user_profile?.avatar_url ?? null
+                }))
+            }
+        })
+        res.json(projects)
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -247,57 +271,57 @@ app.get('/display/projects/:userId', async (req, res) => {
 
 // edit project
 app.put('/api/project/:project_id', async (req, res) => {
-  const { project_id } = req.params
-  const { project_name, deadline, subject } = req.body
+    const { project_id } = req.params
+    const { project_name, deadline, subject } = req.body
 
-  try {
-    const { data, error } = await supabase
-      .from('project')
-      .update({
-        project_name,
-        deadline,
-        subject
-      })
-      .eq('project_id', project_id)
-      .select()
-      .single()
+    try {
+        const { data, error } = await supabase
+            .from('project')
+            .update({
+                project_name,
+                deadline,
+                subject
+            })
+            .eq('project_id', project_id)
+            .select()
+            .single()
 
-    if (error) throw error
+        if (error) throw error
 
-    res.json({ success: true, project: data })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ success: false })
-  }
+        res.json({ success: true, project: data })
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ success: false })
+    }
 })
 
 // delete project
 app.delete('/api/project/:project_id', async (req, res) => {
-  const { project_id } = req.params
+    const { project_id } = req.params
 
-  try {
-    // ลบ message
-    await supabase.from('message').delete().eq('project_id', project_id)
+    try {
+        // ลบ message
+        await supabase.from('message').delete().eq('project_id', project_id)
 
-    // ลบ members
-    await supabase.from('project_members').delete().eq('project_id', project_id)
+        // ลบ members
+        await supabase.from('project_members').delete().eq('project_id', project_id)
 
-    // ถ้ามี task ก็ลบๆไปซะ
-    await supabase.from('task').delete().eq('project_id', project_id)
+        // ถ้ามี task ก็ลบๆไปซะ
+        await supabase.from('task').delete().eq('project_id', project_id)
 
-    // ลบ project
-    const { error } = await supabase
-      .from('project')
-      .delete()
-      .eq('project_id', project_id)
+        // ลบ project
+        const { error } = await supabase
+            .from('project')
+            .delete()
+            .eq('project_id', project_id)
 
-    if (error) throw error
+        if (error) throw error
 
-    res.json({ success: true })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ success: false })
-  }
+        res.json({ success: true })
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ success: false })
+    }
 })
 
 app.post('/search/member', async (req, res) => {
@@ -311,7 +335,6 @@ app.post('/search/member', async (req, res) => {
             .select('user_id, username, email')
             .eq('email', email)
             .single()
-
         if (error || !data) {
             return res.json({ found: false })
         }

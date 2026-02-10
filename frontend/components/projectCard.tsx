@@ -20,9 +20,14 @@ export default function ProjectCard({
     project_name,
     subject,
     deadline,
-    members,
+    members = [],
     onPress,
-}: Props) {
+}: Props) 
+{
+// const safeMembers = Array.isArray(members) ? members : []
+// const visibleMembers = safeMembers.slice(0, 4)
+// const extraCount = safeMembers.length - 4
+
     return (
         <Pressable
             onPress={onPress}

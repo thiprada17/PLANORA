@@ -66,34 +66,28 @@ export default function HomePage() {
     const userId = await AsyncStorage.getItem("user_id")
     try {
       const response = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`);
-      const data = await response.json();
-  //     setProjects(Array.isArray(data) ?
-  //       data : []);
-  //       data.map((p) => ({
-  //         ...p,
-  //         deadline: p.deadline
-  //           ? new Date(p.deadline + "T00:00:00") //ตอนดึงมามันแสดงแบบไม่ถุกต้อง
-  //           : null,
-  //       }))
-  //       : []
-  //     );
-  //   } catch (error) {
-  //     console.error("Fetch error:", error);
-  //     setProjects([]);
-  //   }
-  // };
-const formattedProjects = Array.isArray(data) ? data.map((p) => ({
+      // const response = await fetch(`http://172.20.10.3:3000/display/projects/${userId}`);
+      const text = await response.text()
+      console.log("RAW RESPONSE:", text)
+      const data = JSON.parse(text)
+      const formattedProjects = Array.isArray(data) ? data.map((p) => ({
         ...p,
         deadline: p.deadline ? new Date(p.deadline + "T00:00:00") : null,
+        members: p.members ?? []
+
       })) : [];
-      
+
+      // deadline: p.deadline ? new Date(p.deadline) : null,
+      //     members: []
+      //   }))
+      // : []
+
       setProjects(formattedProjects);
     } catch (error) {
       console.error("Fetch error:", error);
       setProjects([]);
     }
   };
-
 
   useEffect(() => {
     fetchProjects();
@@ -103,30 +97,6 @@ const formattedProjects = Array.isArray(data) ? data.map((p) => ({
     useCallback(() => {
       fetchProjects();
     }, []));
-
-  // const mockProjects: Project[] = [
-  //   {
-  //     project_id: "1",
-  //     project_name: "test1",
-  //     subject: "CN321",
-  //     deadline: new Date("2026-02-11"),
-  //     members: [{ id: "u1" }, { id: "u2" }, { id: "u3" }],
-  //   },
-  //   {
-  //     project_id: "2",
-  //     project_name: "test2",
-  //     subject: "CN334",
-  //     deadline: new Date("2026-03-01"),
-  //     members: [{ id: "u1" }, { id: "u4" }],
-  //   },
-  //   {
-  //     project_id: "3",
-  //     project_name: "test3",
-  //     subject: "SF231",
-  //     deadline: null,
-  //     members: [{ id: "u2" }, { id: "u3" }, { id: "u4" }, { id: "u5" }],
-  //   },
-  // ];
 
   // const projects = mockProjects;
 
