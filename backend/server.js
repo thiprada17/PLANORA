@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt')
 
 const app = express()
 
+app.use(express.json());
 app.use(cors())
 app.use(bodyParser.json())
 
@@ -388,6 +389,64 @@ app.post('/search/member', async (req, res) => {
             user_id: data.user_id,
             username: data.username,
             email: data.email
+        })
+    } catch (error) {
+        res.status(500).json({ found: false });
+    }
+
+})
+
+app.post('/create/task', async (req, res) => {
+   const { name, deadline } = req.body
+
+    console.log('Client calling /test endpoint')
+
+    try {
+        console.log("Data received:", name, deadline)
+        
+         const { task, error} = await supabase
+            .from('task')
+            .insert({ task_name: name, deadline: deadline})
+            .select()
+            .single()
+        
+            console.log(task)
+
+               if (error || !task) {
+            return res.json(error)
+        }
+        res.status(200).json({ 
+            success: true, 
+            message: "Server received data successfully",
+            data: { name, deadline }
+        });
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, error: error.message });
+    }
+
+})
+
+app.post('/assign/member', async (req, res) => {
+    const email = req.body.email.trim().toLowerCase()
+
+    try {
+        const { data, error } = await supabase
+            .from('project_members')
+            .select('user_id, username')
+            .eq('email', email)
+            .single()
+        
+        if (error || !data) {
+            return res.json({ found: false })
+        }
+
+        console.log("task " + data)
+
+        res.json({
+            found: true,
+            user_id: data.user_id,
+            username: data.username
         })
     } catch (error) {
         res.status(500).json({ found: false });
