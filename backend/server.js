@@ -401,15 +401,20 @@ app.post('/create/task', async (req, res) => {
 
     console.log('Client calling /test endpoint')
 
-    const { task: setTask, error: projectError } = await supabase
-            .from('task')
-            .insert({ name, deadline, assign: 1 })
-            .select()
-            .single()
-
     try {
         console.log("Data received:", name, deadline)
         
+         const { task, error} = await supabase
+            .from('task')
+            .insert({ task_name: name, deadline: deadline})
+            .select()
+            .single()
+        
+            console.log(task)
+
+               if (error || !task) {
+            return res.json(error)
+        }
         res.status(200).json({ 
             success: true, 
             message: "Server received data successfully",
@@ -425,11 +430,9 @@ app.post('/create/task', async (req, res) => {
 app.post('/assign/member', async (req, res) => {
     const email = req.body.email.trim().toLowerCase()
 
-    console.log("task : " + email)
-
     try {
         const { data, error } = await supabase
-            .from('project_member')
+            .from('project_members')
             .select('user_id, username')
             .eq('email', email)
             .single()
@@ -437,6 +440,8 @@ app.post('/assign/member', async (req, res) => {
         if (error || !data) {
             return res.json({ found: false })
         }
+
+        console.log("task " + data)
 
         res.json({
             found: true,

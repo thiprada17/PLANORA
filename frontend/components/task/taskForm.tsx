@@ -35,6 +35,8 @@ export default function TaskForm({ onCancel }: TaskFormProps) {
     try {
       const memsearch = await searchMember(email);
 
+      console.log("memserch " + memsearch)
+
       if (!memsearch?.found) {
         alert("user not found");
         return;
@@ -77,7 +79,9 @@ export default function TaskForm({ onCancel }: TaskFormProps) {
         },
       );
 
-      return await res.json();
+      const member = res.json()
+
+      return await member;
     } catch (error) {}
   };
   const handleCreateTask = async () => {
