@@ -9,6 +9,7 @@ export default function Layout() {
     KanitSemiBold: require("../assets/fonts/Kanit-SemiBold.ttf"),
     KanitMedium: require("../assets/fonts/Kanit-Medium.ttf"),
     KanitRegular: require("../assets/fonts/KanitRegular.ttf"),
+    KanitExtraBold: require("../assets/fonts/KanitExtraBold.ttf"),
   });
 
   if (!fontsLoaded) {

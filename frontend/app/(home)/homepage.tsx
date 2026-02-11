@@ -378,7 +378,6 @@ export default function HomePage() {
                         members={item.members}
                         onPress={() =>
                           router.push(`../project/${item.project_id}/board`)
-
                         }
                       />
                     </View>

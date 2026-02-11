@@ -13,8 +13,9 @@ module.exports = {
         kanitBold: ["KanitBold"],
         kanitRegular: ["KanitRegular"],
         kanitLight: ["KanitLight"],
-        kanitMedium: ["kanitMedium"],
-        kanitSemiBold: ["kanitSemiBold"],
+        kanitMedium: ["KanitMedium"],
+        kanitSemiBold: ["KanitSemiBold"],
+        kanitExtraBold: ["KanitExtraBold"],
       },
 
       colors: {
