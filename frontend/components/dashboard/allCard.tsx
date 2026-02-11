@@ -119,7 +119,7 @@ export default function StatsCards({
         className="w-[45%] border border-black mr-8 overflow-hidden"
         style={shadowStyle}
       >
-        <View className="bg-[#E96A5F] p-2 items-center border-b border-black">
+        <View className="bg-[#E96A5F] p-3 items-center border-b border-black">
 
           <StrokeText
             text="Countdown"
