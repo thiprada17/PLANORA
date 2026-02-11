@@ -4,98 +4,92 @@ import {
   TextInput,
   Pressable,
   Image,
-  Platform,
 } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { icons } from "@/constants/icons";
 import { useFonts } from "expo-font";
+import DropDownPicker from "react-native-dropdown-picker";
 
 type TaskFormProps = {
   onCancel: () => void;
+  projectId: number;
 };
 
-export default function TaskForm({ onCancel }: TaskFormProps) {
+export default function TaskForm({ onCancel, projectId }: TaskFormProps) {
   const [showPicker, setShowPicker] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState<string[]>([]);
+  const [items, setItems] = useState<{
+    label: string;
+    value: string;
+    avatar_url: string;
+  }[]>([]);
 
   const [task, setTask] = useState({
-    name: "",
+    task_name: "",
     deadline: "",
-    member: [] as { id: number; name: string }[]
   });
 
-  const [emailInput, setEmailInput] = useState("");
-
-  const handleAddMember = async () => {
-    const email = emailInput.trim();
-    if (!email) return;
-
-    console.log("test " + email)
-
-    try {
-      const memsearch = await searchMember(email);
-
-      console.log("memserch " + memsearch)
-
-      if (!memsearch?.found) {
-        alert("user not found");
-        return;
-      }
-
-      const user_id = memsearch.user_id;
-
-      if (task.member.some((m) => m.id === user_id)) {
-        setEmailInput("");
-        return;
-      }
-
-      setTask((prev) => ({
-        ...prev,
-        member: [
-          ...prev.member,
+  useEffect(() => {
+    const loadMembers = async () => {
+      try {
+        const res = await fetch(
+          `https://freddy-unseconded-kristan.ngrok-free.dev/assign/member/${projectId}`,
           {
-            id: memsearch.user_id,
-            name: memsearch.username,
-          },
-        ],
-      }));
+            headers: { "ngrok-skip-browser-warning": "true" },
+          }
+        );
+        const data = await res.json();
 
-      setEmailInput("");
-    } catch (err) {
-      console.log(err);
+        const formatted = data.map((m: any) => ({
+          label: m.username,
+          value: m.user_id.toString(),
+          avatar_url: m.avatar_url,
+        }));
+
+        setItems(formatted);
+      } catch (error) {
+        console.log("Load Members Error:", error);
+      }
+    };
+
+    if (projectId) {
+      loadMembers();
     }
-  };
+  }, [projectId]);
 
-  const searchMember = async (email: string) => {
-    try {
-      const res = await fetch(
-        "http://172.20.10.2:3000/assign/member",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        },
-      );
-
-      const member = res.json()
-
-      return await member;
-    } catch (error) {}
-  };
   const handleCreateTask = async () => {
-    console.log("yes");
     try {
-      await fetch("http://172.20.10.2:3000/create/task", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(task),
+      const selectedMembers = value.map((id) => {
+        const member = items.find((item) => item.value === id);
+        return {
+          user_id: id,
+          username: member?.label,
+          avatar_url: member?.avatar_url,
+        };
       });
 
-      alert("yayy");
+      const payload = {
+        name: task.task_name,
+        deadline: task.deadline,
+        projectId: projectId,
+        members: selectedMembers,
+      };
+
+      await fetch(
+        "https://freddy-unseconded-kristan.ngrok-free.dev/create/task",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      alert("Task Created!");
+      onCancel();
     } catch (error) {
-      console.log(error);
+      console.log("Create Task Error:", error);
     }
   };
 
@@ -109,20 +103,19 @@ export default function TaskForm({ onCancel }: TaskFormProps) {
   const onDateChange = (event: any, selectedDate?: Date) => {
     setShowPicker(false);
     if (selectedDate) {
-      const formattedDate = `${selectedDate.getDate()}/${
-        selectedDate.getMonth() + 1
-      }/${selectedDate.getFullYear().toString().slice(-2)}`;
-      setTask({ ...task, deadline: formattedDate });
+      const isoDate = selectedDate.toISOString().split("T")[0];
+      setTask({ ...task, deadline: isoDate });
     }
   };
 
   return (
-    <View className="gap-4">
+    <View className="gap-4 p-2">
       <View className="items-center mb-2">
-        <Text className="font-kanitBold text-2xl text-black">Create Task</Text>
+        <Text className="font-kanitBold text-2xl text-black">
+          Create Task
+        </Text>
       </View>
 
-      {/* Task name */}
       <View>
         <View className="flex-row items-center gap-2 mb-2">
           <Image
@@ -135,12 +128,13 @@ export default function TaskForm({ onCancel }: TaskFormProps) {
         <TextInput
           placeholder="JerseyJamTU"
           className="font-kanitRegular border border-neutral-400 rounded-xl px-4 py-3 text-neutral-700 bg-white"
-          value={task.name}
-          onChangeText={(text) => setTask({ ...task, name: text })}
+          value={task.task_name}
+          onChangeText={(text) =>
+            setTask({ ...task, task_name: text })
+          }
         />
       </View>
 
-      {/* End date */}
       <View>
         <View className="flex-row items-center gap-2 mb-2">
           <Image
@@ -174,8 +168,7 @@ export default function TaskForm({ onCancel }: TaskFormProps) {
         )}
       </View>
 
-      {/* Assign */}
-      <View>
+      <View style={{ zIndex: 5000 }}>
         <View className="flex-row items-center gap-2 mb-2">
           <Image
             source={icons.person_add}
@@ -185,48 +178,66 @@ export default function TaskForm({ onCancel }: TaskFormProps) {
           <Text className="font-kanitBold text-black">Assign</Text>
         </View>
 
-        <View className="border border-neutral-400 rounded-xl px-2 h-[50px] bg-white" >
-
-          {task.member.map((mail, index) => (
-            <View
-              key={index}
-              className="flex-row items-center bg-[#EBEBEB] px-2 py-1 rounded-md mr-2 my-1"
-            >
-            <Text className="font-kanitRegular text-[10px] mr-1 ">
-              {mail.name}
-            </Text>
-            <Pressable
-              onPress={() =>
-                setTask({
-                  ...task,
-                  member: task.member.filter((_, i) => i !== index),
-                })
-              }
-            >
-              <Text className="text-red-500 font-bold ml-1">×</Text>
-            </Pressable>
-          </View>
-        ))}
-
-        <TextInput
-          placeholder={task.member.length === 0 ? "example@mail.com" : ""}
-          className="font-kanitRegular color-neutral-700 flex-1 min-w-[100px] "
-          value={emailInput}
-          onChangeText={setEmailInput}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          onSubmitEditing={handleAddMember}
-          blurOnSubmit={false}
-        />
-      </View>
-    </View>
-
-      <View className="flex-row justify-end mt-2">
-        <Pressable
-          onPress={() => {
-            handleCreateTask();
-            console.log("Task Created:", task);
+        <DropDownPicker
+          multiple={true}
+          min={0}
+          max={10}
+          open={open}
+          value={value}
+          items={items}
+          setOpen={setOpen}
+          setValue={setValue}
+          setItems={setItems}
+          listMode="SCROLLVIEW"
+          placeholder="Select members..."
+          mode="BADGE"
+          style={{
+            borderColor: "#A3A3A3",
+            borderRadius: 12,
+            minHeight: 50,
+            backgroundColor: "white",
           }}
+          dropDownContainerStyle={{
+            borderColor: "#D4D4D8",
+            backgroundColor: "white",
+            elevation: 5,
+          }}
+          placeholderStyle={{
+            color: "#A3A3A3",
+            fontFamily: "KanitRegular",
+          }}
+          labelStyle={{
+            fontFamily: "KanitRegular",
+            color: "#404040",
+          }}
+          badgeColors={["#F0F0F0"]}
+          badgeTextStyle={{
+            fontFamily: "KanitRegular",
+            color: "#3d3737",
+            fontSize: 12,
+          }}
+          badgeStyle={{
+            borderRadius: 8,
+            paddingHorizontal: 8,
+            paddingVertical: 2,
+            margin: 2,
+            borderWidth: 1,
+            borderColor: "#E5E5E5",
+          }}
+          badgeDotColors={"#222222"}
+          badgeDotStyle={{
+            width: 6,
+            height: 6,
+          }}
+        />
+        <Text className="text-[10px] text-neutral-400 mt-1">
+          * You can select multiple members
+        </Text>
+      </View>
+
+      <View className="flex-row justify-end mt-4">
+        <Pressable
+          onPress={handleCreateTask}
           className="bg-[#A8D5BA] border border-black rounded-lg p-2 w-10 h-10 items-center justify-center shadow-sm"
         >
           <Image
