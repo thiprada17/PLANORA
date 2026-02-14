@@ -222,10 +222,9 @@ export default function HomePage() {
                     Deadline range
                   </Text>
 
-                  {/* แบบฟอร์มกรอกวันคับ ขอเปนสีพื้นๆไปก่อนเน้อ อันนี้น้องจากวันนที่*/}
                   <Pressable
                     onPress={() => setActivePicker("from")}
-                    className="border rounded-lg px-3 py-2 mb-2"
+                    className="border border-gray-300 rounded-lg px-3 py-2 mb-2"
                   >
                     <Text className="text-xs">
                       From: {fromDate ? fromDate.toLocaleDateString() : "Select date"}
@@ -235,7 +234,7 @@ export default function HomePage() {
                   {/* ถึงวันที่ */}
                   <Pressable
                     onPress={() => setActivePicker("to")}
-                    className="border rounded-lg px-3 py-2 mb-4"
+                    className="border border-gray-300 rounded-lg px-3 py-2 mb-4"
                   >
                     <Text className="text-xs">
                       To: {toDate ? toDate.toLocaleDateString() : "Select date"}
@@ -251,9 +250,9 @@ export default function HomePage() {
                         setAppliedToDate(null);
                         setShowDeadlineCard(false);
                       }}
-                      className="flex-1 bg-gray-100 rounded-lg py-2"
+                      className="flex-1 bg-[#F07166] rounded-lg py-2"
                     >
-                      <Text className="text-center text-xs text-gray-600">
+                      <Text className="text-center text-xs text-white">
                         Clear
                       </Text>
                     </Pressable>
@@ -269,7 +268,7 @@ export default function HomePage() {
                         setAppliedToDate(toDate);
                         setShowDeadlineCard(false);
                       }}
-                      className="flex-1 bg-black rounded-lg py-2"
+                      className="flex-1 bg-[#98DAAA] rounded-lg py-2"
                     >
                       <Text className="text-center text-xs text-white">
                         Apply
