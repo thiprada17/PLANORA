@@ -441,6 +441,56 @@ app.post('/create/task', async (req, res) => {
     }
 })
 
+<<<<<<< Updated upstream
+=======
+app.put('/task/:id', async (req, res) => {
+    const { id } = req.params;
+    const { name, deadline } = req.body;
+
+    try {
+        const { data, error } = await supabase
+            .from('task')
+            .update({ 
+                task_name: name,
+                deadline: deadline 
+            })
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) throw error;
+        res.json({ success: true, data });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+app.delete('/api/task/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        await supabase
+            .from('task_assign')
+            .delete()
+            .eq('task_id', id);
+
+        const { error } = await supabase
+            .from('task')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false });
+    }
+});
+
+app.post('/assign/member', async (req, res) => {
+    const email = req.body.email.trim().toLowerCase()
+>>>>>>> Stashed changes
 
 app.get('/assign/member/:projectId', async (req, res) => {
     const { projectId } = req.params
