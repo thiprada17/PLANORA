@@ -13,7 +13,7 @@ module.exports = {
         kanitBold: ["KanitBold"],
         kanitRegular: ["KanitRegular"],
         kanitLight: ["KanitLight"],
-        kanitMedium: ["kanitMedium"],
+        KanitMedium: ["KanitMedium"],
         kanitSemiBold: ["kanitSemiBold"],
       },
 

@@ -59,7 +59,7 @@ export default function setting() {
           <Image source={icons.menu} className="w-7 h-7" />
         </Pressable>
 
-        <Text className="text-[40px] font-kanitMedium text-black">
+        <Text className="text-[40px] font-KanitMedium text-black">
           Project Setting
         </Text>
       </View>
