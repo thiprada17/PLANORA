@@ -393,9 +393,9 @@ app.post('/create/task', async (req, res) => {
     const { name, deadline, projectId, members } = req.body
 
     try {
-        console.log("Data received:", name, deadline, projectId)
-
-        const { data, error } = await supabase
+        console.log("Data received:", name, deadline)
+        
+         const { data, error} = await supabase
             .from('task')
             .insert({
                 task_name: name,
@@ -405,15 +405,11 @@ app.post('/create/task', async (req, res) => {
             })
             .select()
             .single()
+        
+            console.log(data)
 
-        if (error) {
-            console.log("Insert error:", error)
-            return res.status(400).json({ error })
-        }
-
-        if (error) {
-            console.log("Insert error:", error)
-            return res.status(400).json({ error })
+               if (error || !data) {
+            return res.json(error)
         }
 
         const membersData = members.map(i => ({
@@ -587,7 +583,8 @@ app.get('/dashboard/:projectId/:userId', async (req, res) => {
             return new Date(t.deadline) < today && t.status !== 'complete'
         }).length
         const myAssignments = myTasks.length
-        const projectDeadline = new Date(project.deadline)
+        const projectDeadline = project.deadline
+        ? new Date(project.deadline): null
         const countdownDays = Math.max(
             0,
             Math.ceil((projectDeadline - today) / (1000 * 60 * 60 * 24))
