@@ -68,7 +68,6 @@ export default function HomePage() {
     const userId = await AsyncStorage.getItem("user_id")
     try {
       const response = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`);
-      // const response = await fetch(`http://172.20.10.3:3000/display/projects/${userId}`);
       const text = await response.text()
       console.log("RAW RESPONSE:", text)
       const data = JSON.parse(text)
@@ -365,6 +364,7 @@ export default function HomePage() {
                       />
                     </Pressable>
                   ))} */}
+<<<<<<< Updated upstream
                   {projects.map((item) => (
                     <View
                       key={item.project_id}
@@ -383,6 +383,23 @@ export default function HomePage() {
                     </View>
                   ))}
 
+=======
+                 {filteredProjects.map((item) => (
+                  <View key={item.project_id}className="w-[150px] h-[150px] mt-4">
+                    <ProjectCard
+                    project_id={item.project_id}
+                    project_name={item.project_name}
+                    subject={item.subject}
+                    deadline={item.deadline}
+                    members={item.members}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/project/[projectId]/dashBoard",
+                        params: { projectId: item.project_id },})
+                      }/>
+                      </View>
+                    ))}
+>>>>>>> Stashed changes
                 </View>
               </ScrollView>
             </View>
