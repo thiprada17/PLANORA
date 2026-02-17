@@ -364,26 +364,6 @@ export default function HomePage() {
                       />
                     </Pressable>
                   ))} */}
-<<<<<<< Updated upstream
-                  {projects.map((item) => (
-                    <View
-                      key={item.project_id}
-                      className="w-[150px] h-[150px] mt-4"
-                    >
-                      <ProjectCard
-                        project_id={item.project_id}
-                        project_name={item.project_name}
-                        subject={item.subject}
-                        deadline={item.deadline}
-                        members={item.members}
-                        onPress={() =>
-                          router.push(`../project/${item.project_id}/board`)
-                        }
-                      />
-                    </View>
-                  ))}
-
-=======
                  {filteredProjects.map((item) => (
                   <View key={item.project_id}className="w-[150px] h-[150px] mt-4">
                     <ProjectCard
@@ -399,7 +379,6 @@ export default function HomePage() {
                       }/>
                       </View>
                     ))}
->>>>>>> Stashed changes
                 </View>
               </ScrollView>
             </View>
