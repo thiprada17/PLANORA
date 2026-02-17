@@ -161,6 +161,7 @@ console.log("projectID =", projectID);
               shadowOffset: { width: 0, height: 2 },
             }}
             className="w-[210px] h-[540px] mr-7 mx p-4 rounded-2xl border border-neutral-400 bg-[#CAEAD5]">
+{/* className="w-[210px] max-h-[540px] self-start mr-7 mx p-4 rounded-2xl border border-neutral-400 bg-[#CAEAD5]"> */}
 
             {/* Column Header */}
             <View className="flex-row items-center justify-between">
@@ -181,7 +182,7 @@ console.log("projectID =", projectID);
             <ScrollView
               showsVerticalScrollIndicator={false}
               nestedScrollEnabled
-              style={{ flexGrow: 0 }}
+              style={{ flexGrow: 0 }} //
             >
               {col.tasks.map((_, i) => (
                 <View
