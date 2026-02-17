@@ -403,15 +403,15 @@ app.post('/create/task', async (req, res) => {
     try {
         console.log("Data received:", name, deadline)
         
-         const { task, error} = await supabase
+         const { data, error} = await supabase
             .from('task')
             .insert({ task_name: name, deadline: deadline})
             .select()
             .single()
         
-            console.log(task)
+            console.log(data)
 
-               if (error || !task) {
+               if (error || !data) {
             return res.json(error)
         }
         res.status(200).json({ 
@@ -496,7 +496,8 @@ app.get('/dashboard/:projectId/:userId', async (req, res) => {
             return new Date(t.deadline) < today && t.status !== 'complete'
         }).length
         const myAssignments = myTasks.length
-        const projectDeadline = new Date(project.deadline)
+        const projectDeadline = project.deadline
+        ? new Date(project.deadline): null
         const countdownDays = Math.max(
             0,
             Math.ceil((projectDeadline - today) / (1000 * 60 * 60 * 24))

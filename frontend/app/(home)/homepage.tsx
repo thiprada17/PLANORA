@@ -24,6 +24,7 @@ type Project = {
   subject: string;
   deadline: Date | null;
   members: Member[];
+  status?: string;
 };
 
 export default function HomePage() {
@@ -66,6 +67,7 @@ export default function HomePage() {
 
   const fetchProjects = async () => {
     const userId = await AsyncStorage.getItem("user_id")
+    if (!userId) return;
     try {
       const response = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`);
       const text = await response.text()
@@ -118,6 +120,18 @@ export default function HomePage() {
   const [appliedFromDate, setAppliedFromDate] = useState<Date | null>(null);
   const [appliedToDate, setAppliedToDate] = useState<Date | null>(null);
 
+  const filteredProjects = projects.filter((project) => {
+  if (statusValue !== "ALL" && project.status !== statusValue) {
+    return false;
+  }
+  if (appliedFromDate && project.deadline && project.deadline < appliedFromDate) {
+    return false;
+  }
+  if (appliedToDate && project.deadline && project.deadline > appliedToDate) {
+    return false;
+  }
+  return true;
+});
 
   const deadlineLabel =
     appliedFromDate && appliedToDate
@@ -335,7 +349,6 @@ export default function HomePage() {
                   >
                     <Text className="text-4xl text-neutral-400">+</Text>
                   </Pressable>
-                  {/* {projects.map((item) => (
                   {/* {projects.map((item) => (
                     <Pressable
                       key={item.project_id}
