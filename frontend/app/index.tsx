@@ -15,6 +15,7 @@ export default function Index() {
       <Link href="/project/:projectId/board">board</Link>
       <Link href="/project/:projectId/chat">chat</Link>
       <Link href="/project/[projectId]/dashBoard">dashboard</Link>
+      <Link href="/project/:projectId/setting">setting</Link>
     </View>
     
   );

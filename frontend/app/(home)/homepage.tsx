@@ -11,8 +11,6 @@ import { useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ProjectCard from "@/components/projectCard";
 
-
-
 type Member = {
   id: string;
   avatar?: string | null;
