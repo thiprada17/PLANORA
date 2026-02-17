@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { icons } from "@/constants/icons";
+import TabBar from "@/components/tabBar";
 
 export default function setting() {
   const [projectName, setProjectName] = useState("Apple Jack");
@@ -21,6 +22,7 @@ export default function setting() {
 
   const [statusOpen, setStatusOpen] = useState(false);
   const [statusValue, setStatusValue] = useState("COMPLETE");
+  const [tabBarVisible, setTabBarVisible] = useState(false);
 
   // check status เหมือนหน้า homepage แล้ว
   const statusItems = [
@@ -55,20 +57,24 @@ export default function setting() {
     <SafeAreaView className="flex-1 bg-white px-5 pt-4">
       {/* HEADER */}
       <View className="mb-5">
-        <Pressable className="mb-2">
+        <Pressable className="mb-2" onPress={() => setTabBarVisible(true)}>
           <Image source={icons.menu} className="w-7 h-7" />
         </Pressable>
 
-        <Text className="text-[40px] font-KanitMedium text-black">
+        <Text className="text-[40px] font-kanitMedium text-black">
           Project Setting
         </Text>
       </View>
+      <TabBar
+        visible={tabBarVisible}
+        onClose={() => setTabBarVisible(false)}
+      />
 
       {/* Form */}
       <View className="space-y-4 ">
         {/* Project Name */}
         <View>
-          <Text className="text-gray-500 mb-2">Project Name:</Text>
+          <Text className="text-gray-500 mb-2 font-kanitMedium">Project Name:</Text>
           <TextInput
             value={projectName}
             onChangeText={setProjectName}
@@ -78,7 +84,7 @@ export default function setting() {
 
         {/* Deadline */}
         <View>
-          <Text className="text-gray-500 mb-2">Deadline:</Text>
+          <Text className="text-gray-500 mb-2 font-kanitMedium">Deadline:</Text>
           <Pressable
             onPress={() => setShowDatePicker(true)}
             className="h-[48px] text-gray-500 border border-black rounded-md px-4 py-3 mb-5 flex-row justify-between items-center"
@@ -92,7 +98,7 @@ export default function setting() {
 
         {/* Status */}
         <View style={{ zIndex: 30, width: "100%" }}>
-          <Text className="text-gray-500 mb-2">Status:</Text>
+          <Text className="text-gray-500 mb-2 font-kanitMedium">Status:</Text>
           <DropDownPicker
             open={statusOpen}
             value={statusValue}
@@ -118,7 +124,7 @@ export default function setting() {
 
         {/* Subject */}
         <View style={{ zIndex: 20, width: "100%" }}>
-          <Text className="text-gray-500 mb-2">Subject:</Text>
+          <Text className="text-gray-500 mb-2 font-kanitMedium">Subject:</Text>
           <DropDownPicker
             open={subjectOpen}
             value={subjectValue}
