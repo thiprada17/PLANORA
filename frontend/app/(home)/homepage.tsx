@@ -11,8 +11,6 @@ import { useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ProjectCard from "@/components/projectCard";
 
-
-
 type Member = {
   id: string;
   avatar?: string | null;
@@ -71,7 +69,6 @@ export default function HomePage() {
     try {
       const response = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`);
       const text = await response.text()
-      console.log("RAW RESPONSE:", text)
       const data = JSON.parse(text)
       const formattedProjects = Array.isArray(data) ? data.map((p) => ({
         ...p,
@@ -106,6 +103,8 @@ export default function HomePage() {
   const [openFilter, setOpenFilter] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
   const [statusValue, setStatusValue] = useState("ALL");
+  const [subjectFilter, setSubjectFilter] = useState<string>("ALL");
+
 
   const statusItems = [
     { label: "Status: ALL", value: "ALL" },
@@ -143,6 +142,21 @@ export default function HomePage() {
   const FILTER_HEIGHT = 30;
   const FILTER_RADIUS = 11;
   const FILTER_TEXT_SIZE = 9;
+
+  const subjectItems = [
+  { label: "All", value: "ALL" },
+  ...Array.from(new Set(projects.map(p => p.subject)))
+    .map(sub => ({
+      label: sub,
+      value: sub
+    }))
+];
+
+const filteredProjects =
+  subjectFilter === "ALL"
+    ? projects
+    : projects.filter(p => p.subject === subjectFilter);
+
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -183,10 +197,10 @@ export default function HomePage() {
             <View className="mr-1" style={{ width: 110, zIndex: 50 }}>
               <DropDownPicker
                 open={statusOpen}
-                value={statusValue}
-                items={statusItems}
+                value={subjectFilter}
+                items={subjectItems}
                 setOpen={setStatusOpen}
-                setValue={setStatusValue}
+                setValue={setSubjectFilter}
                 listMode="SCROLLVIEW"
                 containerStyle={{ height: FILTER_HEIGHT }} 
                 style={{
@@ -235,10 +249,9 @@ export default function HomePage() {
                     Deadline range
                   </Text>
 
-                  {/* แบบฟอร์มกรอกวันคับ ขอเปนสีพื้นๆไปก่อนเน้อ อันนี้น้องจากวันนที่*/}
                   <Pressable
                     onPress={() => setActivePicker("from")}
-                    className="border rounded-lg px-3 py-2 mb-2"
+                    className="border border-gray-300 rounded-lg px-3 py-2 mb-2"
                   >
                     <Text className="text-xs">
                       From: {fromDate ? fromDate.toLocaleDateString() : "Select date"}
@@ -248,7 +261,7 @@ export default function HomePage() {
                   {/* ถึงวันที่ */}
                   <Pressable
                     onPress={() => setActivePicker("to")}
-                    className="border rounded-lg px-3 py-2 mb-4"
+                    className="border border-gray-300 rounded-lg px-3 py-2 mb-4"
                   >
                     <Text className="text-xs">
                       To: {toDate ? toDate.toLocaleDateString() : "Select date"}
@@ -264,9 +277,9 @@ export default function HomePage() {
                         setAppliedToDate(null);
                         setShowDeadlineCard(false);
                       }}
-                      className="flex-1 bg-gray-100 rounded-lg py-2"
+                      className="flex-1 bg-[#F07166] rounded-lg py-2"
                     >
-                      <Text className="text-center text-xs text-gray-600">
+                      <Text className="text-center text-xs text-white">
                         Clear
                       </Text>
                     </Pressable>
@@ -282,7 +295,7 @@ export default function HomePage() {
                         setAppliedToDate(toDate);
                         setShowDeadlineCard(false);
                       }}
-                      className="flex-1 bg-black rounded-lg py-2"
+                      className="flex-1 bg-[#98DAAA] rounded-lg py-2"
                     >
                       <Text className="text-center text-xs text-white">
                         Apply
@@ -392,6 +405,8 @@ export default function HomePage() {
                       }/>
                       </View>
                     ))}
+                    </View>
+                  ))}
                 </View>
               </ScrollView>
             </View>
