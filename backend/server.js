@@ -454,6 +454,84 @@ app.post('/assign/member', async (req, res) => {
 
 })
 
+// ดึงข้อมุล dashboard
+app.get('/dashboard/:projectId/:userId', async (req, res) => {
+    const { projectId, userId } = req.params
+
+    try {
+
+        // ดึงข้อมูล Project (ชื่อ, วิชา, deadline)
+        const { data: project, error: projectError } = await supabase
+            .from('project')
+            .select('project_id, project_name, subject, deadline')
+            .eq('project_id', projectId)
+            .single()
+        if (projectError) throw projectError
+
+        // ดึง task ทั้งหมดของ project นี้
+        const { data: tasks, error: taskError } = await supabase
+            .from('task')
+            .select('id, deadline, status')
+            .eq('project_id', projectId)
+        if (taskError) throw taskError
+
+        // ดึง task ที่ user นี้ถูก assign
+        const { data: myTasks, error: assignError } = await supabase
+            .from('task_assign')
+            .select('task_id')
+            .eq('project_id', projectId)
+            .eq('user_id', userId)
+        if (assignError) throw assignError
+
+        // ดึงสมาชิกใน project
+        const { data: members, error: memberError } = await supabase
+            .from('project_members')
+            .select('username')
+            .eq('project_id', projectId)
+        if (memberError) throw memberError
+
+        // คำนวณค่าใดๆ
+        const today = new Date()
+        const totalTasks = tasks.length
+        const overdue = tasks.filter(t => {
+            return new Date(t.deadline) < today && t.status !== 'complete'
+        }).length
+        const myAssignments = myTasks.length
+        const projectDeadline = new Date(project.deadline)
+        const countdownDays = Math.max(
+            0,
+            Math.ceil((projectDeadline - today) / (1000 * 60 * 60 * 24))
+        )
+        const statusSummary = {}
+        tasks.forEach(t => {
+            const status = t.status || 'unknown'
+            statusSummary[status] = (statusSummary[status] || 0) + 1
+        })
+        const overview = Object.keys(statusSummary).map(key => ({
+            label: key,
+            value: statusSummary[key]
+        }))
+
+        res.json({
+            project,
+            stats: {
+                overdue,
+                totalTasks,
+                countdownDays,
+                myAssignments
+            },
+            overview,
+            members: members.map(m => ({
+                name: m.username
+            }))
+        })
+
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ error: err.message })
+    }
+})
+
 server.listen(3000, '0.0.0.0', () => {
     console.log('Server running on port 3000')
 })
