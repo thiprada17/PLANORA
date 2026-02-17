@@ -23,6 +23,8 @@ export default function Index() {
     const [password, setPassword] = useState('')
     const [isLoading, setIsLoading] = useState(false);
     const [pageLoading, setPageLoading] = useState(true);
+    const [loginEmail, setLoginEmail] = useState('');
+    const [loginPassword, setLoginPassword] = useState('');
 
     const openSignup = () => {
         Animated.timing(loginY, {
@@ -47,17 +49,17 @@ export default function Index() {
     });
 
 
-useEffect(() => {
-  const timer = setTimeout(() => {
-    setPageLoading(false);
-  }, 500);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setPageLoading(false);
+        }, 500);
 
-  return () => clearTimeout(timer);
-}, []);
+        return () => clearTimeout(timer);
+    }, []);
 
-if (!fonts || pageLoading) {
-  return <Loading visible={true} />;
-}
+    if (!fonts || pageLoading) {
+        return <Loading visible={true} />;
+    }
 
     //signup dtb
     const handleSignup = async () => {
@@ -79,7 +81,7 @@ if (!fonts || pageLoading) {
             const data = await res.json()
 
             if (data.success == true) {
-                router.replace('/homepage')
+                router.replace('/(home)/homepage')
             }
             if (!res.ok) {
                 alert(data.message || data.error)
@@ -175,6 +177,8 @@ if (!fonts || pageLoading) {
                         <View className="mt-6">
                             <TextInput
                                 placeholder="Email"
+                                value={loginEmail}
+                                onChangeText={setLoginEmail}
                                 placeholderTextColor="#9CA3AF"
                                 keyboardType="email-address"
                                 autoCapitalize="none"
@@ -183,6 +187,8 @@ if (!fonts || pageLoading) {
 
                             <TextInput
                                 placeholder="Password"
+                                value={loginPassword}
+                                onChangeText={setLoginPassword}
                                 placeholderTextColor="#9CA3AF"
                                 secureTextEntry
                                 className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"

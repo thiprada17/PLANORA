@@ -10,11 +10,15 @@ import { Animated } from "react-native";
 import { useRef, useEffect } from "react";
 import { Keyboard, TouchableWithoutFeedback } from "react-native";
 import { SearchBar } from "react-native-screens";
+import LoadingCreate from "@/components/loading_create";
+
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
 
 export default function CreateProject() {
+
+  const [isSearching, setIsSearching] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const router = useRouter();
 
@@ -72,8 +76,6 @@ export default function CreateProject() {
       : "w-10 h-0.5 bg-neutral-300 ml-[7px] mr-[7px]";
   };
 
-
-
   const CheckButton = ({ nothaveinput }: { nothaveinput: boolean }) => (
     <Pressable
       className={`bg-GREEN ml-2 px-6 py-3 rounded-lg w-1 items-center justify-center ${nothaveinput ? 'opacity-50' : ''}`}
@@ -86,7 +88,6 @@ export default function CreateProject() {
       <Image source={icons.check} className="items-center justify-center w-6 h-6" />
     </Pressable>
   )
-
 
 
   const onDateChange = (event: any, selectedDate?: Date) => {
@@ -110,16 +111,21 @@ export default function CreateProject() {
   if (!email) return;
 
   try {
+    setIsSearching(true);
     const memsearch = await searchMember(email);
 
     if (!memsearch?.found) {
+      setIsSearching(false); //ปิดก่อน
+      setTimeout(() => {
       alert("user not found");
+      }, 100); //ให้ปิด loading ก่อน alert
       return;
     }
 
     const user_id = memsearch.user_id;
 
     if (project.member.some(m => m.id === user_id)) {
+      setIsSearching(false);
       setEmailInput("");
       return;
     }
@@ -140,12 +146,15 @@ export default function CreateProject() {
 
   } catch (err) {
     console.log(err);
+  } finally {
+    setIsSearching(false);
   }
 };
 
   const searchMember = async (email: string) => {
     try {
       const res = await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/search/member', {
+      // const res = await fetch('http://192.168.1.141:3000/search/member', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -177,6 +186,7 @@ const handleSubmit = async () => {
 }
 
   return (
+    <View className="flex-1 pt-[50px]">
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View className="flex-1 bg-neutral-100 items-center pt-[50px]">
 
@@ -377,5 +387,7 @@ const handleSubmit = async () => {
 
       </View >
     </TouchableWithoutFeedback>
+    <LoadingCreate visible={isSearching} />
+</View>
   );
 }

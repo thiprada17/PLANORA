@@ -11,8 +11,6 @@ import { useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ProjectCard from "@/components/projectCard";
 
-
-
 type Member = {
   id: string;
   avatar?: string | null;
@@ -238,10 +236,9 @@ const filteredProjects =
                     Deadline range
                   </Text>
 
-                  {/* แบบฟอร์มกรอกวันคับ ขอเปนสีพื้นๆไปก่อนเน้อ อันนี้น้องจากวันนที่*/}
                   <Pressable
                     onPress={() => setActivePicker("from")}
-                    className="border rounded-lg px-3 py-2 mb-2"
+                    className="border border-gray-300 rounded-lg px-3 py-2 mb-2"
                   >
                     <Text className="text-xs">
                       From: {fromDate ? fromDate.toLocaleDateString() : "Select date"}
@@ -251,7 +248,7 @@ const filteredProjects =
                   {/* ถึงวันที่ */}
                   <Pressable
                     onPress={() => setActivePicker("to")}
-                    className="border rounded-lg px-3 py-2 mb-4"
+                    className="border border-gray-300 rounded-lg px-3 py-2 mb-4"
                   >
                     <Text className="text-xs">
                       To: {toDate ? toDate.toLocaleDateString() : "Select date"}
@@ -267,9 +264,9 @@ const filteredProjects =
                         setAppliedToDate(null);
                         setShowDeadlineCard(false);
                       }}
-                      className="flex-1 bg-gray-100 rounded-lg py-2"
+                      className="flex-1 bg-[#F07166] rounded-lg py-2"
                     >
-                      <Text className="text-center text-xs text-gray-600">
+                      <Text className="text-center text-xs text-white">
                         Clear
                       </Text>
                     </Pressable>
@@ -285,7 +282,7 @@ const filteredProjects =
                         setAppliedToDate(toDate);
                         setShowDeadlineCard(false);
                       }}
-                      className="flex-1 bg-black rounded-lg py-2"
+                      className="flex-1 bg-[#98DAAA] rounded-lg py-2"
                     >
                       <Text className="text-center text-xs text-white">
                         Apply
@@ -395,7 +392,6 @@ const filteredProjects =
                         members={item.members}
                         onPress={() =>
                           router.push(`../project/${item.project_id}/board`)
-
                         }
                       />
 =======

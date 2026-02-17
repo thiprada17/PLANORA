@@ -129,7 +129,7 @@ export default function TabBar({ visible, onClose }: TabBarProps) {
                                     <TreeItem icon="dashboard" label="Dashboard" 
                                     onPress={() => {
                                 onClose();
-                                router.push("/(home)/homepage");
+                                router.push("/project/[projectId]/dashBoard");
                             }} />
                                     <TreeItem icon="board" label="Board" onPress={() => {
                                 onClose();
@@ -137,11 +137,11 @@ export default function TabBar({ visible, onClose }: TabBarProps) {
                             }}/>
                                     <TreeItem icon="chat" label="Chat" onPress={() => {
                                 onClose();
-                                router.push("/(home)/homepage");
+                                router.push("/project/[projectId]/board");
                             }} />
                                     <TreeItem icon="settings" label="Setting" isLast onPress={() => {
                                 onClose();
-                                router.push("/(home)/homepage");
+                                router.push("/project/[projectId]/setting");
                             }} />
                                 </View>
                             </View>

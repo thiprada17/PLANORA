@@ -390,7 +390,6 @@ app.post('/search/member', async (req, res) => {
 })
 
 app.post('/create/task', async (req, res) => {
-<<<<<<< Updated upstream
     const { name, deadline, projectId, members } = req.body
 
     try {
@@ -404,54 +403,12 @@ app.post('/create/task', async (req, res) => {
                 project_id: projectId,
                 status: "to-do"
             })
-=======
-   const { name, deadline, project_id } = req.body
-
-    console.log('Client calling /test endpoint')
-
-    try {
-        console.log("Data received:", name, deadline, project_id)
-        
-         const { data, error} = await supabase
-            .from('task')
-            .insert({ task_name: name, deadline: deadline, project_id: project_id})
->>>>>>> Stashed changes
             .select()
             .single()
 
-<<<<<<< Updated upstream
         if (error) {
             console.log("Insert error:", error)
             return res.status(400).json({ error })
-=======
-               if (error || !data) {
-                return res.status(400).json(error)
-            }
-        res.status(200).json({ 
-            success: true, 
-            message: "Server received data successfully",
-            data: { name, deadline }
-        });
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ success: false, error: error.message });
-    }
-
-})
-
-app.post('/assign/member', async (req, res) => {
-    const email = req.body.email.trim().toLowerCase()
-
-    try {
-        const { data, error } = await supabase
-            .from('project_members')
-            .select('user_id, username')
-            .eq('email', email)
-            .single()
-        
-        if (error || !data) {
-            return res.json({ found: false })
->>>>>>> Stashed changes
         }
 
         if (error) {
@@ -484,9 +441,6 @@ app.post('/assign/member', async (req, res) => {
     }
 })
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
 app.put('/task/:id', async (req, res) => {
     const { id } = req.params;
     const { name, deadline } = req.body;
@@ -531,10 +485,6 @@ app.delete('/api/task/:id', async (req, res) => {
         res.status(500).json({ success: false });
     }
 });
-
-app.post('/assign/member', async (req, res) => {
-    const email = req.body.email.trim().toLowerCase()
->>>>>>> Stashed changes
 
 app.get('/assign/member/:projectId', async (req, res) => {
     const { projectId } = req.params
@@ -593,9 +543,86 @@ app.get('/get/task/:projectId', async (req, res) => {
 
 })
 
-
 =======
->>>>>>> Stashed changes
+// ดึงข้อมุล dashboard
+app.get('/dashboard/:projectId/:userId', async (req, res) => {
+    const { projectId, userId } = req.params
+
+    try {
+
+        // ดึงข้อมูล Project (ชื่อ, วิชา, deadline)
+        const { data: project, error: projectError } = await supabase
+            .from('project')
+            .select('project_id, project_name, subject, deadline')
+            .eq('project_id', projectId)
+            .single()
+        if (projectError) throw projectError
+
+        // ดึง task ทั้งหมดของ project นี้
+        const { data: tasks, error: taskError } = await supabase
+            .from('task')
+            .select('id, deadline, status')
+            .eq('project_id', projectId)
+        if (taskError) throw taskError
+
+        // ดึง task ที่ user นี้ถูก assign
+        const { data: myTasks, error: assignError } = await supabase
+            .from('task_assign')
+            .select('task_id')
+            .eq('project_id', projectId)
+            .eq('user_id', userId)
+        if (assignError) throw assignError
+
+        // ดึงสมาชิกใน project
+        const { data: members, error: memberError } = await supabase
+            .from('project_members')
+            .select('username')
+            .eq('project_id', projectId)
+        if (memberError) throw memberError
+
+        // คำนวณค่าใดๆ
+        const today = new Date()
+        const totalTasks = tasks.length
+        const overdue = tasks.filter(t => {
+            return new Date(t.deadline) < today && t.status !== 'complete'
+        }).length
+        const myAssignments = myTasks.length
+        const projectDeadline = new Date(project.deadline)
+        const countdownDays = Math.max(
+            0,
+            Math.ceil((projectDeadline - today) / (1000 * 60 * 60 * 24))
+        )
+        const statusSummary = {}
+        tasks.forEach(t => {
+            const status = t.status || 'unknown'
+            statusSummary[status] = (statusSummary[status] || 0) + 1
+        })
+        const overview = Object.keys(statusSummary).map(key => ({
+            label: key,
+            value: statusSummary[key]
+        }))
+
+        res.json({
+            project,
+            stats: {
+                overdue,
+                totalTasks,
+                countdownDays,
+                myAssignments
+            },
+            overview,
+            members: members.map(m => ({
+                name: m.username
+            }))
+        })
+
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ error: err.message })
+    }
+})
+
+
 server.listen(3000, '0.0.0.0', () => {
     console.log('Server running on port 3000')
 })
