@@ -395,8 +395,6 @@ app.post('/search/member', async (req, res) => {
 
 })
 
-<<<<<<< Updated upstream
-=======
 app.post('/create/task', async (req, res) => {
    const { name, deadline } = req.body
 
@@ -533,7 +531,6 @@ app.get('/dashboard/:projectId/:userId', async (req, res) => {
     }
 })
 
->>>>>>> Stashed changes
 server.listen(3000, '0.0.0.0', () => {
     console.log('Server running on port 3000')
 })
