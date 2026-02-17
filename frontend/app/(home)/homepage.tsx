@@ -119,8 +119,11 @@ export default function HomePage() {
   const [appliedFromDate, setAppliedFromDate] = useState<Date | null>(null);
   const [appliedToDate, setAppliedToDate] = useState<Date | null>(null);
 
-  const filteredProjects = projects.filter((project) => {
+const filteredProjects = projects.filter((project) => {
   if (statusValue !== "ALL" && project.status !== statusValue) {
+    return false;
+  }
+  if (subjectFilter !== "ALL" && project.subject !== subjectFilter) {
     return false;
   }
   if (appliedFromDate && project.deadline && project.deadline < appliedFromDate) {
@@ -152,10 +155,10 @@ export default function HomePage() {
     }))
 ];
 
-const filteredProjects =
-  subjectFilter === "ALL"
-    ? projects
-    : projects.filter(p => p.subject === subjectFilter);
+// const filteredProjects =
+//   subjectFilter === "ALL"
+//     ? projects
+//     : projects.filter(p => p.subject === subjectFilter);
 
 
   return (
@@ -405,8 +408,6 @@ const filteredProjects =
                       }/>
                       </View>
                     ))}
-                    </View>
-                  ))}
                 </View>
               </ScrollView>
             </View>
