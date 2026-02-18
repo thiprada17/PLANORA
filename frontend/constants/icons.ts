@@ -31,6 +31,7 @@ import label from "@/assets/icons/label.png";
 import face from "@/assets/icons/face.png";
 import delete_forever from "@/assets/icons/delete_forever.png";
 import download from "@/assets/icons/download.png";
+import logo from "@/assets/icons/logoja.png";
 
 export const icons = {
   deadline,
@@ -64,5 +65,6 @@ export const icons = {
   label,
   face,
   delete_forever,
-  download
+  download,
+  logo
 };

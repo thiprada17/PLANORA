@@ -22,6 +22,7 @@ type Project = {
   subject: string;
   deadline: Date | null;
   members: Member[];
+  status?: string;
 };
 
 export default function HomePage() {
@@ -64,11 +65,10 @@ export default function HomePage() {
 
   const fetchProjects = async () => {
     const userId = await AsyncStorage.getItem("user_id")
+    if (!userId) return;
     try {
       const response = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`);
-      // const response = await fetch(`http://172.20.10.3:3000/display/projects/${userId}`);
       const text = await response.text()
-      console.log("RAW RESPONSE:", text)
       const data = JSON.parse(text)
       const formattedProjects = Array.isArray(data) ? data.map((p) => ({
         ...p,
@@ -103,6 +103,8 @@ export default function HomePage() {
   const [openFilter, setOpenFilter] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
   const [statusValue, setStatusValue] = useState("ALL");
+  const [subjectFilter, setSubjectFilter] = useState<string>("ALL");
+
 
   const statusItems = [
     { label: "Status: ALL", value: "ALL" },
@@ -117,6 +119,21 @@ export default function HomePage() {
   const [appliedFromDate, setAppliedFromDate] = useState<Date | null>(null);
   const [appliedToDate, setAppliedToDate] = useState<Date | null>(null);
 
+const filteredProjects = projects.filter((project) => {
+  if (statusValue !== "ALL" && project.status !== statusValue) {
+    return false;
+  }
+  if (subjectFilter !== "ALL" && project.subject !== subjectFilter) {
+    return false;
+  }
+  if (appliedFromDate && project.deadline && project.deadline < appliedFromDate) {
+    return false;
+  }
+  if (appliedToDate && project.deadline && project.deadline > appliedToDate) {
+    return false;
+  }
+  return true;
+});
 
   const deadlineLabel =
     appliedFromDate && appliedToDate
@@ -128,6 +145,21 @@ export default function HomePage() {
   const FILTER_HEIGHT = 30;
   const FILTER_RADIUS = 11;
   const FILTER_TEXT_SIZE = 9;
+
+  const subjectItems = [
+  { label: "All", value: "ALL" },
+  ...Array.from(new Set(projects.map(p => p.subject)))
+    .map(sub => ({
+      label: sub,
+      value: sub
+    }))
+];
+
+// const filteredProjects =
+//   subjectFilter === "ALL"
+//     ? projects
+//     : projects.filter(p => p.subject === subjectFilter);
+
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -168,10 +200,10 @@ export default function HomePage() {
             <View className="mr-1" style={{ width: 110, zIndex: 50 }}>
               <DropDownPicker
                 open={statusOpen}
-                value={statusValue}
-                items={statusItems}
+                value={subjectFilter}
+                items={subjectItems}
                 setOpen={setStatusOpen}
-                setValue={setStatusValue}
+                setValue={setSubjectFilter}
                 listMode="SCROLLVIEW"
                 containerStyle={{ height: FILTER_HEIGHT }} 
                 style={{
@@ -334,7 +366,6 @@ export default function HomePage() {
                     <Text className="text-4xl text-neutral-400">+</Text>
                   </Pressable>
                   {/* {projects.map((item) => (
-                  {/* {projects.map((item) => (
                     <Pressable
                       key={item.project_id}
                       href={`../project/${item.project_id}/board`}
@@ -362,24 +393,19 @@ export default function HomePage() {
                       />
                     </Pressable>
                   ))} */}
-                  {projects.map((item) => (
-                    <View
-                      key={item.project_id}
-                      className="w-[150px] h-[150px] mt-4"
-                    >
-                      <ProjectCard
-                        project_id={item.project_id}
-                        project_name={item.project_name}
-                        subject={item.subject}
-                        deadline={item.deadline}
-                        members={item.members}
-                        onPress={() =>
-                          router.push(`../project/${item.project_id}/board`)
-                        }
-                      />
-                    </View>
-                  ))}
-
+                 {filteredProjects.map((item) => (
+                  <View key={item.project_id}className="w-[150px] h-[150px] mt-4">
+                    <ProjectCard
+                    project_id={item.project_id}
+                    project_name={item.project_name}
+                    subject={item.subject}
+                    deadline={item.deadline}
+                    members={item.members}
+                    onPress={() =>
+                      router.push(`../project/${item.project_id}/dashBoard`)
+                      }/>
+                      </View>
+                    ))}
                 </View>
               </ScrollView>
             </View>

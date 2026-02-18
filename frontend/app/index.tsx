@@ -1,22 +1,28 @@
-import { Link } from "expo-router";
-import { Text, View } from "react-native";
-import Auth from "../components/Auth"
-export default function Index() {
-  return (
-   <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-xl font-bold text-blue-500">
-        Welcome to Nativewind!
-      </Text>
+// import { Link } from "expo-router";
+// import { Text, View } from "react-native";
+// import Auth from "../components/Auth"
+// export default function Index() {
+//   return (
+//    <View className="flex-1 items-center justify-center bg-white">
+//       <Text className="text-xl font-bold text-blue-500">
+//         Welcome to Nativewind!
+//       </Text>
 
-      <Auth />
-      <Link href="/(home)/create_project">create project</Link>
-      <Link href="/(authen)/login">LOGIN</Link>
-      <Link href="/(home)/homepage">HOMEPAGE</Link>
-      <Link href="/project/:projectId/board">board</Link>
-      <Link href="/project/:projectId/chat">chat</Link>
-      <Link href="/project/[projectId]/dashBoard">dashboard</Link>
-      <Link href="/project/:projectId/setting">setting</Link>
-    </View>
+//       <Auth />
+//       <Link href="/(home)/create_project">create project</Link>
+//       <Link href="/(authen)/login">LOGIN</Link>
+//       <Link href="/(home)/homepage">HOMEPAGE</Link>
+//       <Link href="/project/:projectId/board">board</Link>
+//       <Link href="/project/:projectId/chat">chat</Link>
+//       <Link href="/project/[projectId]/dashBoard">dashboard</Link>
+//       <Link href="/project/:projectId/setting">setting</Link>
+//     </View>
     
-  );
+//   );
+// }
+
+import { Redirect } from "expo-router";
+
+export default function Index() {
+  return <Redirect href="/(authen)/login" />;
 }
