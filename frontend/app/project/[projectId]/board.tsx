@@ -92,13 +92,6 @@ export default function BoardScreen() {
   const [chatVisible, setChatVisible] = useState(false);
   const [tasks, setTasks] = useState<any[]>([])
 
-  // element: fonts
-  const [fontsLoaded] = useFonts({
-    kanitMedium: require("../../../assets/fonts/Kanit-Medium.ttf"),
-    kanitRegular: require("../../../assets/fonts/KanitRegular.ttf"),
-  });
-
-  if (!fontsLoaded) return null;
 
   // function setModalVisible(arg0: boolean): void {
   //   throw new Error("Function not implemented.");
