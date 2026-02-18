@@ -83,19 +83,18 @@ const users = [1, 2, 3]; // mock
 
 export default function BoardScreen() {
 
-  const { projectId } = useLocalSearchParams<{ projectId: string }>();
-
-  const projectID = Number(projectId);
-
   const [modalVisible, setModalVisible] = useState(false);
   const [tabBarVisible, setTabBarVisible] = useState(false);
   const [chatVisible, setChatVisible] = useState(false);
   const [tasks, setTasks] = useState<any[]>([])
 
-
   // function setModalVisible(arg0: boolean): void {
   //   throw new Error("Function not implemented.");
   // }
+
+    const { projectId } = useLocalSearchParams<{ projectId: string }>();
+
+  const projectID = Number(projectId);
 useEffect(() => {
 
   const fetchTask = async () => {
@@ -300,6 +299,7 @@ useEffect(() => {
       <TabBar
         visible={tabBarVisible}
         onClose={() => setTabBarVisible(false)}
+        projectId={projectID}
       />
 
       <ProjectChatModal

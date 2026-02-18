@@ -13,8 +13,13 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { icons } from "@/constants/icons";
 import TabBar from "@/components/tabBar";
+import { useLocalSearchParams } from "expo-router";
 
 export default function setting() {
+
+    const { projectId } = useLocalSearchParams<{ projectId: string }>();
+    const projectID = Number(projectId)
+    
   const [projectName, setProjectName] = useState("Apple Jack");
 
   const [deadline, setDeadline] = useState<Date | null>(new Date("2026-02-11"));
@@ -68,6 +73,7 @@ export default function setting() {
       <TabBar
         visible={tabBarVisible}
         onClose={() => setTabBarVisible(false)}
+        projectId={projectID}
       />
 
       {/* Form */}

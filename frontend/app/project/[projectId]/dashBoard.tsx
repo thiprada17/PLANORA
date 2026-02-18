@@ -24,6 +24,7 @@ export default function DashBoard() {
   };
 
   const { projectId } = useLocalSearchParams<{ projectId: string }>();
+  const projectID = Number(projectId)
   const [project, setProject] = useState<any>(null);
   const [stats, setStats] = useState({
   overdue: 0,
@@ -75,7 +76,9 @@ const [members, setMembers] = useState<any[]>([]);
       <ScrollView showsVerticalScrollIndicator={false}>
 
         <View className="flex-col items-right px-6 pt-4 mb-2">
-          <TouchableOpacity onPress={() => setOpenTab(true)}>
+          <TouchableOpacity 
+            onPress={() => setOpenTab(true)} 
+            >
             <Image source={icons.menu} className="w-6 h-6" />
           </TouchableOpacity>
           <Text className="text-[36px] font-kanitBold">{project?.project_name ?? "Loading..."}</Text>
@@ -142,6 +145,7 @@ const [members, setMembers] = useState<any[]>([]);
       <TabBar
         visible={openTab}
         onClose={() => setOpenTab(false)}
+        projectId={projectID}
       />
     </SafeAreaView>
   );

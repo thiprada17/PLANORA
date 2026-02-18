@@ -33,9 +33,10 @@ const Icon = ({
 type TabBarProps = {
     visible: boolean;
     onClose: () => void;
+    projectId: number
 };
 
-export default function TabBar({ visible, onClose }: TabBarProps) {
+export default function TabBar({ visible, onClose , projectId}: TabBarProps) {
     const router = useRouter();
     const [user, setUser] = useState<{
         name: string | null;
@@ -129,19 +130,21 @@ export default function TabBar({ visible, onClose }: TabBarProps) {
                                     <TreeItem icon="dashboard" label="Dashboard" 
                                     onPress={() => {
                                 onClose();
-                                router.push("/project/[projectId]/dashBoard");
+
+                                
+                                router.push(`/project/${projectId}/dashBoard`);
                             }} />
                                     <TreeItem icon="board" label="Board" onPress={() => {
                                 onClose();
-                                router.push("/project/[projectId]/board");
+                                router.push(`/project/${projectId}/board`);
                             }}/>
                                     <TreeItem icon="chat" label="Chat" onPress={() => {
                                 onClose();
-                                router.push("/project/[projectId]/board");
+                           router.push(`/project/${projectId}/board`);
                             }} />
                                     <TreeItem icon="settings" label="Setting" isLast onPress={() => {
                                 onClose();
-                                router.push("/project/[projectId]/setting");
+                               router.push(`/project/${projectId}/setting`);
                             }} />
                                 </View>
                             </View>

@@ -402,9 +402,7 @@ const filteredProjects = projects.filter((project) => {
                     deadline={item.deadline}
                     members={item.members}
                     onPress={() =>
-                      router.push({
-                        pathname: "/project/[projectId]/dashBoard",
-                        params: { projectId: item.project_id },})
+                      router.push(`../project/${item.project_id}/dashBoard`)
                       }/>
                       </View>
                     ))}

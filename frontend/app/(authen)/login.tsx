@@ -5,7 +5,8 @@ import {
     Animated,
     Dimensions,
     useColorScheme,
-    TextInput
+    TextInput,
+    Image
 } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useFonts } from 'expo-font';
@@ -14,6 +15,7 @@ import Auth from "../../components/Auth"
 import { router } from 'expo-router';
 const screenHeight = Dimensions.get('window').height;
 import Loading from '../../components/loading';
+import { icons } from "@/constants/icons";
 
 export default function Index() {
     const [isSignupOpen, setIsSignupOpen] = useState(false);
@@ -102,9 +104,8 @@ export default function Index() {
                 className="items-center justify-center"
                 style={{ height: screenHeight * 0.26 }}
             >
-                <Text className="font-kanitBold text-[30px]">
-                    Plandora
-                </Text>
+
+                <Image source={icons.logo} className='w-[80%] h-10'/>
             </View>
 
             {/*Card*/}
