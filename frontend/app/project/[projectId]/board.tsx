@@ -104,7 +104,6 @@ export default function BoardScreen() {
   //   throw new Error("Function not implemented.");
   // }
 useEffect(() => {
-  if (!projectID) return;
 
   const fetchTask = async () => {
     try {
@@ -136,6 +135,8 @@ useEffect(() => {
 
   fetchTask();
 }, [projectID]);
+
+  if (!projectID) return;
 
 
 
