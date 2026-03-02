@@ -363,6 +363,8 @@ const handleSubmit = async () => {
                 onPress={() => {
                   handleSubmit()
                   console.log("Create project:", project);
+                      router.replace('/homepage')
+    
                 }}
               >
                 <Text
