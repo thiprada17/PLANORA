@@ -99,62 +99,62 @@ export default function CreateProject() {
       const formattedDate = `${year}-${month}-${day}`;
       setProject({ ...project, deadline: formattedDate });
     }
-};
+  };
 
   const readytocreate = !(project.project_name.trim() == "") && project.deadline !== "" && project.subject !== "" && (project.member.length > 0)
 
   if (!fonts) return null;
 
 
- const handleAddMember = async () => {
-  const email = emailInput.trim();
-  if (!email) return;
+  const handleAddMember = async () => {
+    const email = emailInput.trim();
+    if (!email) return;
 
-  try {
-    setIsSearching(true);
-    const memsearch = await searchMember(email);
+    try {
+      setIsSearching(true);
+      const memsearch = await searchMember(email);
 
-    if (!memsearch?.found) {
-      setIsSearching(false); //ปิดก่อน
-      setTimeout(() => {
-      alert("user not found");
-      }, 100); //ให้ปิด loading ก่อน alert
-      return;
-    }
+      if (!memsearch?.found) {
+        setIsSearching(false); //ปิดก่อน
+        setTimeout(() => {
+          alert("user not found");
+        }, 100); //ให้ปิด loading ก่อน alert
+        return;
+      }
 
-    const user_id = memsearch.user_id;
+      const user_id = memsearch.user_id;
 
-    if (project.member.some(m => m.id === user_id)) {
-      setIsSearching(false);
+      if (project.member.some(m => m.id === user_id)) {
+        setIsSearching(false);
+        setEmailInput("");
+        return;
+      }
+
+      setProject(prev => ({
+        ...prev,
+        member: [
+          ...prev.member,
+          {
+            id: memsearch.user_id,
+            name: memsearch.username,
+            email: memsearch.email
+          }
+        ]
+      }));
+
       setEmailInput("");
-      return;
+
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsSearching(false);
     }
-
-    setProject(prev => ({
-      ...prev,
-      member: [
-        ...prev.member,
-        {
-          id: memsearch.user_id,
-          name: memsearch.username,
-          email: memsearch.email
-        }
-      ]
-    }));
-
-    setEmailInput("");
-
-  } catch (err) {
-    console.log(err);
-  } finally {
-    setIsSearching(false);
-  }
-};
+  };
 
   const searchMember = async (email: string) => {
     try {
       const res = await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/search/member', {
-      // const res = await fetch('http://192.168.1.141:3000/search/member', {
+        // const res = await fetch('http://192.168.1.141:3000/search/member', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -169,227 +169,226 @@ export default function CreateProject() {
     }
   }
 
-const handleSubmit = async () => {
-  console.log("yes")
-  const userId = await AsyncStorage.getItem('userId');
-  try {
-    await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/create/post', {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(project)
-    })
+  const handleSubmit = async () => {
+    console.log("yes")
+    const userId = await AsyncStorage.getItem('userId');
+    try {
+      await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/create/post', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(project)
+      })
 
-    alert('yayy')
-  } catch (error) {
-    console.log(error)
+      alert('yayy')
+    } catch (error) {
+      console.log(error)
+    }
   }
-}
 
   return (
     <View className="flex-1 pt-[50px]">
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="flex-1 bg-neutral-100 items-center pt-[50px]">
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View className="flex-1 bg-neutral-100 items-center pt-[50px]">
 
-        <Text className="font-kanitBold text-xl color-BLACK mb-7">CREATE PROJECT</Text>
-
-
-        <View className="w-[90%] min-h-[280px] bg-white border border-neutral-900 rounded-2xl mt-2 px-6 py-6 shadow-sm">
-
-          <View className="flex-row justify-center items-start mt-2 mb-8">
+          <Text className="font-kanitBold text-xl color-BLACK mb-7">CREATE PROJECT</Text>
 
 
-            <View className="flex-row items-center">
-              <View className={getStepCircleStyle(step, 1)}>
-                <Image source={icons.folder} className="w-5 h-5" />
+          <View className="w-[90%] min-h-[280px] bg-white border border-neutral-900 rounded-2xl mt-2 px-6 py-6 shadow-sm">
+
+            <View className="flex-row justify-center items-start mt-2 mb-8">
+              <View className="flex-row items-center">
+                <View className={getStepCircleStyle(step, 1)}>
+                  <Image source={icons.folder} className="w-5 h-5" />
+                </View>
+                <View className={getLineStyle(step, 1)} />
               </View>
-              <View className={getLineStyle(step, 1)} />
-            </View>
-
-            <View className="flex-row items-center">
-              <View className={getStepCircleStyle(step, 2)}>
-                <Image source={icons.deadline} className="w-5 h-5" />
-              </View>
-              <View className={getLineStyle(step, 2)} />
-            </View>
-
-            <View className="flex-row items-center">
-              <View className={getStepCircleStyle(step, 3)}>
-                <Image source={icons.topic} className="w-5 h-5" />
-              </View>
-              <View className={getLineStyle(step, 3)} />
-            </View>
-
-            <View className={getStepCircleStyle(step, 4)}>
-              <Image source={icons.person_add} className="w-5 h-5" />
-            </View>
-
-          </View>
-
-          <View className="flex-1 justify-start pt-3">
-            {step == 1 && <View>
-              <Text className="font-kanitRegular color-BLACK mb-2">
-                Project Name
-              </Text>
-
-              <View className="flex-row">
-                <TextInput
-                  placeholder="JerseyJamTU"
-                  className="font-kanitRegular border rounded-xl px-4 py-3 color-neutral-700 border-neutral-300 w-[85%]"
-                  value={project.project_name}
-                  onChangeText={(text) =>
-                    setProject({ ...project, project_name: text })
-                  }
-                />
-                <CheckButton nothaveinput={project.project_name.trim().length == 0} />
-              </View>
-            </View>
-
-            }
-            {step == 2 && <View>
-              <Text className="font-kanitRegular color-BLACK mb-2">Deadline</Text>
 
               <View className="flex-row items-center">
-                <Pressable
-                  onPress={() => setShowPicker(true)}
-                  className="flex-row items-center border rounded-xl px-4 py-3 color-neutral-700 border-neutral-300 w-[85%] bg-white justify-between"
-                >
-                  <Text className={`font-kanitRegular ${project.deadline ? 'text-black' : 'text-neutral-400'}`} >
-                    {project.deadline || "DD/MM/YY"}
-                  </Text>
-
-                  <Image source={icons.calendar} className="w-5 h-5 opacity-50" />
-                </Pressable>
-                <CheckButton nothaveinput={!project.deadline} />
-
+                <View className={getStepCircleStyle(step, 2)}>
+                  <Image source={icons.deadline} className="w-5 h-5" />
+                </View>
+                <View className={getLineStyle(step, 2)} />
               </View>
 
-              {showPicker && (
-                <DateTimePicker
-                  value={new Date()}
-                  mode="date"
-                  display="default"
-                  onChange={onDateChange}
-                />
-              )}
-            </View>}
-            {step == 3 && <View>
-              <Text className="font-kanitRegular color-BLACK mb-2">
-                Subject
-              </Text>
+              <View className="flex-row items-center">
+                <View className={getStepCircleStyle(step, 3)}>
+                  <Image source={icons.topic} className="w-5 h-5" />
+                </View>
+                <View className={getLineStyle(step, 3)} />
+              </View>
 
-              <View className="flex-row items-center" style={{ zIndex: 1000 }}>
-                <View className="w-[85%] ">
-                  <DropDownPicker
-                    style={{
-                      borderColor: "#d4d4d8",
-                      borderRadius: 12,
-                      minHeight: 43,
+              <View className={getStepCircleStyle(step, 4)}>
+                <Image source={icons.person_add} className="w-5 h-5" />
+              </View>
 
-                    }}
-                    dropDownContainerStyle={{
-                      borderColor: "#d4d4d8",
-                      borderRadius: 12,
-                    }}
-                    textStyle={{
-                      fontFamily: "KanitRegular",
-                      color: "#404040",
-                    }}
-                    placeholderStyle={{
-                      color: "#A3A3A3",
-                      fontFamily: "KanitRegular",
-                    }}
-                    open={open}
-                    value={value}
-                    items={items}
-                    setOpen={setOpen}
-                    setValue={setValue}
-                    setItems={setItems}
-                    placeholder="SFXXX"
-                    onChangeValue={(val) => {
-                      if (val) setProject({ ...project, subject: val });
-                    }}
-                    listMode="SCROLLVIEW"
+            </View>
+
+            <View className="flex-1 justify-start pt-3">
+              {step == 1 && <View>
+                <Text className="font-kanitRegular color-BLACK mb-2">
+                  Project Name
+                </Text>
+
+                <View className="flex-row">
+                  <TextInput
+                    placeholder="JerseyJamTU"
+                    className="font-kanitRegular border rounded-xl px-4 py-3 color-neutral-700 border-neutral-300 w-[85%]"
+                    value={project.project_name}
+                    onChangeText={(text) =>
+                      setProject({ ...project, project_name: text })
+                    }
                   />
+                  <CheckButton nothaveinput={project.project_name.trim().length == 0} />
+                </View>
+              </View>
+
+              }
+              {step == 2 && <View>
+                <Text className="font-kanitRegular color-BLACK mb-2">Deadline</Text>
+
+                <View className="flex-row items-center">
+                  <Pressable
+                    onPress={() => setShowPicker(true)}
+                    className="flex-row items-center border rounded-xl px-4 py-3 color-neutral-700 border-neutral-300 w-[85%] bg-white justify-between"
+                  >
+                    <Text className={`font-kanitRegular ${project.deadline ? 'text-black' : 'text-neutral-400'}`} >
+                      {project.deadline || "DD/MM/YY"}
+                    </Text>
+
+                    <Image source={icons.calendar} className="w-5 h-5 opacity-50" />
+                  </Pressable>
+                  <CheckButton nothaveinput={!project.deadline} />
 
                 </View>
-                <CheckButton nothaveinput={!project.subject} />
-              </View>
-            </View>
-            }
-            {step == 4 && <View className="flex-1">
 
-              <Text className="font-kanitRegular color-BLACK mb-2">Add member (Email)</Text>
-
-              <View className="flex-row flex-wrap items-center border rounded-xl p-2 border-neutral-300 bg-white max-h-[60px]">
-                <ScrollView
-                  contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}
-                  showsVerticalScrollIndicator={true}
-                >
-                  {project.member.map((mail, index) => (
-                    <View
-                      key={index}
-                      className="flex-row items-center bg-[#EBEBEB] px-2 py-1 rounded-md mr-2 my-1"
-                    >
-                      <Text className="font-kanitRegular text-[12px] mr-1">{mail.name}</Text>
-                      <Pressable onPress={() => setProject({
-                        ...project,
-                        member: project.member.filter((_, i) => i !== index),
-                      })}>
-                        <Text className="text-red-500 font-bold ml-1">×</Text>
-                      </Pressable>
-                    </View>
-                  ))}
-
-                  <TextInput
-                    placeholder={project.member.length === 0 ? "example@mail.com" : ""}
-                    className="font-kanitRegular color-neutral-700 flex-1 min-w-[100px]"
-                    value={emailInput}
-                    onChangeText={setEmailInput}
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    onSubmitEditing={handleAddMember}
-                    blurOnSubmit={false}
+                {showPicker && (
+                  <DateTimePicker
+                    value={new Date()}
+                    mode="date"
+                    display="default"
+                    onChange={onDateChange}
                   />
-
-                </ScrollView>
-              </View>
-
-
-              <Text className="text-[10px] text-neutral-400 mt-1">* Enter to add email</Text>
-
-              <Pressable
-                className={`mb-7 px-6 py-3 pt-2 h-[30px] mt-5 rounded-xl items-center ${readytocreate ? "bg-GREEN" : ""}`}
-                disabled={!readytocreate}
-                onPress={() => {
-                  handleSubmit()
-                  console.log("Create project:", project);
-                      router.replace('/homepage')
-    
-                }}
-              >
-                <Text
-                  className={`font-kanitBold text-[10px] ${readytocreate ? "text-BLACK" : "text-neutral-500"}`}>
-                  {readytocreate ? "CREATE PROJECT" : ""}
+                )}
+              </View>}
+              {step == 3 && <View>
+                <Text className="font-kanitRegular color-BLACK mb-2">
+                  Subject
                 </Text>
-              </Pressable>
+
+                <View className="flex-row items-center" style={{ zIndex: 1000 }}>
+                  <View className="w-[85%] ">
+                    <DropDownPicker
+                      style={{
+                        borderColor: "#d4d4d8",
+                        borderRadius: 12,
+                        minHeight: 43,
+
+                      }}
+                      dropDownContainerStyle={{
+                        borderColor: "#d4d4d8",
+                        borderRadius: 12,
+                      }}
+                      textStyle={{
+                        fontFamily: "KanitRegular",
+                        color: "#404040",
+                      }}
+                      placeholderStyle={{
+                        color: "#A3A3A3",
+                        fontFamily: "KanitRegular",
+                      }}
+                      open={open}
+                      value={value}
+                      items={items}
+                      setOpen={setOpen}
+                      setValue={setValue}
+                      setItems={setItems}
+                      placeholder="SFXXX"
+                      onChangeValue={(val) => {
+                        if (val) setProject({ ...project, subject: val });
+                      }}
+                      listMode="SCROLLVIEW"
+                    />
+
+                  </View>
+                  <CheckButton nothaveinput={!project.subject} />
+                </View>
+              </View>
+              }
+              {step == 4 && <View className="flex-1">
+
+                <Text className="font-kanitRegular color-BLACK mb-2">Add member (Email)</Text>
+
+                <View className="flex-row flex-wrap items-center border rounded-xl p-2 border-neutral-300 bg-white max-h-[60px]">
+                  <ScrollView
+                    contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}
+                    showsVerticalScrollIndicator={true}
+                  >
+                    {project.member.map((mail, index) => (
+                      <View
+                        key={index}
+                        className="flex-row items-center bg-[#EBEBEB] px-2 py-1 rounded-md mr-2 my-1"
+                      >
+                        <Text className="font-kanitRegular text-[12px] mr-1">{mail.name}</Text>
+                        <Pressable onPress={() => setProject({
+                          ...project,
+                          member: project.member.filter((_, i) => i !== index),
+                        })}>
+                          <Text className="text-red-500 font-bold ml-1">×</Text>
+                        </Pressable>
+                      </View>
+                    ))}
+
+                    <TextInput
+                      placeholder={project.member.length === 0 ? "example@mail.com" : ""}
+                      className="font-kanitRegular color-neutral-700 flex-1 min-w-[100px]"
+                      value={emailInput}
+                      onChangeText={setEmailInput}
+                      autoCapitalize="none"
+                      keyboardType="email-address"
+                      onSubmitEditing={handleAddMember}
+                      blurOnSubmit={false}
+                    />
+
+                  </ScrollView>
+                </View>
+
+
+                <Text className="text-[10px] text-neutral-400 mt-1">* Enter to add email</Text>
+
+                <Pressable
+                  className={`mb-7 px-6 py-3 pt-2 h-[30px] mt-5 rounded-xl items-center ${readytocreate ? "bg-GREEN" : ""}`}
+                  disabled={!readytocreate}
+                  onPress={() => {
+                    handleSubmit()
+                    console.log("Create project:", project);
+                    router.replace('/homepage')
+
+                  }}
+                >
+                  <Text
+                    className={`font-kanitBold text-[10px] ${readytocreate ? "text-BLACK" : "text-neutral-500"}`}>
+                    {readytocreate ? "CREATE PROJECT" : ""}
+                  </Text>
+                </Pressable>
+              </View>
+              }
             </View>
 
-
-            }
+            <Pressable
+              className="w-5 absolute top-4 left-4"
+              onPress={() => {
+                if (step > 1) {
+                  setStep(step - 1);
+                } else { router.replace('/homepage'); }
+              }}
+            >
+              <Image source={icons.back} className="w-4 h-4" />
+            </Pressable>
           </View>
 
-          <Pressable
-            className="w-5 absolute top-4 left-4"
-            onPress={() => step > 1 && setStep(step - 1)}
-          >
-            <Image source={icons.back} className="w-4 h-4" />
-          </Pressable>
-        </View>
-
-
-      </View >
-    </TouchableWithoutFeedback>
-    <LoadingCreate visible={isSearching} />
-</View>
+        </View >
+      </TouchableWithoutFeedback>
+      <LoadingCreate visible={isSearching} />
+    </View>
   );
 }
