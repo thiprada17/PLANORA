@@ -32,6 +32,8 @@ import face from "@/assets/icons/face.png";
 import delete_forever from "@/assets/icons/delete_forever.png";
 import download from "@/assets/icons/download.png";
 import logo from "@/assets/icons/logoja.png";
+import bookmark from "@/assets/icons/bookmark.png"
+import calenCircle from "@/assets/icons/calenCircle.png"
 
 export const icons = {
   deadline,
@@ -66,5 +68,7 @@ export const icons = {
   face,
   delete_forever,
   download,
-  logo
+  logo,
+  bookmark,
+  calenCircle
 };

@@ -8,14 +8,15 @@ import {
   Image,
   Dimensions, Pressable,
 } from "react-native";
-import { useFonts } from "expo-font";
 import { useState } from "react";
 import CreateTaskModal from "@/components/task/create_task";
 import ProjectChatModal from "@/components/chat/project_chat";
 import { icons } from "@/constants/icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Stack } from "expo-router";
 import TabBar from "@/components/tabBar";
+import BoardBar from "@/components/board/boardBar";
+import KanbanBoard from "@/components/board/kanbanBoard";
+import CalendarBoard from "@/components/board/calendarBoard";
 
 import { useLocalSearchParams } from "expo-router";
 
@@ -87,51 +88,48 @@ export default function BoardScreen() {
   const [tabBarVisible, setTabBarVisible] = useState(false);
   const [chatVisible, setChatVisible] = useState(false);
   const [tasks, setTasks] = useState<any[]>([])
+  const [activeTab, setActiveTab] = useState<"kanban" | "todo" | "calendar">("kanban");
 
   // function setModalVisible(arg0: boolean): void {
   //   throw new Error("Function not implemented.");
   // }
 
-    const { projectId } = useLocalSearchParams<{ projectId: string }>();
+  const { projectId } = useLocalSearchParams<{ projectId: string }>();
 
   const projectID = Number(projectId);
-useEffect(() => {
+  useEffect(() => {
 
-  const fetchTask = async () => {
-    try {
-      const res = await fetch(
-        `https://freddy-unseconded-kristan.ngrok-free.dev/get/task/${projectID}`
-      );
+    const fetchTask = async () => {
+      try {
+        // const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/get/task/${projectID}`);
+        const res = await fetch(`http://192.168.1.154:3000/get/task/${projectID}`);
 
-      if (!res.ok) {
-        throw new Error("Network response not ok");
-      }
+        if (!res.ok) {
+          throw new Error("Network response not ok");
+        }
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (Array.isArray(data)) {
-        setTasks(data);
-      } else if (Array.isArray(data.tasks)) {
-        setTasks(data.tasks);
-      } else {
+        if (Array.isArray(data)) {
+          setTasks(data);
+        } else if (Array.isArray(data.tasks)) {
+          setTasks(data.tasks);
+        } else {
+          setTasks([]);
+        }
+
+        console.log(data)
+
+      } catch (err) {
+        console.log("Fetch error:", err);
         setTasks([]);
       }
+    };
 
-      console.log(data)
-
-    } catch (err) {
-      console.log("Fetch error:", err);
-      setTasks([]);
-    }
-  };
-
-  fetchTask();
-}, [projectID]);
+    fetchTask();
+  }, [projectID]);
 
   if (!projectID) return;
-
-
-
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -163,139 +161,28 @@ useEffect(() => {
       </View>
 
       {/* Tab */}
-      <View className="flex-row items-center justify-between mx-6 mt-4 mb-6 px-5 py-2 border border-[#8E8E8E] rounded-xl bg-[#F0F0F0]">
-        <View className="flex-row items-center justify-center gap-2">
-          {/* <Icon name="kanban" size={18} /> */}
-          <Text className="font-kanitMedium text-xl">Kanban</Text>
-        </View>
-
-        <Pressable className="border border-[#8E8E8E] rounded-2xl px-2 py-2 bg-[#F0F0F0]">
-          <Icon name="filter" size={17} />
-        </Pressable>
-      </View>
-
-      {/* Board */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={true}
-        contentContainerStyle={styles.board}
-      >
-        {Column.map((col) => {
-          const columnTasks = tasks.filter(
-            (task) => task.status === col.id
-          );
-
-          return (
-
-            <View
-              key={col.id}
-              style={{
-                shadowColor: "#000",
-                shadowOpacity: 0.5,
-                shadowRadius: 2,
-                shadowOffset: { width: 0, height: 2 },
-              }}
-              className="w-[210px] h-[540px] mr-7 mx p-4 rounded-2xl border border-neutral-400 bg-[#CAEAD5]">
-
-              {/* Column Header */}
-              <View className="flex-row items-center justify-between">
-                <Text className="font-kanitMedium text-xl">{col.title}</Text>
-
-                <View className="flex-row gap-1">
-                  <TouchableOpacity className="border border-black rounded-md px-2 py-2 mx-1 my-1 mt-4 mb-3 bg-white">
-                    <Icon name="custom_pen" size={15} />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity className="border border-black rounded-md px-2 py-2 mt-4 mb-3 bg-[#F07166]">
-                    <Icon name="delete" size={15} />
-                  </TouchableOpacity>
-                </View>
-              </View>
-              <View className="h-[1.5px] bg-black my-3 mt-2" />
-              {/* Cards */}
-              <ScrollView
-                showsVerticalScrollIndicator={false}
-                nestedScrollEnabled
-                style={{ flexGrow: 0 }}
-              >
-                {columnTasks.map((task) => (
-                  <View
-                    key={task.id}
-                    style={{
-                      shadowColor: "#000",
-                      shadowOpacity: 0.6,
-                      shadowRadius: 2,
-                      shadowOffset: { width: 0, height: 2 },
-                    }}
-                    className="mb-3 rounded-3xl border border-black bg-[#F0F0F0] pt-1.5 pb-1 px-1 "
-                  >
-                    <View
-                      style={{
-                        shadowColor: "#000",
-                        shadowOpacity: 0.25,
-                        shadowRadius: 4,
-                        shadowOffset: { width: 0, height: 3 },
-                        elevation: 4,
-                      }}
-                      className="mt-4 rounded-3xl border border-black bg-white">
-                      <Text className="font-kanitMedium text-xl mt-7 mx-2 px-2">
-                    {task.task_name ?? "Untitled Task"}
-
-                      </Text>
-
-                      <View className="flex-row items-center gap-1 mb-5 mx-2 px-2 ">
-                        <View className="border border-black rounded-full p-1 bg-white">
-                          {/* <Icon name="date" size={8} /> */}
-                        </View>
-                        <Text className="font-kanitRegular text-xs text-black">
-                          {task.deadline ?? "-"}
-                        </Text>
-                      </View>
-
-                      <Text className="font-kanitRegular text-xs text-black mx-2 mb-2 px-2">
-                        Assign to
-                      </Text>
-
-                     <View className="flex-row items-center mx-3 mb-5">
-  {task.task_assign?.map((user: any, i: number) => (
-    <View
-      key={user.user_id}
-      style={{
-        shadowColor: "#000",
-        shadowOpacity: 0.4,
-        shadowRadius: 2,
-        shadowOffset: { width: 0, height: 2 },
-      }}
-      className={`${i !== 0 ? "-ml-3" : ""}`}
-    >
-      <Image
-        source={{ uri: user.avatar_url }}
-        style={{
-          width: 28,
-          height: 28,
-          borderRadius: 14,
-          borderWidth: 1.5,
-          borderColor: "black",
-        }}
+      <BoardBar
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        onFilterPress={() => console.log("filter")}
       />
-    </View>
-  ))}
-</View>
-
-                    </View>
-                  </View>
-                ))}
-
-                {/* Add task */}
-                <TouchableOpacity className="flex-row items-center gap-2 mt-2"
-                  onPress={() => setModalVisible(true)}
-                >
-                  <Text className="font-kanitMedium text-md">+ Add Task</Text>
-                </TouchableOpacity>
-              </ScrollView>
-            </View>
-          )})}
-      </ScrollView>
+      {/* kanban */}
+      {activeTab === "kanban" && (
+        <KanbanBoard
+          tasks={tasks}
+          setModalVisible={setModalVisible}
+        />
+      )}
+      {/* todo */}
+      {activeTab === "todo" && (
+        <View className="mx-6 mt-4">
+          <Text className="font-kanitMedium text-xl">Todo List</Text>
+        </View>
+      )}
+      {/* calendar */}
+      {activeTab === "calendar" && (
+        <CalendarBoard />
+      )}
       <TabBar
         visible={tabBarVisible}
         onClose={() => setTabBarVisible(false)}
@@ -326,18 +213,3 @@ useEffect(() => {
   );
 }
 
-const styles = StyleSheet.create({
-  board: {
-    marginHorizontal: spacing.lg,
-    alignItems: "flex-start",
-  },
-  fab: {
-    position: "absolute",
-    bottom: 24,
-    right: 24,
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-  },
-});
