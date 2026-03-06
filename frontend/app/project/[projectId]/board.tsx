@@ -181,7 +181,7 @@ export default function BoardScreen() {
       )}
       {/* calendar */}
       {activeTab === "calendar" && (
-        <CalendarBoard />
+        <CalendarBoard tasks={tasks} />
       )}
       <TabBar
         visible={tabBarVisible}
