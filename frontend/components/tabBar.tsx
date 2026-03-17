@@ -36,7 +36,7 @@ type TabBarProps = {
     projectId: number
 };
 
-export default function TabBar({ visible, onClose , projectId}: TabBarProps) {
+export default function TabBar({ visible, onClose, projectId }: TabBarProps) {
     const router = useRouter();
     const [user, setUser] = useState<{
         name: string | null;
@@ -108,11 +108,11 @@ export default function TabBar({ visible, onClose , projectId}: TabBarProps) {
                         </View>
                         {/* Menu */}
                         <View className="space-y-6">
-                            <Pressable className="flex-row items-center space-x-3 mb-3" 
-                            onPress={() => {
-                                onClose();
-                                router.push("/(home)/homepage");
-                            }}>
+                            <Pressable className="flex-row items-center space-x-3 mb-3"
+                                onPress={() => {
+                                    onClose();
+                                    router.push("/(home)/homepage");
+                                }}>
                                 <Icon name="home_garden" size={23} />
                                 <Text className="text-[18px] font-kanitMedium ml-2">
                                     {user.name ?? "Guest"}'s Homepage
@@ -127,25 +127,25 @@ export default function TabBar({ visible, onClose , projectId}: TabBarProps) {
                                     </Text>
                                 </View>
                                 <View className="ml-0 mt-1.5">
-                                    <TreeItem icon="dashboard" label="Dashboard" 
-                                    onPress={() => {
-                                onClose();
+                                    <TreeItem icon="dashboard" label="Dashboard"
+                                        onPress={() => {
+                                            onClose();
 
-                                
-                                router.push(`/project/${projectId}/dashBoard`);
-                            }} />
+
+                                            router.push(`/project/${projectId}/dashBoard`);
+                                        }} />
                                     <TreeItem icon="board" label="Board" onPress={() => {
-                                onClose();
-                                router.push(`/project/${projectId}/board`);
-                            }}/>
+                                        onClose();
+                                        router.push(`/project/${projectId}/board`);
+                                    }} />
                                     <TreeItem icon="chat" label="Chat" onPress={() => {
-                                onClose();
-                           router.push(`/project/${projectId}/board`);
-                            }} />
+                                        onClose();
+                                        router.push(`/project/${projectId}/voice_call`);
+                                    }} />
                                     <TreeItem icon="settings" label="Setting" isLast onPress={() => {
-                                onClose();
-                               router.push(`/project/${projectId}/setting`);
-                            }} />
+                                        onClose();
+                                        router.push(`/project/${projectId}/setting`);
+                                    }} />
                                 </View>
                             </View>
                         </View>
@@ -177,15 +177,15 @@ export default function TabBar({ visible, onClose , projectId}: TabBarProps) {
 }
 
 function TreeItem({
-  icon,
-  label,
-  isLast = false,
-  onPress,
+    icon,
+    label,
+    isLast = false,
+    onPress,
 }: {
-  icon: keyof typeof icons;
-  label: string;
-  isLast?: boolean;
-  onPress?: () => void;
+    icon: keyof typeof icons;
+    label: string;
+    isLast?: boolean;
+    onPress?: () => void;
 }) {
     return (
         <View className="flex-row h-10">
