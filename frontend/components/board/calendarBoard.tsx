@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { View, Text, Pressable, Modal } from "react-native";
+import { View, Text, Pressable, Modal, Dimensions } from "react-native";
 
 type Task = {
     id: string;
@@ -42,23 +42,44 @@ export default function CalendarBoard({ tasks }: Props) {
         setCurrentDate(newDate);
     };
 
+    const SCREEN_WIDTH = Dimensions.get("window").width;
+    const CALENDAR_PADDING = 48 + 32; // กะๆ ก่อน
+    const CELL_WIDTH = (SCREEN_WIDTH - CALENDAR_PADDING) / 7;
+
     const calendarTasks = useMemo(() => {
         return tasks.map(task => {
-            const start = new Date(task.start_date);
+            const start = task.start_date
+                ? new Date(task.start_date)
+                : new Date(task.deadline);
             const end = new Date(task.deadline);
+
+            // อันนี้กันพัง
+            if (isNaN(start.getTime()) || isNaN(end.getTime())) return null;
+            if (start > end) return null;
+
+            if (
+                start.getMonth() !== month &&
+                end.getMonth() !== month
+            ) return null;
+
             const startDay = start.getDate();
-            const endDay = end.getDate();
             const span =
-                (end.getTime() - start.getTime()) /
-                (1000 * 60 * 60 * 24) + 1
+                Math.floor(
+                    (end.getTime() - start.getTime()) /
+                    (1000 * 60 * 60 * 24)
+                ) + 1;
 
             return {
                 ...task,
                 startDay,
-                span: endDay - startDay + 1
+                span
             };
-        });
-    }, [tasks]);
+        }).filter(
+            (task): task is Task & { startDay: number; span: number } => task !== null);
+    }, [tasks, month]);
+
+    const CELL_HEIGHT = 96;
+    const CELL_PADDING_TOP = 10;
 
     return (
         <View className="mx-6 mt-4 p-4 border rounded-2xl bg-white">
@@ -84,37 +105,71 @@ export default function CalendarBoard({ tasks }: Props) {
                     </Text>
                 ))}
             </View>
-            {/* grid */}
-            <View className="flex-row flex-wrap border border-neutral-300">
-                {cells.map((day, i) => {
-                    return (
-                        <View key={i} className="w-[14.28%] h-28 border border-neutral-200 p-1">
+=            <View className="relative">
+                {/* GRID */}
+                <View className="flex-row flex-wrap border border-neutral-300">
+                    {cells.map((day, i) => (
+                        <View
+                            key={i}
+                            className="w-[14.28%] h-24 border border-neutral-200 p-1 overflow-hidden"
+                        >
                             {day && <Text className="text-xs">{day}</Text>}
                         </View>
-                    );
-                })}
-                {/*  ไอยาวๆ */}
-                {calendarTasks.map(task => {
-                    const left = (firstDay + task.startDay - 1) * (100 / 7);
-                    return (
-                        <Pressable
-                            key={task.id}
-                            onPress={() => setSelectedTask(task)}
-                            style={{
-                                position: "absolute",
-                                left: `${left}%`,
-                                top: 40,
-                                width: `${task.span * 14.28}%`,
-                                backgroundColor: statusColor[task.status],
-                                padding: 3,
-                                borderRadius: 4
-                            }}>
-                            <Text numberOfLines={1} style={{ fontSize: 10 }}>
-                                {task.task_name}
-                            </Text>
-                        </Pressable>
-                    );
-                })}
+                    ))}
+                </View>
+
+                {/* TASK LAYER */}
+                <View style={{ position: "absolute", top: 0, left: 0, right: 0 }}>
+
+                    {calendarTasks.map((task) => {
+                        const startIndex = firstDay + task.startDay - 1;
+                        const row = Math.floor(startIndex / 7);
+                        const col = startIndex % 7;
+
+                        const maxSpan = 7 - col;
+                        const renderSpan = Math.min(task.span, maxSpan);
+
+                        // จำกัด 2 task ต่อ cell
+                        const sameCellTasks = calendarTasks.filter(t => {
+                            const idx = firstDay + t.startDay - 1;
+                            return Math.floor(idx / 7) === row && (idx % 7) === col;
+                        });
+
+                        const indexInCell = sameCellTasks.findIndex(t => t.id === task.id);
+
+                        if (indexInCell > 1) return null; // ก้ถ้าเกิน 2 ไม่แสดง
+
+                        return (
+                            <Pressable
+                                key={task.id}
+                                onPress={() => setSelectedTask(task)}
+                                style={{
+                                    position: "absolute",
+                                    left: `${col * (100 / 7)}%`,
+                                    width: `${renderSpan * (100 / 7.8)}%`,
+                                    top:
+                                        row * CELL_HEIGHT +
+                                        CELL_PADDING_TOP +
+                                        (indexInCell === 0 ? 0 : 18),
+                                    backgroundColor: "#CAEAD5",
+                                    borderWidth: 0.7,
+                                    borderColor: "#000",
+                                    height: 16,
+                                    justifyContent: "center",
+                                    paddingHorizontal: 6,
+                                    borderRadius: 6,
+                                    overflow: "hidden",
+                                    zIndex: 10,
+                                    transform: [{ translateX: 2 }],
+                                }}
+                            >
+                                <Text numberOfLines={1} style={{ fontSize: 10 }}>
+                                    {task.task_name || "Untitled"}
+                                </Text>
+                            </Pressable>
+                        );
+                    })}
+                </View>
             </View>
 
             {/* modalชั่วคราวๆ */}

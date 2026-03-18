@@ -101,8 +101,8 @@ export default function BoardScreen() {
 
     const fetchTask = async () => {
       try {
-        // const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/get/task/${projectID}`);
-        const res = await fetch(`http://192.168.1.154:3000/get/task/${projectID}`);
+        const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/get/task/${projectID}`);
+        // const res = await fetch(`http://192.168.1.154:3000/get/task/${projectID}`);
 
         if (!res.ok) {
           throw new Error("Network response not ok");
