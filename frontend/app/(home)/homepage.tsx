@@ -68,9 +68,13 @@ export default function HomePage() {
     if (!userId) return;
     try {
       const response = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`);
-      const text = await response.text()
-      const data = JSON.parse(text)
-
+      
+      if (!response.ok) {
+        const text = await response.text();
+        return;
+      }
+      
+      const data = await response.json();
       const formattedProjects = Array.isArray(data) ? data.map((p) => ({
         ...p,
         deadline: p.deadline ? new Date(p.deadline + "T00:00:00") : null,
