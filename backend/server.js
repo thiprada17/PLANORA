@@ -69,6 +69,17 @@ io.on("connection", (socket) => {
     })
 })
 
+app.get("/avatar/:username", async (req, res) => {
+    const { username } = req.params
+       const { data, error } = await supabase
+        .from("user_profile")
+        .select("avatar_url")
+        .eq("username", username)
+
+    if (error) return res.status(500).json(error);
+    res.json(data);
+})
+
 
 app.get("/chat/history/:projectId", async (req, res) => {
     const { projectId } = req.params;

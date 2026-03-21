@@ -58,8 +58,18 @@ export default function RoomPage() {
     loadUser();
   }, []);
 
-  const getUser = async () => {
+  const getUser = async (username: string) => {
     console.log('yes yes')
+        const encoded = encodeURIComponent(username);
+    try {
+      const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/avatar/${encoded}`)
+      const data = await res.json()
+
+      return data[0].avatar_url
+
+    } catch (error) {
+
+    }
   }
 
   // init Agora
@@ -78,9 +88,9 @@ export default function RoomPage() {
       eng.setEnableSpeakerphone(true);  //  บังคับให้เสียงออกลำโพง
       eng.setDefaultAudioRouteToSpeakerphone(true)  // default route = speaker
 
-      eng.setParameters('{"che.audio.enable.aec":false}') // ปิด echo cancel
-      eng.setParameters('{"che.audio.enable.ns":false}')  // ปิด noise suppression  
-      eng.setParameters('{"che.audio.enable.agc":false}')
+      // eng.setParameters('{"che.audio.enable.aec":false}') // ปิด echo cancel
+      // eng.setParameters('{"che.audio.enable.ns":false}')  // ปิด noise suppression  
+      // eng.setParameters('{"che.audio.enable.agc":false}')
 
       // เรียก enableAudioVolumeIndication ก่อน join เสมอ
       eng.enableAudioVolumeIndication(200, 3, true)
@@ -91,7 +101,8 @@ export default function RoomPage() {
 
         // ตัวเราเองเข้าห้องสำเร็จ
         onJoinChannelSuccess: (connection) => {
-          console.log("Joined channel");
+          console.log('joined user : ' + userRef.current.name)
+          getUser(userRef.current.name || "Thiprada Mopad")
           setJoinedUsers([{
             uid: MY_UID,
             name: userRef.current.name ?? "Me",
@@ -100,30 +111,35 @@ export default function RoomPage() {
         },
 
         onUserInfoUpdated: (uid, info) => {
-          setJoinedUsers(prev => {
-            const exists = prev.some(u => u.uid === uid);
-            if (exists) {
-              // อัปเดตชื่อ
-              return prev.map(u =>
-                u.uid === uid
-                  ? { ...u, name: info.userAccount ?? "User " + uid }
-                  : u
-              );
-            } else {
-              // เพิ่มใหม่เลย (กรณี fire ก่อน onUserJoined)
-              return [...prev, {
-                uid,
-                name: info.userAccount ?? "User " + uid,
-                avatar: `https://api.dicebear.com/7.x/adventurer/png?seed=${uid}`
-              }];
-            }
+          const username = info.userAccount;
+          if (!username) return;
 
-          })
+          getUser(username).then(data => {
+            setJoinedUsers(prev => {
+              const exists = prev.some(u => u.uid === uid);
+              if (exists) {
+                return prev.map(u =>
+                  u.uid === uid
+                    ? {
+                      ...u,
+                      name: username,
+                      avatar: data ?? `https://api.dicebear.com/7.x/adventurer/png?seed=${uid}`
+                    }
+                    : u
+                );
+              } else {
+                return [...prev, {
+                  uid,
+                  name: username,
+                  avatar: data ?? `https://api.dicebear.com/7.x/adventurer/png?seed=${uid}`
+                }];
+              }
+            });
+          });
         },
 
         // มีคนอื่นเข้ามา
         onUserJoined: (connection, uid) => {
-          getUser();
           console.log("User joined:", uid)
           setJoinedUsers(prev => {
             if (prev.some(u => u.uid === uid)) return prev;
