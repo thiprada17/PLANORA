@@ -33,7 +33,7 @@ export default function setting() {
   useEffect(() => {
     const fetchProject = async () => {
       const res = await fetch(
-        `http://10.120.1.11:3000/api/project/${projectID}`,
+        `https://freddy-unseconded-kristan.ngrok-free.dev/api/project/${projectID}`,
       );
       const data = await res.json();
       console.log("fetch result:", data);
@@ -52,7 +52,7 @@ export default function setting() {
   const handleSave = async () => {
     try {
       const res = await fetch(
-        `http://10.120.1.11:3000/api/project/${projectID}`,
+        `https://freddy-unseconded-kristan.ngrok-free.dev/api/project/${projectID}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -84,7 +84,7 @@ export default function setting() {
         onPress: async () => {
           try {
             const res = await fetch(
-              `http://10.120.1.11:3000/api/project/${projectID}`,
+              `https://freddy-unseconded-kristan.ngrok-free.dev/api/project/${projectID}`,
               {
                 method: "DELETE",
               },
