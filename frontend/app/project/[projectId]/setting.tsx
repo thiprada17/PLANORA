@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 import {
   View,
   Text,
@@ -13,30 +14,100 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { icons } from "@/constants/icons";
 import TabBar from "@/components/tabBar";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 
 export default function setting() {
+  const { projectId } = useLocalSearchParams<{ projectId: string }>();
+  const projectID = Number(projectId);
+  const router = useRouter();
 
-    const { projectId } = useLocalSearchParams<{ projectId: string }>();
-    const projectID = Number(projectId)
-    
-  const [projectName, setProjectName] = useState("Apple Jack");
-
-  const [deadline, setDeadline] = useState<Date | null>(new Date("2026-02-11"));
+  const [projectName, setProjectName] = useState("");
+  const [deadline, setDeadline] = useState<Date | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
-
   const [statusOpen, setStatusOpen] = useState(false);
-  const [statusValue, setStatusValue] = useState("COMPLETE");
+  const [statusValue, setStatusValue] = useState("");
   const [tabBarVisible, setTabBarVisible] = useState(false);
+  const [subjectOpen, setSubjectOpen] = useState(false);
+  const [subjectValue, setSubjectValue] = useState("");
+
+  useEffect(() => {
+    const fetchProject = async () => {
+      const res = await fetch(
+        `https://freddy-unseconded-kristan.ngrok-free.dev/api/project/${projectID}`,
+      );
+      const data = await res.json();
+      console.log("fetch result:", data);
+      if (data.success) {
+        setProjectName(data.project.project_name);
+        if (data.project.deadline) {
+          setDeadline(new Date(data.project.deadline));
+        }
+        setStatusValue(data.project.status);
+        setSubjectValue(data.project.subject);
+      }
+    };
+    fetchProject();
+  }, [projectID]);
+
+  const handleSave = async () => {
+    try {
+      const res = await fetch(
+        `https://freddy-unseconded-kristan.ngrok-free.dev/api/project/${projectID}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            project_name: projectName,
+            deadline: deadline?.toISOString().split("T")[0],
+            subject: subjectValue,
+          }),
+        },
+      );
+      const data = await res.json();
+      if (data.success) {
+        Alert.alert("Saved", "Project updated successfully");
+        router.push(`/project/${projectID}/dashBoard`);
+      } else {
+        Alert.alert("Error", "Failed to save");
+      }
+    } catch (err) {
+      Alert.alert("Error", "Network error");
+    }
+  };
+
+  const handleDelete = async () => {
+    Alert.alert("Delete Project", "Are you sure?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            const res = await fetch(
+              `https://freddy-unseconded-kristan.ngrok-free.dev/api/project/${projectID}`,
+              {
+                method: "DELETE",
+              },
+            );
+            const data = await res.json();
+            if (data.success) {
+              router.replace("/"); 
+            } else {
+              Alert.alert("Error", "Failed to delete");
+            }
+          } catch (err) {
+            Alert.alert("Error", "Network error");
+          }
+        },
+      },
+    ]);
+  };
 
   // check status เหมือนหน้า homepage แล้ว
   const statusItems = [
     { label: "Process", value: "PROCESS" },
     { label: "Complete", value: "COMPLETE" },
   ];
-
-  const [subjectOpen, setSubjectOpen] = useState(false);
-  const [subjectValue, setSubjectValue] = useState("SF222");
 
   // check subject เหมือนหน้า homepage แล้ว
   const subjectItems = [
@@ -80,7 +151,9 @@ export default function setting() {
       <View className="space-y-4 ">
         {/* Project Name */}
         <View>
-          <Text className="text-gray-500 mb-2 font-kanitMedium">Project Name:</Text>
+          <Text className="text-gray-500 mb-2 font-kanitMedium">
+            Project Name:
+          </Text>
           <TextInput
             value={projectName}
             onChangeText={setProjectName}
@@ -158,7 +231,7 @@ export default function setting() {
       {/* Button */}
       <View className="flex-row justify-between ">
         <Pressable
-          onPress={() => Alert.alert("Saved")}
+          onPress={handleSave}
           className="flex-row items-center bg-[#98DAAA] px-6 py-3 rounded-lg drop-shadow-lg shadow-black/30 elevation-5"
           style={styles.shadow}
         >
@@ -169,7 +242,7 @@ export default function setting() {
         </Pressable>
 
         <Pressable
-          onPress={() => Alert.alert("Deleted")}
+          onPress={handleDelete}
           className="flex-row items-center bg-[#C84E44] px-6 py-3 rounded-lg"
           style={styles.shadow}
         >

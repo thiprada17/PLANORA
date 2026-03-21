@@ -343,6 +343,25 @@ app.put('/api/project/:project_id', async (req, res) => {
     }
 })
 
+app.get('/api/project/:project_id', async (req, res) => {
+    const { project_id } = req.params
+
+    try {
+        const { data, error } = await supabase
+            .from('project')
+            .select('*')
+            .eq('project_id', project_id)
+            .single()
+
+        if (error) throw error
+
+        res.json({ success: true, project: data })
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ success: false })
+    }
+})
+
 // delete project
 app.delete('/api/project/:project_id', async (req, res) => {
     const { project_id } = req.params
