@@ -36,6 +36,7 @@ import bookmark from "@/assets/icons/bookmark.png"
 import calenCircle from "@/assets/icons/calenCircle.png"
 import mic from "@/assets/icons/mic.png"
 import phone_cancel from "@/assets/icons/phone_cancel.png"
+import chatwithyak from "@/assets/icons/chatwithyak.png"
 
 export const icons = {
   deadline,
@@ -74,5 +75,6 @@ export const icons = {
   bookmark,
   calenCircle,
   mic,
-  phone_cancel
+  phone_cancel,
+  chatwithyak
 };

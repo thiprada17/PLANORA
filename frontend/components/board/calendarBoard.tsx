@@ -104,7 +104,7 @@ export default function CalendarBoard({ tasks }: Props) {
     }, [slottedTasks]);
 
     return (
-        <View className="mx-6 mt-4 p-4 border rounded-2xl bg-white">
+        <View className="mx-6 mt-1 p-4 border rounded-2xl bg-white">
             {/* header */}
             <View className="flex-row items-center justify-between mb-3">
                 <Pressable onPress={() => changeMonth(-1)} hitSlop={8}>
@@ -131,7 +131,12 @@ export default function CalendarBoard({ tasks }: Props) {
                 {/* cell backgrounds + วันที่ */}
                 <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
                     {cells.map((day, i) => (
-                        <View key={i} style={{ width: cellW, height: 90, backgroundColor: "white", padding: 3 }}>
+                        <View key={i} style={{
+                            width: cellW,
+                            height: 85,
+                            backgroundColor: "white",
+                            padding: 3
+                        }}>
                             {day && <Text style={{ fontSize: 11, fontWeight: "500" }}>{day}</Text>}
                         </View>
                     ))}
@@ -139,20 +144,36 @@ export default function CalendarBoard({ tasks }: Props) {
 
                 {/* grid lines */}
                 {containerWidth > 0 && (
-                    <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="none">
+                    <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+                        pointerEvents="none">
                         {Array.from({ length: totalRows + 1 }, (_, r) => (
-                            <View key={`h${r}`} style={{ position: "absolute", left: 0, right: 0, top: r * 90, height: 0.5, backgroundColor: "#ddd" }} />
+                            <View key={`h${r}`} style={{
+                                position: "absolute",
+                                left: 0,
+                                right: 0,
+                                top: r * 85,
+                                height: 0.5,
+                                backgroundColor: "#ddd"
+                            }} />
                         ))}
                         {Array.from({ length: 8 }, (_, c) => (
-                            <View key={`v${c}`} style={{ position: "absolute", top: 0, bottom: 0, left: c * cellW, width: 0.5, backgroundColor: "#ddd" }} />
+                            <View key={`v${c}`} style={{
+                                position: "absolute",
+                                top: 0,
+                                bottom: 0,
+                                left: c * cellW,
+                                width: 0.5,
+                                backgroundColor: "#ddd"
+                            }} />
                         ))}
                     </View>
                 )}
 
                 {/* task bars */}
                 {containerWidth > 0 && (
-                    <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} pointerEvents="box-none">
-                        
+                    <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+                        pointerEvents="box-none">
+
                         {slottedTasks.map((seg, idx) => {
                             if (seg.slot >= 2) return null;
                             return (
@@ -162,7 +183,7 @@ export default function CalendarBoard({ tasks }: Props) {
                                     style={{
                                         position: "absolute",
                                         left: seg.col * cellW + 2,
-                                        top: seg.row * 90 + 24 + seg.slot * 19,  // 24 = padding จากบน, 19 = slot height + gap
+                                        top: seg.row * 85 + 24 + seg.slot * 19,
                                         width: seg.span * cellW - 4,
                                         height: 20,
                                         backgroundColor: statusColor[seg.task.status],
@@ -197,7 +218,7 @@ export default function CalendarBoard({ tasks }: Props) {
                                     style={{
                                         position: "absolute",
                                         left: col * cellW + 2,
-                                        top: row * 90 + 24 + 2 * 19,  // slot 3 ลงมา
+                                        top: row * 85 + 24 + 2 * 19,
                                         width: cellW - 4,
                                         height: 13,
                                         backgroundColor: "#E5E7EB",
@@ -216,8 +237,14 @@ export default function CalendarBoard({ tasks }: Props) {
 
             {/* Modal*/}
             <Modal visible={!!selectedTasks} transparent animationType="fade">
-                <Pressable style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.4)", justifyContent: "center", alignItems: "center" }} onPress={() => setSelectedTasks(null)}>
-                    <Pressable style={{ backgroundColor: "white", padding: 24, borderRadius: 12, width: "80%" }} onPress={() => {}}>
+                <Pressable style={{
+                    flex: 1,
+                    backgroundColor: "rgba(0,0,0,0.4)",
+                    justifyContent: "center",
+                    alignItems: "center"
+                }}
+                    onPress={() => setSelectedTasks(null)}>
+                    <Pressable style={{ backgroundColor: "white", padding: 24, borderRadius: 12, width: "80%" }} onPress={() => { }}>
                         <Text className="text-lg font-kanitMedium mb-3">Tasks</Text>
                         {selectedTasks?.map((t) => (
                             <Pressable key={t.id} onPress={() => { setSelectedTasks(null); setSelectedTask(t); }}
@@ -233,10 +260,30 @@ export default function CalendarBoard({ tasks }: Props) {
             </Modal>
 
             <Modal visible={!!selectedTask} transparent animationType="fade">
-                <Pressable style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.4)", justifyContent: "center", alignItems: "center" }} onPress={() => setSelectedTask(null)}>
-                    <Pressable style={{ backgroundColor: "white", padding: 24, borderRadius: 12, width: "80%" }} onPress={() => {}}>
+                <Pressable style={{
+                    flex: 1,
+                    backgroundColor: "rgba(0,0,0,0.4)",
+                    justifyContent: "center",
+                    alignItems: "center"
+                }}
+                    onPress={() => setSelectedTask(null)}>
+
+                    <Pressable style={{
+                        backgroundColor: "white",
+                        padding: 24,
+                        borderRadius: 12,
+                        width: "80%"
+                    }}
+                        onPress={() => { }}>
                         <Text className="text-lg font-kanitMedium mb-3">{selectedTask?.task_name || "Untitled"}</Text>
-                        <View style={{ backgroundColor: statusColor[selectedTask?.status ?? "todo"], paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6, alignSelf: "flex-start", marginBottom: 12 }}>
+                        <View style={{
+                            backgroundColor: statusColor[selectedTask?.status ?? "todo"],
+                            paddingHorizontal: 10,
+                            paddingVertical: 4,
+                            borderRadius: 6,
+                            alignSelf: "flex-start",
+                            marginBottom: 12
+                        }}>
                             <Text style={{ fontSize: 12 }}>{selectedTask?.status}</Text>
                         </View>
                         <Text style={{ fontSize: 12, color: "#666", marginBottom: 4 }}>Start: {selectedTask?.start_date || "-"}</Text>

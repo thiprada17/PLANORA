@@ -90,10 +90,6 @@ export default function BoardScreen() {
   const [tasks, setTasks] = useState<any[]>([])
   const [activeTab, setActiveTab] = useState<"kanban" | "todo" | "calendar">("kanban");
 
-  // function setModalVisible(arg0: boolean): void {
-  //   throw new Error("Function not implemented.");
-  // }
-
   const { projectId } = useLocalSearchParams<{ projectId: string }>();
 
   const projectID = Number(projectId);
@@ -199,15 +195,16 @@ export default function BoardScreen() {
         style={{
           position: "absolute",
           right: 24,
-          bottom: 90,
+          bottom: 35,
           shadowColor: "#000",
           shadowOpacity: 0.3,
           shadowRadius: 4,
           shadowOffset: { width: 0, height: 3 },
         }}
-        className="w-[56px] h-[56px] rounded-full bg-white justify-center items-center">
+        // className="w-[56px] h-[56px] rounded-full bg-white justify-center items-center"
+        >
         <Image
-          source={icons.chat} style={{ width: 26, height: 26 }} />
+          source={icons.chatwithyak} style={{ width: 65, height: 65 }} />
       </Pressable>
     </SafeAreaView>
   );
