@@ -61,7 +61,7 @@ export default function BoardBar({
   );
 
   return (
-    <View className="mx-6 mt-4 mb-6 border border-[#8E8E8E] rounded-xl bg-[#F0F0F0]">
+    <View className="mx-6 mt-4 mb-6 border-[0.7px] border-[#8E8E8E] rounded-xl bg-[#F0F0F0]">
 
       {/*ก้อนใหญ่ */}
       <View className="flex-row items-center justify-between px-3 py-2">

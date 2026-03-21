@@ -77,7 +77,7 @@ export default function GoogleLoginButton() {
   return (
     <Pressable
       onPress={handleGoogleLogin}
-      className="mt-0 w-full flex-row items-center justify-center rounded-xl bg-white py-3 border border-gray-300"
+      className="mt-0 w-full flex-row items-center justify-center rounded-xl bg-white py-3 border-[1px] border-gray-300"
     >
       <Image
         source={icons.googleLogo}

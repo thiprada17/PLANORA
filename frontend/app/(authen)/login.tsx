@@ -125,7 +125,7 @@ export default function Index() {
                                 onChangeText={setUsername}
                                 placeholderTextColor="#9CA3AF"
                                 autoCapitalize="none"
-                                className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-kanitRegular"
                             />
                             <TextInput
                                 placeholder="Email"
@@ -134,7 +134,7 @@ export default function Index() {
                                 placeholderTextColor="#9CA3AF"
                                 keyboardType="email-address"
                                 autoCapitalize="none"
-                                className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-kanitRegular"
                             />
                             <TextInput
                                 placeholder="Password"
@@ -142,7 +142,7 @@ export default function Index() {
                                 onChangeText={setPassword}
                                 placeholderTextColor="#9CA3AF"
                                 secureTextEntry
-                                className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-kanitRegular"
                             />
                             <Pressable onPress={handleSignup} disabled={isLoading} className={`rounded-xl py-3 ${isLoading ? 'bg-GRAY' : 'bg-black'}`}>
                                 <Text className="text-center font-kanitBold text-white">
@@ -165,7 +165,7 @@ export default function Index() {
 
                 {/*login*/}
                 <Animated.View
-                    className="absolute top-14 h-full w-[90%] rounded-t-[28px] border border-neutral-900 shadow-sm bg-GRAY px-5 pt-4 shadow-lg"
+                    className="absolute top-14 h-full w-[90%] rounded-t-[28px] border-[1px] border-neutral-900 shadow-sm bg-GRAY px-5 pt-4 shadow-lg"
                     style={{ transform: [{ translateY: loginY }] }}
                 >
                     <Pressable className="py-3" onPress={openLogin}>
@@ -183,7 +183,7 @@ export default function Index() {
                                 placeholderTextColor="#9CA3AF"
                                 keyboardType="email-address"
                                 autoCapitalize="none"
-                                className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-kanitRegular"
                             />
 
                             <TextInput
@@ -192,7 +192,7 @@ export default function Index() {
                                 onChangeText={setLoginPassword}
                                 placeholderTextColor="#9CA3AF"
                                 secureTextEntry
-                                className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-kanitRegular"
                             />
 
                             <Pressable className="rounded-xl bg-black py-3">

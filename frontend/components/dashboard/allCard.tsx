@@ -52,8 +52,8 @@ export default function StatsCards({
 
       {/* overdue */}
       <View className="w-[45%] mb-4 mr-8" style={shadowStyle}>
-        <View className="bg-[#EFFFEA] border border-black flex-row">
-          <View className="w-5 bg-GREEN border-r border-black" />
+        <View className="bg-[#EFFFEA] border-[0.7px] border-black flex-row">
+          <View className="w-5 bg-GREEN border-r-[0.7px] border-black" />
           <View className="flex-1 p-4 items-center">
 
             <StrokeText
@@ -81,7 +81,7 @@ export default function StatsCards({
 
       {/* จน task */}
       <View
-        className="w-[45%] mb-4 bg-white border border-black p-4 items-center"
+        className="w-[45%] mb-4 bg-white border-[0.7px] border-[#4F83AB] p-4 items-center"
         style={shadowStyle}
       >
         <View className="absolute left-6 top-0 bottom-0 w-[1px] bg-red-400" />
@@ -116,7 +116,7 @@ export default function StatsCards({
 
       {/* countdown*/}
       <View
-        className="w-[45%] border border-black mr-8 overflow-hidden"
+        className="w-[45%] border-[0.7px] border-black mr-8 overflow-hidden"
         style={shadowStyle}
       >
         <View className="bg-[#E96A5F] p-3 items-center border-b border-black">
@@ -151,7 +151,7 @@ export default function StatsCards({
 
       {/* งานเรานา */}
       <View
-        className="w-[45%] bg-[#EFFFDF] border border-black p-4 items-center"
+        className="w-[45%] bg-[#EFFFDF] border-[0.7px] border-black p-4 items-center"
         style={shadowStyle}
       >
 

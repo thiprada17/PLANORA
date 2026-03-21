@@ -33,23 +33,23 @@ export default function KanbanBoard({ tasks, setModalVisible }: Props) {
               shadowRadius: 2,
               shadowOffset: { width: 0, height: 2 },
             }}
-            className="w-[210px] h-[540px] mr-7 p-4 rounded-2xl border border-neutral-400 bg-[#CAEAD5]"
+            className="w-[210px] h-[540px] mr-7 p-4 rounded-2xl border-[1px] border-neutral-100 bg-[#C9EAD5]"
           >
             {/* Column Header */}
             <View className="flex-row items-center justify-between">
-              <Text className="font-kanitMedium text-xl">{col.title}</Text>
+              <Text className="font-kanitMedium text-xl text-[#222222]">{col.title}</Text>
               <View className="flex-row gap-1">
-                  <TouchableOpacity className="border border-black rounded-md px-2 py-2 mx-1 my-1 mt-4 mb-3 bg-white">
-<Image source={icons.custom_pen} style={{ width: 17, height: 17 }} />
-                  </TouchableOpacity>
+                {/* <TouchableOpacity className="border border-black rounded-md px-2 py-2 mx-1 my-1 mt-4 mb-3 bg-white">
+                  <Image source={icons.custom_pen} style={{ width: 17, height: 17 }} />
+                </TouchableOpacity>
 
-                  <TouchableOpacity className="border border-black rounded-md px-2 py-2 mt-4 mb-3 bg-[#F07166]">
-<Image source={icons.delete} style={{ width: 17, height: 17 }} />                  
-</TouchableOpacity>
-                </View>
+                <TouchableOpacity className="border border-black rounded-md px-2 py-2 mt-4 mb-3 bg-[#F07166]">
+                  <Image source={icons.delete} style={{ width: 17, height: 17 }} />
+                </TouchableOpacity> */}
+              </View>
             </View>
 
-            <View className="h-[1.5px] bg-black my-3 mt-2" />
+            <View className="h-[1px] bg-neutral-600 my-3 mt-2" />
 
             <ScrollView showsVerticalScrollIndicator={false}>
               {columnTasks.map((task) => (
@@ -62,7 +62,7 @@ export default function KanbanBoard({ tasks, setModalVisible }: Props) {
                     shadowOffset: { width: 0, height: 2 },
                     elevation: 4
                   }}
-                  className="mb-3 rounded-3xl border border-black bg-[#F0F0F0] pt-1.5 pb-1 px-1"
+                  className="mb-3 rounded-3xl border border-neutral-500 bg-[#F0F0F0] pt-1.5 pb-1.5 px-1.5"
                 >
                   <View className="mt-4 rounded-3xl border border-black bg-white">
                     <Text className="font-kanitMedium text-xl mt-5 mx-2 px-2">
@@ -70,7 +70,7 @@ export default function KanbanBoard({ tasks, setModalVisible }: Props) {
                     </Text>
 
                     <View className="flex-row items-center gap-1 mb-5 mx-2 px-2">
-                     <Image source={icons.calenCircle} style={{ width: 17, height: 17}} />
+                      <Image source={icons.calenCircle} style={{ width: 17, height: 17 }} />
                       <Text className="font-kanitRegular text-xs text-black">
                         {task.deadline ?? "-"}
                       </Text>
@@ -92,8 +92,8 @@ export default function KanbanBoard({ tasks, setModalVisible }: Props) {
                               width: 28,
                               height: 28,
                               borderRadius: 14,
-                              borderWidth: 1.5,
-                              borderColor: "black",
+                              borderWidth: 1,
+                              borderColor: "gray",
                             }}
                           />
                         </View>
@@ -107,7 +107,7 @@ export default function KanbanBoard({ tasks, setModalVisible }: Props) {
                 className="flex-row items-center gap-2 mt-2"
                 onPress={() => setModalVisible(true)}
               >
-                <Text className="font-kanitMedium text-md">+ Add Task</Text>
+                <Text className="font-kanitMedium text-neutral-500 text-md">+ Add Task</Text>
               </TouchableOpacity>
             </ScrollView>
           </View>

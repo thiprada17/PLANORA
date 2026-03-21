@@ -149,7 +149,7 @@ export default function BoardScreen() {
             shadowOpacity: 0.3,
             shadowRadius: 2,
           }}
-          className="border-2 border-black rounded-lg px-3 py-2 bg-white active:bg-gray-100"
+          className="border-[1px] border-black rounded-lg px-3 py-2 bg-white active:bg-gray-100"
         >
           <Text className="font-kanitMedium">+ Create Task</Text>
         </Pressable>

@@ -40,7 +40,7 @@ export default function ProjectCard({
             }}
         >
             <View className="absolute inset-0 rounded-3xl bg-black" />
-            <View className="absolute top-0 left-0 right-0 h-[135px] rounded-3xl bg-GREEN p-3 border border-black">
+            <View className="absolute top-0 left-0 right-0 h-[135px] rounded-3xl bg-GREEN p-3 border border-[#222222]">
 
             <View className="self-start bg-white px-3 rounded-full mb-2 flex-row items-center"
                 style={{

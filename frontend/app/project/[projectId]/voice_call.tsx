@@ -21,7 +21,7 @@ type JoinedUser = {
 };
 
 export default function RoomPage() {
-  // ✅ ใช้ ref สำหรับ engine เพื่อให้ cleanup เข้าถึงได้เสมอ
+  // ใช้ ref สำหรับ engine เพื่อให้ cleanup เข้าถึงได้เสมอ
   const engineRef = useRef<IRtcEngine | null>(null);
   const userRef = useRef<{ name: string | null; profile: string | null }>({
     name: null,
