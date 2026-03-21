@@ -361,7 +361,7 @@ export default function CreateProject() {
                   onPress={() => {
                     handleSubmit()
                     console.log("Create project:", project);
-                    router.replace('/homepage')
+                    router.back()
 
                   }}
                 >
