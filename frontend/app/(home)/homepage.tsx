@@ -118,19 +118,49 @@ export default function HomePage() {
   const [toDate, setToDate] = useState<Date | null>(null);
   const [appliedFromDate, setAppliedFromDate] = useState<Date | null>(null);
   const [appliedToDate, setAppliedToDate] = useState<Date | null>(null);
+<<<<<<< Updated upstream
 
+=======
+  
+  const normalize = (date: Date) =>
+    new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const filteredProjects = projects.filter((project) => {
+    if (subjectFilter !== "ALL" && project.subject !== subjectFilter) {
+      return false;
+    }
+    if (appliedFromDate && appliedToDate && project.deadline) {
+      const from = normalize(appliedFromDate);
+      const to = normalize(appliedToDate);
+      const projectDate = normalize(new Date(project.deadline));
+      if (projectDate < from || projectDate > to) {
+        return false;
+      }
+    }
+    return true;
+  });
+>>>>>>> Stashed changes
 
   const deadlineLabel =
     appliedFromDate && appliedToDate
       ? `${appliedFromDate.toLocaleDateString()} - ${appliedToDate.toLocaleDateString()}`
       : "Any";
 
-
-
   const FILTER_HEIGHT = 30;
   const FILTER_RADIUS = 11;
   const FILTER_TEXT_SIZE = 9;
 
+<<<<<<< Updated upstream
+=======
+  const subjectItems = [
+  { label: "All", value: "ALL" },
+  ...Array.from(new Set(projects.map(p => p.subject)))
+    .map(sub => ({
+      label: sub,
+      value: sub
+    }))
+];
+
+>>>>>>> Stashed changes
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1 px-5 pb-8 pt-4">
@@ -173,7 +203,14 @@ export default function HomePage() {
                 value={statusValue}
                 items={statusItems}
                 setOpen={setStatusOpen}
+<<<<<<< Updated upstream
                 setValue={setStatusValue}
+=======
+                setValue={(callback) => {
+                  const value = callback(subjectFilter);
+                  setSubjectFilter(value);
+                }}
+>>>>>>> Stashed changes
                 listMode="SCROLLVIEW"
                 containerStyle={{ height: FILTER_HEIGHT }} 
                 style={{
