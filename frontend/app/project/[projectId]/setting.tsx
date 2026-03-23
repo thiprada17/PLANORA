@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 import {
   View,
   Text,
