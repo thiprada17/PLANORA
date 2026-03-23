@@ -17,7 +17,7 @@ import TabBar from "@/components/tabBar";
 import BoardBar from "@/components/board/boardBar";
 import KanbanBoard from "@/components/board/kanbanBoard";
 import CalendarBoard from "@/components/board/calendarBoard";
-
+import TodoBoard from "@/components/board/todoBoard";
 import { useLocalSearchParams } from "expo-router";
 
 
@@ -91,6 +91,17 @@ export default function BoardScreen() {
   const [activeTab, setActiveTab] = useState<"kanban" | "todo" | "calendar">("kanban");
 
   const { projectId } = useLocalSearchParams<{ projectId: string }>();
+
+  const formatted = data.map((item: any) => ({
+    id: item.id,
+    task_name: item.task_name,
+    start_date: item.start_date || item.deadline,
+    deadline: item.deadline,
+    status: item.status || "to-do",
+    task_assign: item.task_assign || []
+  }));
+
+setTasks(formatted);
 
   const projectID = Number(projectId);
   useEffect(() => {
@@ -171,9 +182,10 @@ export default function BoardScreen() {
       )}
       {/* todo */}
       {activeTab === "todo" && (
-        <View className="mx-6 mt-4">
-          <Text className="font-kanitMedium text-xl">Todo List</Text>
-        </View>
+        <TodoBoard
+        tasks={tasks}
+        setModalVisible={setModalVisible}
+        />
       )}
       {/* calendar */}
       {activeTab === "calendar" && (

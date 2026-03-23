@@ -512,6 +512,21 @@ app.delete('/api/task/:id', async (req, res) => {
     }
 });
 
+// task status
+app.put('/task/status/:id', async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const { error } = await supabase
+    .from('task')
+    .update({ status })
+    .eq('id', id);
+
+  if (error) return res.status(500).json(error);
+
+  res.json({ success: true });
+});
+
 app.get('/assign/member/:projectId', async (req, res) => {
     const { projectId } = req.params
     try {
