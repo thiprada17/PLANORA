@@ -138,7 +138,7 @@ export default function TabBar({ visible, onClose, projectId }: TabBarProps) {
                                         onClose();
                                         router.push(`/project/${projectId}/board`);
                                     }} />
-                                    <TreeItem icon="chat" label="Chat" onPress={() => {
+                                    <TreeItem icon="chat" label="Call" onPress={() => {
                                         onClose();
                                         router.push(`/project/${projectId}/voice_call`);
                                     }} />
