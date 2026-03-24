@@ -1,17 +1,12 @@
-import { View, Text, TextInput, TouchableOpacity, Pressable, Button, ScrollView } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Pressable, Button, ScrollView, Animated, Image, Keyboard, TouchableWithoutFeedback } from "react-native";
 import { useState } from "react";
 import { useFonts } from "expo-font";
 import { icons } from "@/constants/icons";
-import { Image } from "react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import DropDownPicker from "react-native-dropdown-picker";
-import { Stack } from "expo-router";
-import { Animated } from "react-native";
 import { useRef, useEffect } from "react";
-import { Keyboard, TouchableWithoutFeedback } from "react-native";
 import { SearchBar } from "react-native-screens";
 import LoadingCreate from "@/components/loading_create";
-
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
@@ -21,7 +16,6 @@ export default function CreateProject() {
   const [isSearching, setIsSearching] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const router = useRouter();
-
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
@@ -49,8 +43,49 @@ export default function CreateProject() {
   });
 
   const [step, setStep] = useState(1);
-
   const [emailInput, setEmailInput] = useState("");
+  const [memberError, setMemberError] = useState("");
+
+  const shakeAni = useRef(new Animated.Value(0)).current;
+  // ตอนแรกใช้ scale อันเดียวแต่มันลดให้เรื่อยๆ อันหลังมันะเล็ก
+  const scale1 = useRef(new Animated.Value(1)).current;
+  const scale2 = useRef(new Animated.Value(1)).current;
+  const scale3 = useRef(new Animated.Value(1)).current;
+  const scale4 = useRef(new Animated.Value(1)).current;
+  const line1 = useRef(new Animated.Value(0)).current;
+  const line2 = useRef(new Animated.Value(0)).current;
+  const line3 = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const runScale = (scale: Animated.Value) => {
+      scale.setValue(0.8);
+      Animated.spring(scale, {
+        toValue: 1,
+        friction: 4,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    if (step === 1) runScale(scale1);
+    if (step === 2) runScale(scale2);
+    if (step === 3) runScale(scale3);
+    if (step === 4) runScale(scale4);
+
+    const animateLine = (line: Animated.Value, toValue: number) => {
+      Animated.timing(line, {
+        toValue,
+        duration: 300,
+        useNativeDriver: false, //width false นะ เปิดแล้วแปรงร่าง
+      }).start();
+    };
+
+    animateLine(line1, step > 1 ? 1 : 0);
+    animateLine(line2, step > 2 ? 1 : 0);
+    animateLine(line3, step > 3 ? 1 : 0);
+  }, [step]);
+
+  if (!fonts) return null;
+
 
   const getStepCircleStyle = (currentStep: number, stepNumber: number) => {
     if (currentStep > stepNumber) {
@@ -103,22 +138,40 @@ export default function CreateProject() {
 
   const readytocreate = !(project.project_name.trim() == "") && project.deadline !== "" && project.subject !== "" && (project.member.length > 0)
 
-  if (!fonts) return null;
-
-
   const handleAddMember = async () => {
     const email = emailInput.trim();
     if (!email) return;
 
+    const isValidEmail = /\S+@\S+\.\S+/.test(email);
+    if (!isValidEmail) {
+              setMemberError("invalid email format");
+      shakeAni.setValue(0);
+        Animated.sequence([
+          Animated.timing(shakeAni, { toValue: 6, duration: 40, useNativeDriver: true }),
+          Animated.timing(shakeAni, { toValue: -6, duration: 40, useNativeDriver: true }),
+          Animated.timing(shakeAni, { toValue: 4, duration: 40, useNativeDriver: true }),
+          Animated.timing(shakeAni, { toValue: -4, duration: 40, useNativeDriver: true }),
+          Animated.timing(shakeAni, { toValue: 0, duration: 40, useNativeDriver: true }),
+        ]).start();
+      return;
+    }
     try {
       setIsSearching(true);
+      setMemberError("")
       const memsearch = await searchMember(email);
 
       if (!memsearch?.found) {
         setIsSearching(false); //ปิดก่อน
-        setTimeout(() => {
-          alert("user not found");
-        }, 100); //ให้ปิด loading ก่อน alert
+        setMemberError("Don't find this user");
+
+        shakeAni.setValue(0);
+        Animated.sequence([
+          Animated.timing(shakeAni, { toValue: 6, duration: 40, useNativeDriver: true }),
+          Animated.timing(shakeAni, { toValue: -6, duration: 40, useNativeDriver: true }),
+          Animated.timing(shakeAni, { toValue: 4, duration: 40, useNativeDriver: true }),
+          Animated.timing(shakeAni, { toValue: -4, duration: 40, useNativeDriver: true }),
+          Animated.timing(shakeAni, { toValue: 0, duration: 40, useNativeDriver: true }),
+        ]).start();
         return;
       }
 
@@ -153,8 +206,9 @@ export default function CreateProject() {
 
   const searchMember = async (email: string) => {
     try {
+
       const res = await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/search/member', {
-        // const res = await fetch('http://192.168.1.141:3000/search/member', {
+      // const res = await fetch('http://10.4.13.69:3000/search/member', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -165,7 +219,8 @@ export default function CreateProject() {
 
       return await res.json()
     } catch (error) {
-
+      console.log(error);
+      return null;
     }
   }
 
@@ -197,30 +252,69 @@ export default function CreateProject() {
 
             <View className="flex-row justify-center items-start mt-2 mb-8">
               <View className="flex-row items-center">
-                <View className={getStepCircleStyle(step, 1)}>
-                  <Image source={icons.folder} className="w-5 h-5" />
+                <Animated.View style={{ transform: [{ scale: scale1 }] }}>
+                  <View className={getStepCircleStyle(step, 1)}>
+                    <Image source={icons.folder} className="w-5 h-5" />
+                  </View>
+                </Animated.View>
+                <View className="w-10 h-0.5 bg-neutral-300 mx-[7px] overflow-hidden">
+                  <Animated.View
+                    style={{
+                      height: 2,
+                      backgroundColor: "#81b895",
+                      width: line1.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ["0%", "100%"],
+                      }),
+                    }}
+                  />
                 </View>
-                <View className={getLineStyle(step, 1)} />
               </View>
 
               <View className="flex-row items-center">
-                <View className={getStepCircleStyle(step, 2)}>
-                  <Image source={icons.deadline} className="w-5 h-5" />
+                <Animated.View style={{ transform: [{ scale: scale2 }] }}>
+                  <View className={getStepCircleStyle(step, 2)}>
+                    <Image source={icons.deadline} className="w-5 h-5" />
+                  </View>
+                </Animated.View>
+                <View className="w-10 h-0.5 bg-neutral-300 mx-[7px] overflow-hidden">
+                  <Animated.View
+                    style={{
+                      height: 2,
+                      backgroundColor: "#81b895",
+                      width: line2.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ["0%", "100%"],
+                      }),
+                    }}
+                  />
                 </View>
-                <View className={getLineStyle(step, 2)} />
               </View>
 
               <View className="flex-row items-center">
-                <View className={getStepCircleStyle(step, 3)}>
-                  <Image source={icons.topic} className="w-5 h-5" />
+                <Animated.View style={{ transform: [{ scale: scale3 }] }}>
+                  <View className={getStepCircleStyle(step, 3)}>
+                    <Image source={icons.topic} className="w-5 h-5" />
+                  </View>
+                </Animated.View>
+                <View className="w-10 h-0.5 bg-neutral-300 mx-[7px] overflow-hidden">
+                  <Animated.View
+                    style={{
+                      height: 2,
+                      backgroundColor: "#81b895",
+                      width: line3.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ["0%", "100%"],
+                      }),
+                    }}
+                  />
                 </View>
-                <View className={getLineStyle(step, 3)} />
               </View>
-
-              <View className={getStepCircleStyle(step, 4)}>
-                <Image source={icons.person_add} className="w-5 h-5" />
-              </View>
-
+              <Animated.View style={{ transform: [{ scale: scale4 }] }}>
+                <View className={getStepCircleStyle(step, 4)}>
+                  <Image source={icons.person_add} className="w-5 h-5" />
+                </View>
+              </Animated.View>
             </View>
 
             <View className="flex-1 justify-start pt-3">
@@ -318,10 +412,13 @@ export default function CreateProject() {
 
                 <Text className="font-kanitRegular color-BLACK mb-2">Add member (Email)</Text>
 
-                <View className="flex-row flex-wrap items-center border rounded-xl p-2 border-neutral-300 bg-white max-h-[60px]">
+                {/* <View className="flex-row flex-wrap items-center border rounded-xl p-2 border-neutral-300 bg-white max-h-[60px]"> */}
+                {/* <View className={`flex-row flex-wrap items-center border rounded-xl p-2 max-h-[60px] 
+${memberError ? 'border-red-500' : 'border-neutral-300'} bg-white`}> */}
+<Animated.View style={{ transform: [{ translateX: shakeAni }] }} className={`flex-row flex-wrap items-center border rounded-xl p-2 max-h-[60px] 
+${memberError ? 'border-red-500' : 'border-neutral-300'} bg-white`}>
                   <ScrollView
                     contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}
-                    showsVerticalScrollIndicator={true}
                   >
                     {project.member.map((mail, index) => (
                       <View
@@ -338,22 +435,29 @@ export default function CreateProject() {
                       </View>
                     ))}
 
-                    <TextInput
-                      placeholder={project.member.length === 0 ? "example@mail.com" : ""}
-                      className="font-kanitRegular color-neutral-700 flex-1 min-w-[100px]"
-                      value={emailInput}
-                      onChangeText={setEmailInput}
-                      autoCapitalize="none"
-                      keyboardType="email-address"
-                      onSubmitEditing={handleAddMember}
-                      blurOnSubmit={false}
-                    />
-
+                    {/* <Animated.View style={{ transform: [{ translateX: shakeAni }] }}> */}
+                      <TextInput
+                        placeholder={project.member.length === 0 ? "example@mail.com" : ""}
+                        value={emailInput}
+                        onChangeText={(t) => {
+                          setEmailInput(t);
+                          setMemberError(""); // ลบ error ตอนพิม
+                        }}
+                        onSubmitEditing={handleAddMember}
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                        className="font-kanitRegular color-neutral-700 min-w-[120px]"
+                      />
+                    {/* </Animated.View> */}
                   </ScrollView>
+                  </Animated.View>
+                {/* </View> */}
+
+                <View>
+                  <Text className={`text-[10px] mt-1 ${memberError ? 'text-red-500' : 'text-neutral-400'}`}>
+                    {memberError || "*Enter to add member"}
+                  </Text>
                 </View>
-
-
-                <Text className="text-[10px] text-neutral-400 mt-1">* Enter to add email</Text>
 
                 <Pressable
                   className={`mb-7 px-6 py-3 pt-2 h-[30px] mt-5 rounded-xl items-center ${readytocreate ? "bg-GREEN" : ""}`}
@@ -365,10 +469,12 @@ export default function CreateProject() {
 
                   }}
                 >
-                  <Text
-                    className={`font-kanitBold text-[10px] ${readytocreate ? "text-BLACK" : "text-neutral-500"}`}>
-                    {readytocreate ? "CREATE PROJECT" : ""}
-                  </Text>
+
+                  {readytocreate ? (
+                    <Text className="font-kanitBold text-[10px] text-BLACK">
+                      CREATE PROJECT
+                    </Text>
+                  ) : null}
                 </Pressable>
               </View>
               }
