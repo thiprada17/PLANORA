@@ -6,7 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  Dimensions, Pressable,
+  Dimensions,
+  Pressable,
 } from "react-native";
 import { useState } from "react";
 import CreateTaskModal from "@/components/task/create_task";
@@ -17,9 +18,9 @@ import TabBar from "@/components/tabBar";
 import BoardBar from "@/components/board/boardBar";
 import KanbanBoard from "@/components/board/kanbanBoard";
 import CalendarBoard from "@/components/board/calendarBoard";
+import TaskSetting from "@/components/task/taskSetting";
 
 import { useLocalSearchParams } from "expo-router";
-
 
 const Icon = ({
   name,
@@ -83,21 +84,36 @@ const Column = [
 const users = [1, 2, 3]; // mock
 
 export default function BoardScreen() {
-
   const [modalVisible, setModalVisible] = useState(false);
   const [tabBarVisible, setTabBarVisible] = useState(false);
   const [chatVisible, setChatVisible] = useState(false);
-  const [tasks, setTasks] = useState<any[]>([])
-  const [activeTab, setActiveTab] = useState<"kanban" | "todo" | "calendar">("kanban");
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<"kanban" | "todo" | "calendar">(
+    "kanban",
+  );
+
+  const [settingVisible, setSettingVisible] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<any>(null);
 
   const { projectId } = useLocalSearchParams<{ projectId: string }>();
 
   const projectID = Number(projectId);
+  const handleTaskPress = (rawTask: any) => {
+    setSelectedTask({
+      task_id: rawTask.id,
+      task_name: rawTask.task_name,
+      deadline: rawTask.deadline,
+      members: rawTask.task_assign ?? [],
+    });
+    
+    setSettingVisible(true);
+  };
   useEffect(() => {
-
     const fetchTask = async () => {
       try {
-        const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/get/task/${projectID}`);
+        const res = await fetch(
+          `https://freddy-unseconded-kristan.ngrok-free.dev/get/task/${projectID}`,
+        );
         // const res = await fetch(`http://192.168.1.154:3000/get/task/${projectID}`);
 
         if (!res.ok) {
@@ -114,8 +130,7 @@ export default function BoardScreen() {
           setTasks([]);
         }
 
-        console.log(data)
-
+        console.log(data);
       } catch (err) {
         console.log("Fetch error:", err);
         setTasks([]);
@@ -131,11 +146,16 @@ export default function BoardScreen() {
     <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
       <View className="flex-row items-center mx-6 pt-10">
-        <TouchableOpacity className="mr-3" onPress={() => setTabBarVisible(true)}>
+        <TouchableOpacity
+          className="mr-3"
+          onPress={() => setTabBarVisible(true)}
+        >
           <Icon name="menu" size={24} />
         </TouchableOpacity>
 
-        <Text className="flex-1 font-kanitMedium text-[36px] text-black">Board</Text>
+        <Text className="flex-1 font-kanitMedium text-[36px] text-black">
+          Board
+        </Text>
 
         <Pressable
           onPress={() => setModalVisible(true)}
@@ -154,6 +174,12 @@ export default function BoardScreen() {
           onClose={() => setModalVisible(false)}
           projectId={projectID}
         />
+        <TaskSetting
+          visible={settingVisible}
+          onClose={() => setSettingVisible(false)}
+          projectId={projectID}
+          task={selectedTask}
+        />
       </View>
 
       {/* Tab */}
@@ -167,8 +193,10 @@ export default function BoardScreen() {
         <KanbanBoard
           tasks={tasks}
           setModalVisible={setModalVisible}
+          onTaskPress={handleTaskPress}
         />
       )}
+
       {/* todo */}
       {activeTab === "todo" && (
         <View className="mx-6 mt-4">
@@ -176,9 +204,7 @@ export default function BoardScreen() {
         </View>
       )}
       {/* calendar */}
-      {activeTab === "calendar" && (
-        <CalendarBoard tasks={tasks} />
-      )}
+      {activeTab === "calendar" && <CalendarBoard tasks={tasks} />}
       <TabBar
         visible={tabBarVisible}
         onClose={() => setTabBarVisible(false)}
@@ -188,7 +214,8 @@ export default function BoardScreen() {
       <ProjectChatModal
         visible={chatVisible}
         projectId={projectID}
-        onClose={() => setChatVisible(false)} />
+        onClose={() => setChatVisible(false)}
+      />
 
       <Pressable
         onPress={() => setChatVisible(true)}
@@ -202,11 +229,9 @@ export default function BoardScreen() {
           shadowOffset: { width: 0, height: 3 },
         }}
         // className="w-[56px] h-[56px] rounded-full bg-white justify-center items-center"
-        >
-        <Image
-          source={icons.chatwithyak} style={{ width: 65, height: 65 }} />
+      >
+        <Image source={icons.chatwithyak} style={{ width: 65, height: 65 }} />
       </Pressable>
     </SafeAreaView>
   );
 }
-
