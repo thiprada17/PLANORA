@@ -130,7 +130,7 @@ contentContainerStyle={{
           >
             {/* Column Header */}
             <View className="flex-row items-center justify-between">
-              <Text className="font-kanitMedium text-xl text-[#222222]">{col.title}</Text>
+              <Text className="font-KanitMedium text-xl text-[#222222]">{col.title}</Text>
               {/* <View className="flex-row gap-1"/> */}
             </View>
 
@@ -167,18 +167,18 @@ contentContainerStyle={{
                     className="mb-3 rounded-3xl border border-neutral-500 bg-[#F0F0F0] pt-1.5 pb-1.5 px-1.5"
                   >
                     <View className="mt-4 rounded-3xl border border-black bg-white">
-                      <Text className="font-kanitMedium text-xl mt-5 mx-2 px-2">
+                      <Text className="font-KanitMedium text-xl mt-5 mx-2 px-2">
                         {task.task_name ?? "Untitled Task"}
                       </Text>
 
                       <View className="flex-row items-center gap-1 mb-5 mx-2 px-2">
                         <Image source={icons.calenCircle} style={{ width: 17, height: 17 }} />
-                        <Text className="font-kanitRegular text-xs text-black">
+                        <Text className="font-KanitRegular text-xs text-black">
                           {task.deadline ?? "-"}
                         </Text>
                       </View>
 
-                      <Text className="font-kanitRegular text-xs text-black mx-2 mb-2 px-2">
+                      <Text className="font-KanitRegular text-xs text-black mx-2 mb-2 px-2">
                         Assign to
                       </Text>
 
