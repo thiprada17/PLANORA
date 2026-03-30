@@ -99,7 +99,7 @@ export default function TabBar({ visible, onClose, projectId }: TabBarProps) {
                 <SafeAreaView className="flex-1 px-8">
                     <View className="flex-1 ">
                         <View className="flex-row items-center justify-between mb-8 pt-10">
-                            <Text className="text-[32px] font-kanitBold">
+                            <Text className="text-[32px] font-KanitBold">
                                 Planora
                             </Text>
                             <Pressable onPress={onClose}>
@@ -114,7 +114,7 @@ export default function TabBar({ visible, onClose, projectId }: TabBarProps) {
                                     router.push("/(home)/homepage");
                                 }}>
                                 <Icon name="home_garden" size={23} />
-                                <Text className="text-[18px] font-kanitMedium ml-2">
+                                <Text className="text-[18px] font-KanitMedium ml-2">
                                     {user.name ?? "Guest"}'s Homepage
                                 </Text>
                             </Pressable>
@@ -122,7 +122,7 @@ export default function TabBar({ visible, onClose, projectId }: TabBarProps) {
                             <View>
                                 <View className="flex-row items-center space-x-3 mb-1">
                                     <Icon name="folder" size={23} />
-                                    <Text className="text-[18px] font-kanitMedium ml-2">
+                                    <Text className="text-[18px] font-KanitMedium ml-2">
                                         Project
                                     </Text>
                                 </View>
@@ -161,10 +161,10 @@ export default function TabBar({ visible, onClose, projectId }: TabBarProps) {
                                 }
                             />
                             <View className="flex-1">
-                                <Text className="font-kanitMedium text-sm text-black">
+                                <Text className="font-KanitMedium text-sm text-black">
                                     {user.name ?? "Guest"}
                                 </Text>
-                                <Text className="font-kanitRegular text-xs text-neutral-500">
+                                <Text className="font-KanitRegular text-xs text-neutral-500">
                                     {user.email ?? ""}
                                 </Text>
                             </View>
@@ -199,7 +199,7 @@ function TreeItem({
             </View>
             <Pressable className="flex-row items-center space-x-3 ml-2" onPress={onPress}>
                 <Icon name={icon} size={20} />
-                <Text className="text-[17px] font-kanitMedium pl-2">
+                <Text className="text-[17px] font-KanitMedium pl-2">
                     {label}
                 </Text>
             </Pressable>

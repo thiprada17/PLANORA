@@ -111,7 +111,7 @@ export default function TaskForm({ onCancel, projectId }: TaskFormProps) {
   return (
     <View className="gap-4 p-2">
       <View className="items-center mb-2">
-        <Text className="font-kanitBold text-2xl text-black">
+        <Text className="font-KanitBold text-2xl text-black">
           Create Task
         </Text>
       </View>
@@ -123,11 +123,11 @@ export default function TaskForm({ onCancel, projectId }: TaskFormProps) {
             className="w-5 h-5"
             resizeMode="contain"
           />
-          <Text className="font-kanitBold text-black">Task name</Text>
+          <Text className="font-KanitBold text-black">Task name</Text>
         </View>
         <TextInput
           placeholder="JerseyJamTU"
-          className="font-kanitRegular border border-neutral-400 rounded-xl px-4 py-3 text-neutral-700 bg-white"
+          className="font-KanitRegular border border-neutral-400 rounded-xl px-4 py-3 text-neutral-700 bg-white"
           value={task.task_name}
           onChangeText={(text) =>
             setTask({ ...task, task_name: text })
@@ -142,7 +142,7 @@ export default function TaskForm({ onCancel, projectId }: TaskFormProps) {
             className="w-5 h-5"
             resizeMode="contain"
           />
-          <Text className="font-kanitBold text-black">End date</Text>
+          <Text className="font-KanitBold text-black">End date</Text>
         </View>
 
         <Pressable
@@ -150,7 +150,7 @@ export default function TaskForm({ onCancel, projectId }: TaskFormProps) {
           className="border border-neutral-400 rounded-xl px-4 py-3 bg-white"
         >
           <Text
-            className={`font-kanitRegular ${
+            className={`font-KanitRegular ${
               task.deadline ? "text-black" : "text-neutral-400"
             }`}
           >
@@ -175,7 +175,7 @@ export default function TaskForm({ onCancel, projectId }: TaskFormProps) {
             className="w-5 h-5"
             resizeMode="contain"
           />
-          <Text className="font-kanitBold text-black">Assign</Text>
+          <Text className="font-KanitBold text-black">Assign</Text>
         </View>
 
         <DropDownPicker

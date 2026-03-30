@@ -34,6 +34,7 @@ export default function DashBoard() {
 });
 const [overview, setOverview] = useState<any[]>([]);
 const [members, setMembers] = useState<any[]>([]);
+  const [status, setStatus] = useState<String | null>(null)
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -60,6 +61,7 @@ const [members, setMembers] = useState<any[]>([]);
         setStats(data.stats);
         setOverview(data.overview);
         setMembers(data.members);
+        setStatus(data.project.status)
 
       } catch (error) {
         console.error("❌ Fetch Error:", error);
@@ -81,38 +83,38 @@ const [members, setMembers] = useState<any[]>([]);
             >
             <Image source={icons.menu} className="w-6 h-6" />
           </TouchableOpacity>
-          <Text className="text-[36px] font-kanitBold">{project?.project_name ?? "Loading..."}</Text>
+          <Text className="text-[36px] font-KanitBold">{project?.project_name ?? "Loading..."}</Text>
         </View>
         {/* header */}
         <View className="px-6 mb-5 ">
 
           <View className="flex-row mb-1">
-            <Text className="w-24 font-kanitRegular text-sm">
+            <Text className="w-24 font-KanitRegular text-sm">
               Status
             </Text>
 
             <View className="bg-[#E6BB2D] px-5 py-1 rounded-full">
-              <Text className="text-xs font-kanitRegular text-white">
-                ● On Progress
+              <Text className="text-xs font-KanitRegular text-white">
+                ● {status}
               </Text>
             </View>
           </View>
 
           <View className="flex-row mb-1">
-            <Text className="w-24 font-kanitRegular text-sm">
+            <Text className="w-24 font-KanitRegular text-sm">
               Deadline
             </Text>
 
-            <Text className="font-kanitBold text-sm">
+            <Text className="font-KanitBold text-sm">
               {project?.deadline ?? "-"}
             </Text>
           </View>
 
           <View className="flex-row">
-            <Text className="w-24 font-kanitRegular text-sm">
+            <Text className="w-24 font-KanitRegular text-sm">
               Subject
             </Text>
-            <Text className="font-kanitBold text-sm">
+            <Text className="font-KanitBold text-sm">
               {project?.subject ?? "-"}
             </Text>
           </View>

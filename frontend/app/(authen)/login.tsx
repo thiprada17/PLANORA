@@ -112,7 +112,7 @@ export default function Index() {
             <View className="flex-1 items-center">
                 <View className="absolute -top-4 h-full w-[90%] rounded-t-[28px] bg-GREEN px-5 pt-4 shadow-sm">
                     <Pressable className="py-3" onPress={openSignup}>
-                        <Text className="font-kanitBold text-xl">
+                        <Text className="font-KanitBold text-xl">
                             Sign Up
                         </Text>
                     </Pressable>
@@ -125,7 +125,7 @@ export default function Index() {
                                 onChangeText={setUsername}
                                 placeholderTextColor="#9CA3AF"
                                 autoCapitalize="none"
-                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-KanitRegular"
                             />
                             <TextInput
                                 placeholder="Email"
@@ -134,7 +134,7 @@ export default function Index() {
                                 placeholderTextColor="#9CA3AF"
                                 keyboardType="email-address"
                                 autoCapitalize="none"
-                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-KanitRegular"
                             />
                             <TextInput
                                 placeholder="Password"
@@ -142,10 +142,10 @@ export default function Index() {
                                 onChangeText={setPassword}
                                 placeholderTextColor="#9CA3AF"
                                 secureTextEntry
-                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-KanitRegular"
                             />
                             <Pressable onPress={handleSignup} disabled={isLoading} className={`rounded-xl py-3 ${isLoading ? 'bg-GRAY' : 'bg-black'}`}>
-                                <Text className="text-center font-kanitBold text-white">
+                                <Text className="text-center font-KanitBold text-white">
                                     {isLoading ? 'Loading....' : 'Sign Up'}
                                 </Text>
                             </Pressable>
@@ -153,7 +153,7 @@ export default function Index() {
 
                             <View className="my-4 flex-row items-center">
                                 <View className="h-px flex-1 bg-gray-300" />
-                                <Text className="mx-2 font-kanitRegular text-sm text-gray-500">
+                                <Text className="mx-2 font-KanitRegular text-sm text-gray-500">
                                     or
                                 </Text>
                                 <View className="h-px flex-1 bg-gray-300" />
@@ -169,7 +169,7 @@ export default function Index() {
                     style={{ transform: [{ translateY: loginY }] }}
                 >
                     <Pressable className="py-3" onPress={openLogin}>
-                        <Text className="font-kanitBold text-xl">
+                        <Text className="font-KanitBold text-xl">
                             Login
                         </Text>
                     </Pressable>
@@ -183,7 +183,7 @@ export default function Index() {
                                 placeholderTextColor="#9CA3AF"
                                 keyboardType="email-address"
                                 autoCapitalize="none"
-                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-KanitRegular"
                             />
 
                             <TextInput
@@ -192,11 +192,11 @@ export default function Index() {
                                 onChangeText={setLoginPassword}
                                 placeholderTextColor="#9CA3AF"
                                 secureTextEntry
-                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-KanitRegular"
                             />
 
                             <Pressable className="rounded-xl bg-black py-3">
-                                <Text className="text-center font-kanitBold text-white">
+                                <Text className="text-center font-KanitBold text-white">
                                     Login
                                 </Text>
                             </Pressable>
@@ -204,7 +204,7 @@ export default function Index() {
                             {/*ไอเส้นๆ*/}
                             <View className="my-4 flex-row items-center">
                                 <View className="h-px flex-1 bg-gray-300" />
-                                <Text className="mx-2 font-kanitRegular text-sm text-gray-500">
+                                <Text className="mx-2 font-KanitRegular text-sm text-gray-500">
                                     or
                                 </Text>
                                 <View className="h-px flex-1 bg-gray-300" />

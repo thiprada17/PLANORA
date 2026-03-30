@@ -110,7 +110,7 @@ export default function CalendarBoard({ tasks }: Props) {
                 <Pressable onPress={() => changeMonth(-1)} hitSlop={8}>
                     <Text className="text-xl px-2">{"<"}</Text>
                 </Pressable>
-                <Text className="text-xl font-kanitMedium">{monthName} {year}</Text>
+                <Text className="text-xl font-KanitMedium">{monthName} {year}</Text>
                 <Pressable onPress={() => changeMonth(1)} hitSlop={8}>
                     <Text className="text-xl px-2">{">"}</Text>
                 </Pressable>
@@ -119,7 +119,7 @@ export default function CalendarBoard({ tasks }: Props) {
             {/* weekday headers */}
             <View className="flex-row mb-1">
                 {days.map((d) => (
-                    <Text key={d} className="flex-1 text-center text-xs font-kanitMedium text-gray-500">{d}</Text>
+                    <Text key={d} className="flex-1 text-center text-xs font-KanitMedium text-gray-500">{d}</Text>
                 ))}
             </View>
 
@@ -245,7 +245,7 @@ export default function CalendarBoard({ tasks }: Props) {
                 }}
                     onPress={() => setSelectedTasks(null)}>
                     <Pressable style={{ backgroundColor: "white", padding: 24, borderRadius: 12, width: "80%" }} onPress={() => { }}>
-                        <Text className="text-lg font-kanitMedium mb-3">Tasks</Text>
+                        <Text className="text-lg font-KanitMedium mb-3">Tasks</Text>
                         {selectedTasks?.map((t) => (
                             <Pressable key={t.id} onPress={() => { setSelectedTasks(null); setSelectedTask(t); }}
                                 style={{ backgroundColor: statusColor[t.status], padding: 8, borderRadius: 6, marginBottom: 6 }}>
@@ -275,7 +275,7 @@ export default function CalendarBoard({ tasks }: Props) {
                         width: "80%"
                     }}
                         onPress={() => { }}>
-                        <Text className="text-lg font-kanitMedium mb-3">{selectedTask?.task_name || "Untitled"}</Text>
+                        <Text className="text-lg font-KanitMedium mb-3">{selectedTask?.task_name || "Untitled"}</Text>
                         <View style={{
                             backgroundColor: statusColor[selectedTask?.status ?? "todo"],
                             paddingHorizontal: 10,

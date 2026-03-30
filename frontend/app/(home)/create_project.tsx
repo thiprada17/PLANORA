@@ -245,7 +245,7 @@ export default function CreateProject() {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View className="flex-1 bg-neutral-100 items-center pt-[50px]">
 
-          <Text className="font-kanitBold text-xl color-BLACK mb-7">CREATE PROJECT</Text>
+          <Text className="font-KanitBold text-xl color-BLACK mb-7">CREATE PROJECT</Text>
 
 
           <View className="w-[90%] min-h-[280px] bg-white border border-neutral-900 rounded-2xl mt-2 px-6 py-6 shadow-sm">
@@ -319,14 +319,14 @@ export default function CreateProject() {
 
             <View className="flex-1 justify-start pt-3">
               {step == 1 && <View>
-                <Text className="font-kanitRegular color-BLACK mb-2">
+                <Text className="font-KanitRegular color-BLACK mb-2">
                   Project Name
                 </Text>
 
                 <View className="flex-row">
                   <TextInput
                     placeholder="JerseyJamTU"
-                    className="font-kanitRegular border rounded-xl px-4 py-3 color-neutral-700 border-neutral-300 w-[85%]"
+                    className="font-KanitRegular border rounded-xl px-4 py-3 color-neutral-700 border-neutral-300 w-[85%]"
                     value={project.project_name}
                     onChangeText={(text) =>
                       setProject({ ...project, project_name: text })
@@ -338,14 +338,14 @@ export default function CreateProject() {
 
               }
               {step == 2 && <View>
-                <Text className="font-kanitRegular color-BLACK mb-2">Deadline</Text>
+                <Text className="font-KanitRegular color-BLACK mb-2">Deadline</Text>
 
                 <View className="flex-row items-center">
                   <Pressable
                     onPress={() => setShowPicker(true)}
                     className="flex-row items-center border rounded-xl px-4 py-3 color-neutral-700 border-neutral-300 w-[85%] bg-white justify-between"
                   >
-                    <Text className={`font-kanitRegular ${project.deadline ? 'text-black' : 'text-neutral-400'}`} >
+                    <Text className={`font-KanitRegular ${project.deadline ? 'text-black' : 'text-neutral-400'}`} >
                       {project.deadline || "DD/MM/YY"}
                     </Text>
 
@@ -365,7 +365,7 @@ export default function CreateProject() {
                 )}
               </View>}
               {step == 3 && <View>
-                <Text className="font-kanitRegular color-BLACK mb-2">
+                <Text className="font-KanitRegular color-BLACK mb-2">
                   Subject
                 </Text>
 
@@ -410,7 +410,7 @@ export default function CreateProject() {
               }
               {step == 4 && <View className="flex-1">
 
-                <Text className="font-kanitRegular color-BLACK mb-2">Add member (Email)</Text>
+                <Text className="font-KanitRegular color-BLACK mb-2">Add member (Email)</Text>
 
                 {/* <View className="flex-row flex-wrap items-center border rounded-xl p-2 border-neutral-300 bg-white max-h-[60px]"> */}
                 {/* <View className={`flex-row flex-wrap items-center border rounded-xl p-2 max-h-[60px] 
@@ -425,7 +425,7 @@ ${memberError ? 'border-red-500' : 'border-neutral-300'} bg-white`}>
                         key={index}
                         className="flex-row items-center bg-[#EBEBEB] px-2 py-1 rounded-md mr-2 my-1"
                       >
-                        <Text className="font-kanitRegular text-[12px] mr-1">{mail.name}</Text>
+                        <Text className="font-KanitRegular text-[12px] mr-1">{mail.name}</Text>
                         <Pressable onPress={() => setProject({
                           ...project,
                           member: project.member.filter((_, i) => i !== index),
@@ -446,7 +446,7 @@ ${memberError ? 'border-red-500' : 'border-neutral-300'} bg-white`}>
                         onSubmitEditing={handleAddMember}
                         autoCapitalize="none"
                         keyboardType="email-address"
-                        className="font-kanitRegular color-neutral-700 min-w-[120px]"
+                        className="font-KanitRegular color-neutral-700 min-w-[120px]"
                       />
                     {/* </Animated.View> */}
                   </ScrollView>
@@ -471,7 +471,7 @@ ${memberError ? 'border-red-500' : 'border-neutral-300'} bg-white`}>
                 >
 
                   {readytocreate ? (
-                    <Text className="font-kanitBold text-[10px] text-BLACK">
+                    <Text className="font-KanitBold text-[10px] text-BLACK">
                       CREATE PROJECT
                     </Text>
                   ) : null}

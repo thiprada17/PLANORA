@@ -134,15 +134,15 @@ export default function StatsCards({
         <View className="bg-[#F3F3F3] p-6 items-center">
           <View className="items-end">
             <View className="flex-row items-end">
-              <Text className="text-[85px] font-kanitExtraBold leading-[80px]">
+              <Text className="text-[85px] font-KanitExtraBold leading-[80px]">
                 {countdownDays}
               </Text>
-              <Text className="text-sm font-kanitRegular ml-1 mb-3">
+              <Text className="text-sm font-KanitRegular ml-1 mb-3">
                 days
               </Text>
             </View>
 
-            <Text className="text-xs font-kanitRegular">
+            <Text className="text-xs font-KanitRegular">
               before Deadline
             </Text>
           </View>

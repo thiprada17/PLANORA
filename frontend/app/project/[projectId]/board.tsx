@@ -135,7 +135,7 @@ export default function BoardScreen() {
           <Icon name="menu" size={24} />
         </TouchableOpacity>
 
-        <Text className="flex-1 font-kanitMedium text-[36px] text-black">Board</Text>
+        <Text className="flex-1 font-KanitMedium text-[36px] text-black">Board</Text>
 
         <Pressable
           onPress={() => setModalVisible(true)}
@@ -147,7 +147,7 @@ export default function BoardScreen() {
           }}
           className="border-[1px] border-black rounded-lg px-3 py-2 bg-white active:bg-gray-100"
         >
-          <Text className="font-kanitMedium">+ Create Task</Text>
+          <Text className="font-KanitMedium">+ Create Task</Text>
         </Pressable>
         <CreateTaskModal
           visible={modalVisible}
@@ -172,7 +172,7 @@ export default function BoardScreen() {
       {/* todo */}
       {activeTab === "todo" && (
         <View className="mx-6 mt-4">
-          <Text className="font-kanitMedium text-xl">Todo List</Text>
+          <Text className="font-KanitMedium text-xl">Todo List</Text>
         </View>
       )}
       {/* calendar */}

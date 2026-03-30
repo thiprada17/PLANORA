@@ -15,6 +15,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 import { icons } from "@/constants/icons";
 import TabBar from "@/components/tabBar";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { Label } from "@react-navigation/elements";
 
 export default function setting() {
   const { projectId } = useLocalSearchParams<{ projectId: string }>();
@@ -60,6 +61,7 @@ export default function setting() {
             project_name: projectName,
             deadline: deadline?.toISOString().split("T")[0],
             subject: subjectValue,
+            status: statusValue
           }),
         },
       );
@@ -105,8 +107,10 @@ export default function setting() {
 
   // check status เหมือนหน้า homepage แล้ว
   const statusItems = [
-    { label: "Process", value: "PROCESS" },
-    { label: "Complete", value: "COMPLETE" },
+    { label: "On Process", value: "On Process" },
+    { label: "Complete", value: "Complete" },
+ { label: "LAZY", value: "LAZY" },
+  { label: "Almost Dead", value: "Almost Dead" },
   ];
 
   // check subject เหมือนหน้า homepage แล้ว
@@ -137,7 +141,7 @@ export default function setting() {
           <Image source={icons.menu} className="w-7 h-7" />
         </Pressable>
 
-        <Text className="text-[40px] font-kanitMedium text-black">
+        <Text className="text-[40px] font-KanitMedium text-black">
           Project Setting
         </Text>
       </View>
@@ -151,24 +155,24 @@ export default function setting() {
       <View className="space-y-4 ">
         {/* Project Name */}
         <View>
-          <Text className="text-gray-500 mb-2 font-kanitMedium">
+          <Text className="text-gray-500 mb-2 font-KanitMedium">
             Project Name:
           </Text>
           <TextInput
             value={projectName}
             onChangeText={setProjectName}
-            className="h-[48px] text-gray-500 border border-black rounded-md px-4 py-3 mb-5 font-kanitRegular"
+            className="h-[48px] text-gray-500 border border-black rounded-md px-4 py-3 mb-5 font-KanitRegular"
           />
         </View>
 
         {/* Deadline */}
         <View>
-          <Text className="text-gray-500 mb-2 font-kanitMedium">Deadline:</Text>
+          <Text className="text-gray-500 mb-2 font-KanitMedium">Deadline:</Text>
           <Pressable
             onPress={() => setShowDatePicker(true)}
             className="h-[48px] text-gray-500 border border-black rounded-md px-4 py-3 mb-5 flex-row justify-between items-center"
           >
-            <Text className="text-gray-500 font-kanitRegular">
+            <Text className="text-gray-500 font-KanitRegular">
               {deadline ? deadline.toLocaleDateString("en-GB") : "Select date"}
             </Text>
             <Image source={icons.calendar} className="w-6 h-6" />
@@ -177,7 +181,7 @@ export default function setting() {
 
         {/* Status */}
         <View style={{ zIndex: 30, width: "100%" }}>
-          <Text className="text-gray-500 mb-2 font-kanitMedium">Status:</Text>
+          <Text className="text-gray-500 mb-2 font-KanitMedium">Status:</Text>
           <DropDownPicker
             open={statusOpen}
             value={statusValue}
@@ -203,7 +207,7 @@ export default function setting() {
 
         {/* Subject */}
         <View style={{ zIndex: 20, width: "100%" }}>
-          <Text className="text-gray-500 mb-2 font-kanitMedium">Subject:</Text>
+          <Text className="text-gray-500 mb-2 font-KanitMedium">Subject:</Text>
           <DropDownPicker
             open={subjectOpen}
             value={subjectValue}
@@ -236,7 +240,7 @@ export default function setting() {
           style={styles.shadow}
         >
           <Image source={icons.download} className="w-5 h-5 mr-2" />
-          <Text className="text-[15px] text-[#E9FCEF] font-kanitRegular">
+          <Text className="text-[15px] text-[#E9FCEF] font-KanitRegular">
             Save Project
           </Text>
         </Pressable>
@@ -247,7 +251,7 @@ export default function setting() {
           style={styles.shadow}
         >
           <Image source={icons.delete_forever} className="w-5 h-5 mr-2" />
-          <Text className="text-[15px] text-[#FFBCB7] font-kanitRegular">
+          <Text className="text-[15px] text-[#FFBCB7] font-KanitRegular">
             Delete Project
           </Text>
         </Pressable>

@@ -10,12 +10,12 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        kanitBold: ["KanitBold"],
-        kanitRegular: ["KanitRegular"],
-        kanitLight: ["KanitLight"],
-        kanitMedium: ["KanitMedium"],
-        kanitSemiBold: ["KanitSemiBold"],
-        kanitExtraBold: ["KanitExtraBold"],
+        KanitBold: ["KanitBold"],
+        KanitRegular: ["KanitRegular"],
+        KanitLight: ["KanitLight"],
+        KanitMedium: ["KanitMedium"],
+        KanitSemiBold: ["KanitSemiBold"],
+        KanitExtraBold: ["KanitExtraBold"],
       },
 
       colors: {

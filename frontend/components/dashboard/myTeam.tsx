@@ -12,7 +12,7 @@ export default function MyTeam({ shadowStyle, members }: Props) {
       <View
         className="w-[85%] border border-dashed border-black rounded-2xl p-4"
       >
-        <Text className="font-kanitBold text-xl mb-4 text-center">
+        <Text className="font-KanitBold text-xl mb-4 text-center">
           My Team
         </Text>
 
@@ -34,7 +34,7 @@ export default function MyTeam({ shadowStyle, members }: Props) {
                 source={icons.face}
                 className="w-10 h-10 rounded-full mr-3"
               />
-              <Text className="font-kanitRegular text-sm">
+              <Text className="font-KanitRegular text-sm">
                 {member.name}
               </Text>
             </View>

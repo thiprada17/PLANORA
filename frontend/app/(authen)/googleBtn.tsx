@@ -85,7 +85,7 @@ export default function GoogleLoginButton() {
         resizeMode="contain"
       />
 
-      <Text className="font-kanitRegular text-black">
+      <Text className="font-KanitRegular text-black">
         Continue with Google
       </Text>
     </Pressable>

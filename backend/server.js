@@ -238,7 +238,7 @@ app.post('/create/post', async (req, res) => {
     try {
         const { data: projectData, error: projectError } = await supabase
             .from('project')
-            .insert({ project_name, deadline, subject, created_by: null })
+            .insert({ project_name, deadline, subject, created_by: null, status: "not started" })
             .select()
             .single()
 
@@ -320,7 +320,7 @@ app.get('/display/projects/:userId', async (req, res) => {
 // edit project
 app.put('/api/project/:project_id', async (req, res) => {
     const { project_id } = req.params
-    const { project_name, deadline, subject } = req.body
+    const { project_name, deadline, subject, status } = req.body
 
     try {
         const { data, error } = await supabase
@@ -328,7 +328,8 @@ app.put('/api/project/:project_id', async (req, res) => {
             .update({
                 project_name,
                 deadline,
-                subject
+                subject,
+                status
             })
             .eq('project_id', project_id)
             .select()
@@ -578,7 +579,7 @@ app.get('/dashboard/:projectId/:userId', async (req, res) => {
         // ดึงข้อมูล Project (ชื่อ, วิชา, deadline)
         const { data: project, error: projectError } = await supabase
             .from('project')
-            .select('project_id, project_name, subject, deadline')
+            .select('project_id, project_name, subject, deadline, status')
             .eq('project_id', projectId)
             .single()
         if (projectError) throw projectError

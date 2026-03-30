@@ -54,7 +54,7 @@ export default function BoardBar({
       className="flex-row items-center mr-5"
     >
       <Image source={icon} style={{ width: 17, height: 17 }} />
-      <Text className="ml-1 font-kanitMedium text-[15px]">
+      <Text className="ml-1 font-KanitMedium text-[15px]">
         {label}
       </Text>
     </Pressable>

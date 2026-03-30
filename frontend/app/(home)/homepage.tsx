@@ -176,8 +176,8 @@ const filteredProjects = projects.filter((project) => {
 
             </View>
             <View>
-              <Text className="font-kanitBold text-base leading-[17px] text-black">{user.name}</Text>
-              <Text className="font-kanitRegular text-xs leading-[10px] text-neutral-500">{user.email}</Text>
+              <Text className="font-KanitBold text-base leading-[17px] text-black">{user.name}</Text>
+              <Text className="font-KanitRegular text-xs leading-[10px] text-neutral-500">{user.email}</Text>
             </View>
           </View>
           <Pressable
@@ -185,15 +185,15 @@ const filteredProjects = projects.filter((project) => {
             onPress={() => router.replace("/login")}
           >
             <Image source={icons.door_open} className="w-5 h-5 mr-1" />
-            <Text className="text-red-500 font-kanitRegular">Log out</Text>
+            <Text className="text-red-500 font-KanitRegular">Log out</Text>
           </Pressable>
         </View>
 
         <View className="flex-row items-baseline justify-between px-1 mt-2">
-          <Text className="font-kanitBold text-[50px] leading-[56px] text-black">Planora</Text>
+          <Text className="font-KanitBold text-[50px] leading-[56px] text-black">Planora</Text>
           <View className="flex-row items-center">
             <Image source={icons.home_garden} className="w-3.5 h-3.5 mr-1.5" />
-            <Text className="font-kanitRegular text-sm text-black">
+            <Text className="font-KanitRegular text-sm text-black">
               Homepage
             </Text>
           </View>
@@ -253,7 +253,7 @@ const filteredProjects = projects.filter((project) => {
               {/* ไอการ์ดกรอกวัน */}
               {showDeadlineCard && (
                 <View className="absolute right-0 top-[38px] z-50 w-[230px] bg-white rounded-2xl p-4 border border-gray-300 shadow">
-                  <Text className="font-kanitBold text-sm mb-3">
+                  <Text className="font-KanitBold text-sm mb-3">
                     Deadline range
                   </Text>
 
@@ -378,8 +378,8 @@ const filteredProjects = projects.filter((project) => {
                       href={`../project/${item.project_id}/board`}
                       asChild
                     >
-                      <Text className="font-kanitBold text-center">{item.project_name}</Text>
-                      <Text className="font-kanitRegular text-xs text-gray-500">{item.subject}</Text>
+                      <Text className="font-KanitBold text-center">{item.project_name}</Text>
+                      <Text className="font-KanitRegular text-xs text-gray-500">{item.subject}</Text>
                       <ProjectCard
                         key={item.project_id}
                         name={item.project_name}
@@ -421,7 +421,7 @@ const filteredProjects = projects.filter((project) => {
               className="flex-1 bg-black/30"
               onPress={() => setOpenFilter(false)}>
               <View className="absolute bottom-0 w-full bg-white rounded-t-3xl p-6 h-[250px]">
-                <Text className="font-kanitBold text-lg mb-2">Filter</Text>
+                <Text className="font-KanitBold text-lg mb-2">Filter</Text>
                 <Text className="text-neutral-500">ยังไม่มีอะไรจ้า</Text>
               </View>
             </Pressable>

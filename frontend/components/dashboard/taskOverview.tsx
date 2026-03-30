@@ -11,7 +11,7 @@ export default function TaskOverview({ shadowStyle, data }: Props) {
       <View className="w-[85%] relative" style={shadowStyle}>
         <View className="absolute top-4 left-3 w-full h-full bg-GREEN rounded-2xl border -z-10" style={shadowStyle} />
         <View className="bg-white rounded-2xl border border-black px-6 py-4">
-          <Text className="font-kanitBold text-xl mb-3 text-center">
+          <Text className="font-KanitBold text-xl mb-3 text-center">
             Tasks Overview
           </Text>
 
@@ -20,10 +20,10 @@ export default function TaskOverview({ shadowStyle, data }: Props) {
               key={item.label}
               className="flex-row justify-between mb-1"
             >
-              <Text className="font-kanitRegular">
+              <Text className="font-KanitRegular">
                 {item.label}
               </Text>
-              <Text className="font-kanitBold">
+              <Text className="font-KanitBold">
                 {item.value} tasks
               </Text>
             </View>

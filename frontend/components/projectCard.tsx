@@ -52,7 +52,7 @@ export default function ProjectCard({
                 }}
             >
                 <Image source={icons.deadline} className="w-4 h-4 mr-1" />
-                <Text className="text-[11px] font-kanitRegular text-black">
+                <Text className="text-[11px] font-KanitRegular text-black">
                     {deadline
                         ? deadline.toLocaleDateString("en-GB", {
                             day: "2-digit",
@@ -62,11 +62,11 @@ export default function ProjectCard({
                         : "No deadline"}
                 </Text>
             </View>
-            <Text className="font-kanitBold text-2xl text-black mb-1" numberOfLines={1}>
+            <Text className="font-KanitBold text-2xl text-black mb-1" numberOfLines={1}>
                 {project_name}
             </Text>
             <View className="self-start border border-black/40 rounded-full px-3 py-0.5 mb-3">
-                <Text className="text-[9px] font-kanitRegular text-black/60">
+                <Text className="text-[9px] font-KanitRegular text-black/60">
                     {subject}
                 </Text>
             </View>
@@ -90,7 +90,7 @@ export default function ProjectCard({
                     onPress={onPress}
                     className="bg-black px-3 py-0.5 rounded-full"
                 >
-                    <Text className="text-white text-[7px] font-kanitRegular">
+                    <Text className="text-white text-[7px] font-KanitRegular">
                         Details
                     </Text>
                 </Pressable>

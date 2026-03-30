@@ -157,7 +157,7 @@ export default function ProjectChatModal({
                 end={{ x: 0, y: 1 }}
                 style={{ paddingTop: 32, paddingBottom: 40 }}
               >
-                <Text className="font-kanitMedium text-center text-[16px] tracking-widest text-gray-700">
+                <Text className="font-KanitMedium text-center text-[16px] tracking-widest text-gray-700">
                  {pjName} CHAT
                 </Text>
               </LinearGradient>
@@ -186,7 +186,7 @@ export default function ProjectChatModal({
                       msg.isMe ? "bg-white" : "bg-[#D7EFE0]"
                     }`}
                   >
-                    <Text className="font-kanitRegular text-black text-[14px]">
+                    <Text className="font-KanitRegular text-black text-[14px]">
                       {msg.text}
                     </Text>
                   </View>
@@ -197,7 +197,7 @@ export default function ProjectChatModal({
             <View className="p-6 pb-8 bg-white">
               <View className="flex-row items-center gap-2">
                 <TextInput
-                  className="flex-1 bg-[#D7EFE0] rounded-2xl px-4 py-3 font-kanitRegular h-[50px]"
+                  className="flex-1 bg-[#D7EFE0] rounded-2xl px-4 py-3 font-KanitRegular h-[50px]"
                   placeholder="Type a message..."
                   value={message}
                   onChangeText={setMessage}

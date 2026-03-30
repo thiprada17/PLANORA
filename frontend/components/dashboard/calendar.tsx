@@ -24,7 +24,7 @@ export default function CalendarPart({ shadowStyle }: Props) {
         >
             <View className="bg-white self-center flex-row items-center px-20 py-2 rounded-xl mb-2 border border-black">
                 <Image source={icons.calendar} className="w-4 h-4 mr-2" />
-                <Text className="font-kanitBold text-sm">
+                <Text className="font-KanitBold text-sm">
                     {today.toLocaleString("default", { month: "long" })},{" "}
                     {today.getFullYear()}
                 </Text>
@@ -32,7 +32,7 @@ export default function CalendarPart({ shadowStyle }: Props) {
 
             <View className="flex-row items-center justify-between">
                 <TouchableOpacity onPress={() => setOffset(offset - 1)}>
-                    <Text className="text-lg font-kanitBold">◀</Text>
+                    <Text className="text-lg font-KanitBold">◀</Text>
                 </TouchableOpacity>
 
                 {days.map((date, index) => {
@@ -47,13 +47,13 @@ export default function CalendarPart({ shadowStyle }: Props) {
                                     : ""
                                 }`}
                         >
-                            <Text className={`text-sm font-kanitBold ${isToday ? "text-black" : "text-white"}`}
+                            <Text className={`text-sm font-KanitBold ${isToday ? "text-black" : "text-white"}`}
                             >                
                             {date.toLocaleDateString("en-US", 
                                 {weekday: "short",})}
                             </Text>
 
-                            <Text className={`text-sm font-kanitBold ${isToday ? "text-black" : "text-white"}`}>
+                            <Text className={`text-sm font-KanitBold ${isToday ? "text-black" : "text-white"}`}>
                                 {date.getDate()}
                             </Text>
                         </View>
@@ -61,7 +61,7 @@ export default function CalendarPart({ shadowStyle }: Props) {
                 })}
 
                 <TouchableOpacity onPress={() => setOffset(offset + 1)}>
-                    <Text className="text-lg font-kanitBold">▶</Text>
+                    <Text className="text-lg font-KanitBold">▶</Text>
                 </TouchableOpacity>
             </View>
         </View>

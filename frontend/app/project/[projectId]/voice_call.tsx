@@ -100,8 +100,8 @@ export default function RoomPage() {
 
       const eng = createAgoraRtcEngine()
       eng.initialize({ appId })
-      eng.enableAudio();
-      eng.enableLocalAudio(true) // เปิด local audio 
+      eng.enableAudio() // เปิดระบบเสียง
+      eng.enableLocalAudio(true) // เปิดไมค์
 
       eng.setChannelProfile(ChannelProfileType.ChannelProfileCommunication); // เลือกประเภทห้อง
       eng.setClientRole(ClientRoleType.ClientRoleBroadcaster)
@@ -114,10 +114,10 @@ export default function RoomPage() {
       // eng.setParameters('{"che.audio.enable.agc":false}')
 
       // เรียก enableAudioVolumeIndication ก่อน join เสมอ
-      eng.enableAudioVolumeIndication(200, 3, true)
+      eng.enableAudioVolumeIndication(200, 3, true) // ตรวจเสียงทุก 200ms
 
 
-      // สร้าง event ไว้รับ event
+      // สร้าง event handler ไว้รับ event
       eng.registerEventHandler({
 
         // ตัวเราเองเข้าห้องสำเร็จ
@@ -130,6 +130,7 @@ export default function RoomPage() {
             avatar: userRef.current.profile ?? `https://api.dicebear.com/7.x/adventurer/png?seed=${MY_UID}`
           }]);
         },
+
 
         onUserInfoUpdated: (uid, info) => {
           const username = info.userAccount;
@@ -251,11 +252,15 @@ export default function RoomPage() {
   return (
     <SafeAreaView className="flex-1 bg-gray-200 items-center ">
 
-              <TouchableOpacity onPress={() => setOpenTab(true)} className="absolute top-10 left-5"           style={{ zIndex: 10 }}>
-          <Image source={icons.menu} className="w-6 h-6" />
-        </TouchableOpacity>
-
-      <Text className="font-kanitMedium text-lg font-bold mt-10 mb-10">{projectName}</Text>
+      <TouchableOpacity onPress={() => setOpenTab(true)} className="absolute top-10 left-5" style={{ zIndex: 10 }}>
+        <Image source={icons.menu} className="w-6 h-6" />
+      </TouchableOpacity>
+      <Text
+        style={{ fontFamily: "KanitRegular" }}
+        className="text-lg font-bold mt-10 mb-10"
+      >
+        {projectName}
+      </Text>
 
       {joinedUsers.length === 0 && (
         <View
@@ -266,7 +271,7 @@ export default function RoomPage() {
             onPress={joinRoom}
             className="bg-[#99EEC9] px-10 py-3 rounded-xl"
           >
-            <Text className="font-kanitRegular text-2xl text-black">Join</Text>
+            <Text className="font-KanitRegular text-2xl text-black">Join</Text>
           </Pressable>
         </View>
       )}
@@ -279,7 +284,7 @@ export default function RoomPage() {
               className={`w-24 h-24 rounded-full border-2 bg-gray-300 ${speakingUids.has(member.uid) ? 'border-green-400 border-' : 'border-gray-400'
                 }`}
             />
-            <Text className="mt-2 font-kanitRegular">{member.name}</Text>
+            <Text className="mt-2 font-KanitRegular">{member.name}</Text>
           </View>
         ))}
       </View>
@@ -299,11 +304,11 @@ export default function RoomPage() {
           <Image source={icons.phone_cancel} className='h-7 w-7' />
         </Pressable>
       </View>
-            <TabBar
-              visible={openTab}
-              onClose={() => setOpenTab(false)}
-              projectId={Number(projectId)}
-            />
+      <TabBar
+        visible={openTab}
+        onClose={() => setOpenTab(false)}
+        projectId={Number(projectId)}
+      />
     </SafeAreaView>
   );
 }
