@@ -69,7 +69,9 @@ export default function Index() {
             setIsLoading(true);
             // ตอนนี้มันต้องเปลี่ยน ip ที่จะ fetch ตาามเครื่องน้าา ยุ่งยากมาก
             const res = await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/api/signup', {
-                method: 'POST',
+                        // const res = await fetch('http://192.168.1.125:3000/api/signup', {
+  
+            method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'ngrok-skip-browser-warning': '69420'
