@@ -25,11 +25,12 @@ const Column = [
   { id: "complete", title: "Complete" },
 ];
 
-export default function KanbanBoard({
-  tasks: initialTasks,
-  setModalVisible,
-  onTaskPress,
-}: Props) {
+const TASK_CARD_HEIGHT = 180;
+const HEADER_HEIGHT = 60;
+const ADD_BUTTON_HEIGHT = 36;
+const MAX_COL_HEIGHT = 500;
+
+export default function KanbanBoard({ tasks: initialTasks, setModalVisible, onTaskPress }: Props) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [highlightCol, setHighlightCol] = useState<string | null>(null);
@@ -37,6 +38,10 @@ export default function KanbanBoard({
   const columnLayouts = useRef<Record<string, ColumnLayout>>({});
   const columnRefs = useRef<Record<string, any>>({});
   const scrollX = useRef(0);
+
+  useEffect(() => {
+    setTasks(initialTasks);
+  }, [initialTasks]);
 
   const moveTask = (taskId: string, toColumnId: string) => {
     setTasks((prev) =>
@@ -53,7 +58,7 @@ export default function KanbanBoard({
     return null;
   };
 
-    const createPanResponder = (taskId: string) =>
+  const createPanResponder = (taskId: string) =>
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
@@ -71,12 +76,8 @@ export default function KanbanBoard({
       },
     });
 
-  useEffect(() => {
-    setTasks(initialTasks);
-  }, [initialTasks]);
-
   return (
- <ScrollView
+    <ScrollView
       horizontal
       showsHorizontalScrollIndicator
       contentContainerStyle={{
@@ -97,6 +98,13 @@ export default function KanbanBoard({
         const columnTasks = tasks.filter((task) => task.status === col.id);
         const isHighlighted = highlightCol === col.id;
 
+        const columnHeight = columnTasks.length === 0
+          ? HEADER_HEIGHT + ADD_BUTTON_HEIGHT + 40 // ความสูงขั้นต่ำเมื่อไม่มี task
+          : Math.min(
+            columnTasks.length * TASK_CARD_HEIGHT + HEADER_HEIGHT + ADD_BUTTON_HEIGHT,
+            MAX_COL_HEIGHT
+          );
+
         return (
           <View
             key={col.id}
@@ -106,11 +114,7 @@ export default function KanbanBoard({
                 columnLayouts.current[col.id] = { x: pageX, width };
               });
             }}
-  //           showsVerticalScrollIndicator={false}
-  // scrollEnabled={draggingId === null}
-            // className="w-[210px] h-[540px] mr-7 p-4 rounded-2xl border-[1px] border-neutral-100 bg-[#C9EAD5]"
-            // className="mr-7 p-4 rounded-2xl border-[1px] border-neutral-100"
- style={{
+            style={{
               shadowColor: "#000",
               shadowOpacity: 0.5,
               shadowRadius: 2,
@@ -122,31 +126,29 @@ export default function KanbanBoard({
               borderRadius: 16,
               borderWidth: 1,
               borderColor: isHighlighted ? "#5aad78" : "#f5f5f5",
-              alignSelf: "flex-start", 
-              minHeight: 80,
+              alignSelf: "flex-start",
+              height: columnHeight,
             }}
           >
-            {/* Column Header */}
             <View className="flex-row items-center justify-between">
-              <Text className="font-KanitMedium text-xl text-[#222222]">{col.title}</Text>
-              {/* <View className="flex-row gap-1"/> */}
+              <Text className="font-kanitMedium text-xl text-[#222222]">{col.title}</Text>
             </View>
 
             <View className="h-[1px] bg-neutral-600 my-3 mt-2" />
 
-                        <ScrollView
-              style={{ maxHeight: 400 }}
+            <ScrollView
+              style={{ height: columnHeight - HEADER_HEIGHT - ADD_BUTTON_HEIGHT }}
               showsVerticalScrollIndicator={false}
               scrollEnabled={draggingId === null}
+              nestedScrollEnabled
             >
-
               {columnTasks.length === 0 && (
                 <Text style={{ color: "#9ca3af", textAlign: "center", marginTop: 8 }}>
                   No task here
                 </Text>
               )}
 
-               {columnTasks.map((task) => {
+              {columnTasks.map((task) => {
                 const panResponder = createPanResponder(task.id);
                 const isDragging = draggingId === task.id;
 
@@ -181,39 +183,30 @@ export default function KanbanBoard({
                           Assign to
                         </Text>
 
-                      <View className="flex-row items-center mx-3 mb-5">
-                        {task.task_assign?.map((user: any, i: number) => (
-                          <View
-                            key={user.user_id}
-                            className={`${i !== 0 ? "-ml-3" : ""}`}
-                          >
-                            <Image
-                              source={{ uri: user.avatar_url }}
-                              style={{
-                                width: 28,
-                                height: 28,
-                                borderRadius: 14,
-                                borderWidth: 1,
-                                borderColor: "gray",
-                              }}
-                            />
-                          </View>
-                        ))}
+                        <View className="flex-row items-center mx-3 mb-5">
+                          {task.task_assign?.map((user: any, i: number) => (
+                            <View key={user.user_id} className={`${i !== 0 ? "-ml-3" : ""}`}>
+                              <Image
+                                source={{ uri: user.avatar_url }}
+                                style={{ width: 28, height: 28, borderRadius: 14, borderWidth: 1, borderColor: "gray" }}
+                              />
+                            </View>
+                          ))}
+                        </View>
                       </View>
-                    </View>
                     </Pressable>
                   </Animated.View>
                 );
               })}
-              </ScrollView>
+            </ScrollView>
 
-              <TouchableOpacity
-                className="flex-row items-center gap-2 mt-2"
-                onPress={() => setModalVisible(true)}
-              >
-                <Text className="font-KanitMedium text-neutral-500 text-md">+ Add Task</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              className="flex-row items-center gap-2 mt-2"
+              onPress={() => setModalVisible(true)}
+            >
+              <Text className="font-kanitMedium text-neutral-500 text-md">+ Add Task</Text>
+            </TouchableOpacity>
+          </View>
         );
       })}
     </ScrollView>
