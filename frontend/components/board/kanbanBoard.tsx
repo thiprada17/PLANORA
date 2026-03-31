@@ -146,42 +146,40 @@ export default function KanbanBoard({
                 </Text>
               )}
 
-              {columnTasks.map((task) => {
+               {columnTasks.map((task) => {
                 const panResponder = createPanResponder(task.id);
                 const isDragging = draggingId === task.id;
 
                 return (
-                  <Animated.Pressable 
+                  <Animated.View
                     key={task.id}
                     {...panResponder.panHandlers}
-                    onPress={() => onTaskPress(task)}
-                >
-                  <View
                     style={{
                       opacity: isDragging ? 0.4 : 1,
-                        shadowColor: "#000",
-                        shadowOpacity: 0.6,
-                        shadowRadius: 2,
-                        shadowOffset: { width: 0, height: 2 },
-                        elevation: 2,,
-                      }}
-                      className="mb-3 rounded-3xl border border-neutral-500 bg-[#F0F0F0] pt-1.5 pb-1.5 px-1.5"
-                    >
+                      shadowColor: "#000",
+                      shadowOpacity: 0.6,
+                      shadowRadius: 2,
+                      shadowOffset: { width: 0, height: 2 },
+                      elevation: 2,
+                    }}
+                    className="mb-3 rounded-3xl border border-neutral-500 bg-[#F0F0F0] pt-1.5 pb-1.5 px-1.5"
+                  >
+                    <Pressable onPress={() => onTaskPress(task)}>
                       <View className="mt-4 rounded-3xl border border-black bg-white">
-                        <Text className="font-KanitMedium text-xl mt-5 mx-2 px-2">
+                        <Text className="font-kanitMedium text-xl mt-5 mx-2 px-2">
                           {task.task_name ?? "Untitled Task"}
                         </Text>
 
-                      <View className="flex-row items-center gap-1 mb-5 mx-2 px-2">
-                        <Image source={icons.calenCircle} style={{ width: 17, height: 17 }} />
-                        <Text className="font-KanitRegular text-xs text-black">
-                          {task.deadline ?? "-"}
-                        </Text>
-                      </View>
+                        <View className="flex-row items-center gap-1 mb-5 mx-2 px-2">
+                          <Image source={icons.calenCircle} style={{ width: 17, height: 17 }} />
+                          <Text className="font-kanitRegular text-xs text-black">
+                            {task.deadline ?? "-"}
+                          </Text>
+                        </View>
 
-                      <Text className="font-KanitRegular text-xs text-black mx-2 mb-2 px-2">
-                        Assign to
-                      </Text>
+                        <Text className="font-kanitRegular text-xs text-black mx-2 mb-2 px-2">
+                          Assign to
+                        </Text>
 
                       <View className="flex-row items-center mx-3 mb-5">
                         {task.task_assign?.map((user: any, i: number) => (
@@ -203,6 +201,7 @@ export default function KanbanBoard({
                         ))}
                       </View>
                     </View>
+                    </Pressable>
                   </Animated.View>
                 );
               })}
