@@ -48,17 +48,12 @@ export default function KanbanBoard({ tasks: initialTasks, setModalVisible }: Pr
     return null;
   };
 
-  const createPanResponder = (taskId: string) =>
+    const createPanResponder = (taskId: string) =>
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => {
-        setDraggingId(taskId);
-      },
-      onPanResponderMove: (evt) => {
-        const col = getColumnAtX(evt.nativeEvent.pageX);
-        setHighlightCol(col);
-      },
+      onPanResponderGrant: () => setDraggingId(taskId),
+      onPanResponderMove: (evt) => setHighlightCol(getColumnAtX(evt.nativeEvent.pageX)),
       onPanResponderRelease: (evt) => {
         const col = getColumnAtX(evt.nativeEvent.pageX);
         if (col) moveTask(taskId, col);
@@ -76,16 +71,15 @@ export default function KanbanBoard({ tasks: initialTasks, setModalVisible }: Pr
   }, [initialTasks]);
 
   return (
-    <ScrollView
+ <ScrollView
       horizontal
       showsHorizontalScrollIndicator
-contentContainerStyle={{
+      contentContainerStyle={{
         marginHorizontal: 24,
-        alignItems: "flex-start",  // ทำให้ column ย่อตามเนื้อหา
+        alignItems: "flex-start",
       }}
       onScroll={(e) => {
         scrollX.current = e.nativeEvent.contentOffset.x;
-        // re-measure ทุก column หลัง scroll
         Object.entries(columnRefs.current).forEach(([colId, ref]) => {
           ref?.measure((_x: number, _y: number, width: number, _h: number, pageX: number) => {
             columnLayouts.current[colId] = { x: pageX, width };
@@ -111,7 +105,7 @@ contentContainerStyle={{
   // scrollEnabled={draggingId === null}
             // className="w-[210px] h-[540px] mr-7 p-4 rounded-2xl border-[1px] border-neutral-100 bg-[#C9EAD5]"
             // className="mr-7 p-4 rounded-2xl border-[1px] border-neutral-100"
-            style={{
+ style={{
               shadowColor: "#000",
               shadowOpacity: 0.5,
               shadowRadius: 2,
@@ -123,10 +117,9 @@ contentContainerStyle={{
               borderRadius: 16,
               borderWidth: 1,
               borderColor: isHighlighted ? "#5aad78" : "#f5f5f5",
-              maxHeight: 540,
-              alignSelf: "flex-start",
+              alignSelf: "flex-start", 
+              minHeight: 80,
             }}
-  
           >
             {/* Column Header */}
             <View className="flex-row items-center justify-between">
@@ -136,11 +129,11 @@ contentContainerStyle={{
 
             <View className="h-[1px] bg-neutral-600 my-3 mt-2" />
 
-            <ScrollView
-            
-        showsVerticalScrollIndicator={false}
-        scrollEnabled={draggingId === null}
-      >
+                        <ScrollView
+              style={{ maxHeight: 400 }}
+              showsVerticalScrollIndicator={false}
+              scrollEnabled={draggingId === null}
+            >
 
               {columnTasks.length === 0 && (
                 <Text style={{ color: "#9ca3af", textAlign: "center", marginTop: 8 }}>
