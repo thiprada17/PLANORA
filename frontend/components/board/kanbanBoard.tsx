@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Image, PanResponder, Animated } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Image, PanResponder, Animated, Pressable } from "react-native";
 import { icons } from "@/constants/icons";
 
 type Task = {
@@ -13,6 +13,7 @@ type Task = {
 type Props = {
   tasks: any[];
   setModalVisible: (v: boolean) => void;
+  onTaskPress: (task: any) => void;
 };
 
 type ColumnLayout = { x: number; width: number };
@@ -24,7 +25,11 @@ const Column = [
   { id: "complete", title: "Complete" },
 ];
 
-export default function KanbanBoard({ tasks: initialTasks, setModalVisible }: Props) {
+export default function KanbanBoard({
+  tasks: initialTasks,
+  setModalVisible,
+  onTaskPress,
+}: Props) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [highlightCol, setHighlightCol] = useState<string | null>(null);
@@ -146,23 +151,26 @@ export default function KanbanBoard({ tasks: initialTasks, setModalVisible }: Pr
                 const isDragging = draggingId === task.id;
 
                 return (
-                  <Animated.View
+                  <Animated.Pressable 
                     key={task.id}
                     {...panResponder.panHandlers}
+                    onPress={() => onTaskPress(task)}
+                >
+                  <View
                     style={{
                       opacity: isDragging ? 0.4 : 1,
-                      shadowColor: "#000",
-                      shadowOpacity: 0.6,
-                      shadowRadius: 2,
-                      shadowOffset: { width: 0, height: 2 },
-                      elevation: 2,
-                    }}
-                    className="mb-3 rounded-3xl border border-neutral-500 bg-[#F0F0F0] pt-1.5 pb-1.5 px-1.5"
-                  >
-                    <View className="mt-4 rounded-3xl border border-black bg-white">
-                      <Text className="font-KanitMedium text-xl mt-5 mx-2 px-2">
-                        {task.task_name ?? "Untitled Task"}
-                      </Text>
+                        shadowColor: "#000",
+                        shadowOpacity: 0.6,
+                        shadowRadius: 2,
+                        shadowOffset: { width: 0, height: 2 },
+                        elevation: 2,,
+                      }}
+                      className="mb-3 rounded-3xl border border-neutral-500 bg-[#F0F0F0] pt-1.5 pb-1.5 px-1.5"
+                    >
+                      <View className="mt-4 rounded-3xl border border-black bg-white">
+                        <Text className="font-KanitMedium text-xl mt-5 mx-2 px-2">
+                          {task.task_name ?? "Untitled Task"}
+                        </Text>
 
                       <View className="flex-row items-center gap-1 mb-5 mx-2 px-2">
                         <Image source={icons.calenCircle} style={{ width: 17, height: 17 }} />
@@ -212,4 +220,3 @@ export default function KanbanBoard({ tasks: initialTasks, setModalVisible }: Pr
     </ScrollView>
   );
 }
-
