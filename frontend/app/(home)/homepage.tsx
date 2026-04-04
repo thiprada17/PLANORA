@@ -1,5 +1,3 @@
-<<<<<<< Updated upstream
-=======
 import { View, Text, Pressable, Image, Modal, ScrollView, Alert } from "react-native";
 import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
@@ -66,30 +64,36 @@ export default function HomePage() {
   // ];
 
   const fetchProjects = async () => {
-    const userId = await AsyncStorage.getItem("user_id");
+    const userId = await AsyncStorage.getItem("user_id")
     if (!userId) return;
-    
     try {
       const response = await fetch(
         `https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`,
         {
-          headers: { "ngrok-skip-browser-warning": "true" },
-        }
-      );
-
+          headers: {
+            "ngrok-skip-browser-warning": "true",},
+          }
+      )
       if (!response.ok) {
-        const errorText = await response.text();
-        console.log("API ERROR DETAIL:", errorText);
-        throw new Error("API failed");
-      }
+      const text = await response.text();
+      console.error("API ERROR:", text);
+      setProjects([]);
+      return;
+    }
+      const data = await response.json(); 
+    const formattedProjects = Array.isArray(data)
+      ? data.map((p) => ({
+          ...p,
+          deadline: p.deadline ? new Date(p.deadline + "T00:00:00") : null,
+          members: p.members ?? [],
+        }))
+      : [];
 
-      const data = await response.json();
-      
-      const formattedProjects = Array.isArray(data) ? data.map((p) => ({
-        ...p,
-        deadline: p.deadline ? new Date(p.deadline + "T00:00:00") : null,
-        members: p.members ?? []
-      })) : [];
+
+      // deadline: p.deadline ? new Date(p.deadline) : null,
+      //     members: []
+      //   }))
+      // : []
 
       setProjects(formattedProjects);
     } catch (error) {
@@ -435,4 +439,3 @@ const filteredProjects = projects.filter((project) => {
     </SafeAreaView>
   );
 }
->>>>>>> Stashed changes
