@@ -15,8 +15,8 @@ import { PermissionsAndroid, Platform } from 'react-native';
 import { useLocalSearchParams } from "expo-router";
 import TabBar from "@/components/tabBar";
 
-const appId = "1ba060b3befa4a518e2d5e06a58f8738";
-const MY_UID = Math.floor(Math.random() * 9000) + 1000; // สุ่มครั้งเดียว ไม่ใช่ใน component
+const appId = process.env.EXPO_PUBLIC_AGORA_APP_ID ?? '';
+const MY_UID = Math.floor(Math.random() * 9000) + 1000
 
 type JoinedUser = {
   uid: number;
@@ -80,7 +80,6 @@ export default function RoomPage() {
   }, []);
 
   const getUser = async (username: string) => {
-    console.log('yes yes')
     const encoded = encodeURIComponent(username);
     try {
       const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/avatar/${encoded}`)
@@ -208,7 +207,20 @@ export default function RoomPage() {
     };
   }, []);
 
-  const joinRoom = () => {
+  const fetchToken = async (Room: string, uid: number): Promise<string> => {
+    try {
+      const res = await fetch(
+        `https://freddy-unseconded-kristan.ngrok-free.dev/agora/token?channelName=${Room}&uid=${uid}`
+      );
+      const data = await res.json()
+      return data.token
+    } catch (error) {
+      console.log('fetch token error:', error);
+      return '';
+    }
+  }
+
+  const joinRoom = async () => {
     const eng = engineRef.current;
     if (!eng) {
       console.log("Engine not ready");
@@ -224,6 +236,9 @@ export default function RoomPage() {
 
     const proejctId = userRef.current.projectId
 
+      const token = await fetchToken(proejctId, 0);
+  console.log('token:', token);
+
     console.log(userRef.current.name + " " + userRef.current.projectId)
     if (!username) {
       console.log('username not found')
@@ -231,7 +246,7 @@ export default function RoomPage() {
     }
 
 
-    eng.joinChannelWithUserAccount('', proejctId, username, {
+    eng.joinChannelWithUserAccount(token, proejctId, username, {
       clientRoleType: ClientRoleType.ClientRoleBroadcaster // ระบุ role ตอน join ด้วย
     });
   };

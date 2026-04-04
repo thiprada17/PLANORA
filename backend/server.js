@@ -3,6 +3,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const { createClient } = require('@supabase/supabase-js')
 const bcrypt = require('bcrypt')
+require('dotenv').config()
 
 const app = express()
 
@@ -10,9 +11,38 @@ app.use(express.json());
 app.use(cors())
 app.use(bodyParser.json())
 
-const supabaseUrl = 'https://qoxczgyeamhsuxmxhpzr.supabase.co'
-const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFveGN6Z3llYW1oc3V4bXhocHpyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTY4NDA1OSwiZXhwIjoyMDg1MjYwMDU5fQ.5_HoLWXUPAQn7IzgMwRmkUjFUpYaGd3d0s54_f7VMIU' // service key secret
+const supabaseUrl = process.env.SUPABASE_URL
+const supabaseServiceKey = process.env.SUPABASE_KEY
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
+const { RtcTokenBuilder, RtcRole } = require('agora-token');
+
+const agoraAppId = process.env.AGORA_APP_ID;
+const agoraAppCertificate = process.env.AGORA_APP_CERTIFICATE;
+
+app.get('/agora/token', (req, res) => {
+  const { channelName, uid } = req.query;
+
+  if (!channelName || !uid) {
+    return res.status(400).json({ error: 'channelName and uid required' });
+  }
+
+  const expireTime = 3600; // หมดอายุใน 1 ชั่วโมง
+  const currentTime = Math.floor(Date.now() / 1000);
+  const privilegeExpireTime = currentTime + expireTime;
+
+  const token = RtcTokenBuilder.buildTokenWithUid(
+    agoraAppId,
+    agoraAppCertificate,
+    channelName,
+    0,
+    RtcRole.PUBLISHER,
+    privilegeExpireTime,
+    privilegeExpireTime
+  );
+
+  res.json({ token });
+});
 
 // สร้าง server ให้น้องถุงเท้า
 const http = require("http")
