@@ -75,24 +75,20 @@ export default function HomePage() {
           }
       )
       if (!response.ok) {
-        const text = await response.text()
-        console.log("API ERROR:", text)
-        throw new Error("API failed")
-      }
-      const data = await response.json()
+      const text = await response.text();
+      console.error("API ERROR:", text);
+      setProjects([]);
+      return;
+    }
+      const data = await response.json(); 
+    const formattedProjects = Array.isArray(data)
+      ? data.map((p) => ({
+          ...p,
+          deadline: p.deadline ? new Date(p.deadline + "T00:00:00") : null,
+          members: p.members ?? [],
+        }))
+      : [];
 
-      if (!response.ok) {
-        const text = await response.text();
-        return;
-      }
-      
-      const data = await response.json();
-      const formattedProjects = Array.isArray(data) ? data.map((p) => ({
-        ...p,
-        deadline: p.deadline ? new Date(p.deadline + "T00:00:00") : null,
-        members: p.members ?? []
-
-      })) : [];
 
       // deadline: p.deadline ? new Date(p.deadline) : null,
       //     members: []
