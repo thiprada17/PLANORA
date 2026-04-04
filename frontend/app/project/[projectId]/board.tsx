@@ -18,10 +18,8 @@ import TabBar from "@/components/tabBar";
 import BoardBar from "@/components/board/boardBar";
 import KanbanBoard from "@/components/board/kanbanBoard";
 import CalendarBoard from "@/components/board/calendarBoard";
-import TaskSetting from "@/components/task/taskSetting";
-
+import TodoBoard from "@/components/board/todoBoard";
 import { useLocalSearchParams } from "expo-router";
-
 const Icon = ({
   name,
   size = 18,
@@ -197,9 +195,10 @@ export default function BoardScreen() {
 
       {/* todo */}
       {activeTab === "todo" && (
-        <View className="mx-6 mt-4">
-          <Text className="font-KanitMedium text-xl">Todo List</Text>
-        </View>
+        <TodoBoard 
+          tasks={tasks} 
+          setModalVisible={setModalVisible} 
+        />
       )}
       {/* calendar */}
       {activeTab === "calendar" && <CalendarBoard tasks={tasks} />}

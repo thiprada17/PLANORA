@@ -508,6 +508,7 @@ app.post('/create/task', async (req, res) => {
     }
 })
 
+// edit task
 app.put('/task/:id', async (req, res) => {
     const { id } = req.params;
     const { name, deadline } = req.body;

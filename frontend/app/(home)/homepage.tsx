@@ -67,9 +67,19 @@ export default function HomePage() {
     const userId = await AsyncStorage.getItem("user_id")
     if (!userId) return;
     try {
-      
-      const response = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`);
-            // const response = await fetch(`http://192.168.1.125:3000/display/projects/${userId}`);
+      const response = await fetch(
+        `https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`,
+        {
+          headers: {
+            "ngrok-skip-browser-warning": "true",},
+          }
+      )
+      if (!response.ok) {
+        const text = await response.text()
+        console.log("API ERROR:", text)
+        throw new Error("API failed")
+      }
+      const data = await response.json()
 
       if (!response.ok) {
         const text = await response.text();

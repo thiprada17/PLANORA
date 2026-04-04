@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-
 import {
   View,
   Text,
@@ -14,16 +13,16 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { icons } from "@/constants/icons";
 import TabBar from "@/components/tabBar";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { Label } from "@react-navigation/elements";
+import { useLocalSearchParams, useRouter} from "expo-router";
 
 export default function setting() {
-  const { projectId } = useLocalSearchParams<{ projectId: string }>();
-  const projectID = Number(projectId);
   const router = useRouter();
+  const { projectId } = useLocalSearchParams<{ projectId: string }>();
+  const projectID = Number(projectId)
+    
+  const [projectName, setProjectName] = useState("Apple Jack");
 
-  const [projectName, setProjectName] = useState("");
-  const [deadline, setDeadline] = useState<Date | null>(null);
+  const [deadline, setDeadline] = useState<Date | null>(new Date("2026-02-11"));
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
   const [statusValue, setStatusValue] = useState("");
@@ -104,6 +103,29 @@ export default function setting() {
       },
     ]);
   };
+
+  useEffect(() => {
+  const fetchProjectData = async () => {
+    try {
+      // เรียกไปที่ Get Project Name หรือ Dashboard ก็ได้ (ตามที่มีใน server.js)
+      const response = await fetch(`${API_URL}/dashboard/${projectID}/YOUR_USER_ID`); 
+      const data = await response.json();
+
+      if (data && data.project) {
+        setProjectName(data.project.project_name);
+        setSubjectValue(data.project.subject);
+        // แปลงวันที่จาก String เป็น Date Object
+        if (data.project.deadline) {
+          setDeadline(new Date(data.project.deadline));
+        }
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
+  };
+
+  if (projectID) fetchProjectData();
+  }, [projectID]);
 
   // check status เหมือนหน้า homepage แล้ว
   const statusItems = [
