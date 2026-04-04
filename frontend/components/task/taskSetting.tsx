@@ -184,7 +184,7 @@ export default function TaskSetting({
                   }
                   className="font-kanitMedium text-3xl text-black pb"
                   multiline
-                  style={{ minHeight: 60}}
+                  style={{ minHeight: 60 }}
                 />
               </View>
 

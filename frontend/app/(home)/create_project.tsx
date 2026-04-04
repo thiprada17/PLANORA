@@ -337,7 +337,7 @@ export default function CreateProject() {
                         </Pressable>
                       </View>
                     ))}
-
+{/* http://10.120.1.120:3000/get/task/${projectID} */}
                     <TextInput
                       placeholder={project.member.length === 0 ? "example@mail.com" : ""}
                       className="font-kanitRegular color-neutral-700 flex-1 min-w-[100px]"
