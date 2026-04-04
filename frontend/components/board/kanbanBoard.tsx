@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Image, PanResponder, Animated } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Image, PanResponder, Animated, Pressable } from "react-native";
 import { icons } from "@/constants/icons";
 
 type Task = {
@@ -13,6 +13,7 @@ type Task = {
 type Props = {
   tasks: any[];
   setModalVisible: (v: boolean) => void;
+  onTaskPress: (task: any) => void;
 };
 
 type ColumnLayout = { x: number; width: number };
@@ -24,7 +25,12 @@ const Column = [
   { id: "complete", title: "Complete" },
 ];
 
-export default function KanbanBoard({ tasks: initialTasks, setModalVisible }: Props) {
+const TASK_CARD_HEIGHT = 180;
+const HEADER_HEIGHT = 60;
+const ADD_BUTTON_HEIGHT = 36;
+const MAX_COL_HEIGHT = 500;
+
+export default function KanbanBoard({ tasks: initialTasks, setModalVisible, onTaskPress }: Props) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [highlightCol, setHighlightCol] = useState<string | null>(null);
@@ -32,6 +38,10 @@ export default function KanbanBoard({ tasks: initialTasks, setModalVisible }: Pr
   const columnLayouts = useRef<Record<string, ColumnLayout>>({});
   const columnRefs = useRef<Record<string, any>>({});
   const scrollX = useRef(0);
+
+  useEffect(() => {
+    setTasks(initialTasks);
+  }, [initialTasks]);
 
   const moveTask = (taskId: string, toColumnId: string) => {
     setTasks((prev) =>
@@ -52,13 +62,8 @@ export default function KanbanBoard({ tasks: initialTasks, setModalVisible }: Pr
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => {
-        setDraggingId(taskId);
-      },
-      onPanResponderMove: (evt) => {
-        const col = getColumnAtX(evt.nativeEvent.pageX);
-        setHighlightCol(col);
-      },
+      onPanResponderGrant: () => setDraggingId(taskId),
+      onPanResponderMove: (evt) => setHighlightCol(getColumnAtX(evt.nativeEvent.pageX)),
       onPanResponderRelease: (evt) => {
         const col = getColumnAtX(evt.nativeEvent.pageX);
         if (col) moveTask(taskId, col);
@@ -71,21 +76,16 @@ export default function KanbanBoard({ tasks: initialTasks, setModalVisible }: Pr
       },
     });
 
-  useEffect(() => {
-    setTasks(initialTasks);
-  }, [initialTasks]);
-
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator
-contentContainerStyle={{
+      contentContainerStyle={{
         marginHorizontal: 24,
-        alignItems: "flex-start",  // ทำให้ column ย่อตามเนื้อหา
+        alignItems: "flex-start",
       }}
       onScroll={(e) => {
         scrollX.current = e.nativeEvent.contentOffset.x;
-        // re-measure ทุก column หลัง scroll
         Object.entries(columnRefs.current).forEach(([colId, ref]) => {
           ref?.measure((_x: number, _y: number, width: number, _h: number, pageX: number) => {
             columnLayouts.current[colId] = { x: pageX, width };
@@ -98,6 +98,13 @@ contentContainerStyle={{
         const columnTasks = tasks.filter((task) => task.status === col.id);
         const isHighlighted = highlightCol === col.id;
 
+        const columnHeight = columnTasks.length === 0
+          ? HEADER_HEIGHT + ADD_BUTTON_HEIGHT + 40 // ความสูงขั้นต่ำเมื่อไม่มี task
+          : Math.min(
+            columnTasks.length * TASK_CARD_HEIGHT + HEADER_HEIGHT + ADD_BUTTON_HEIGHT,
+            MAX_COL_HEIGHT
+          );
+
         return (
           <View
             key={col.id}
@@ -107,10 +114,6 @@ contentContainerStyle={{
                 columnLayouts.current[col.id] = { x: pageX, width };
               });
             }}
-  //           showsVerticalScrollIndicator={false}
-  // scrollEnabled={draggingId === null}
-            // className="w-[210px] h-[540px] mr-7 p-4 rounded-2xl border-[1px] border-neutral-100 bg-[#C9EAD5]"
-            // className="mr-7 p-4 rounded-2xl border-[1px] border-neutral-100"
             style={{
               shadowColor: "#000",
               shadowOpacity: 0.5,
@@ -123,25 +126,22 @@ contentContainerStyle={{
               borderRadius: 16,
               borderWidth: 1,
               borderColor: isHighlighted ? "#5aad78" : "#f5f5f5",
-              maxHeight: 540,
               alignSelf: "flex-start",
+              height: columnHeight,
             }}
-  
           >
-            {/* Column Header */}
             <View className="flex-row items-center justify-between">
-              <Text className="font-KanitMedium text-xl text-[#222222]">{col.title}</Text>
-              {/* <View className="flex-row gap-1"/> */}
+              <Text className="font-kanitMedium text-xl text-[#222222]">{col.title}</Text>
             </View>
 
             <View className="h-[1px] bg-neutral-600 my-3 mt-2" />
 
             <ScrollView
-            
-        showsVerticalScrollIndicator={false}
-        scrollEnabled={draggingId === null}
-      >
-
+              style={{ height: columnHeight - HEADER_HEIGHT - ADD_BUTTON_HEIGHT }}
+              showsVerticalScrollIndicator={false}
+              scrollEnabled={draggingId === null}
+              nestedScrollEnabled
+            >
               {columnTasks.length === 0 && (
                 <Text style={{ color: "#9ca3af", textAlign: "center", marginTop: 8 }}>
                   No task here
@@ -166,57 +166,49 @@ contentContainerStyle={{
                     }}
                     className="mb-3 rounded-3xl border border-neutral-500 bg-[#F0F0F0] pt-1.5 pb-1.5 px-1.5"
                   >
-                    <View className="mt-4 rounded-3xl border border-black bg-white">
-                      <Text className="font-KanitMedium text-xl mt-5 mx-2 px-2">
-                        {task.task_name ?? "Untitled Task"}
-                      </Text>
-
-                      <View className="flex-row items-center gap-1 mb-5 mx-2 px-2">
-                        <Image source={icons.calenCircle} style={{ width: 17, height: 17 }} />
-                        <Text className="font-KanitRegular text-xs text-black">
-                          {task.deadline ?? "-"}
+                    <Pressable onPress={() => onTaskPress(task)}>
+                      <View className="mt-4 rounded-3xl border border-black bg-white">
+                        <Text className="font-kanitMedium text-xl mt-5 mx-2 px-2">
+                          {task.task_name ?? "Untitled Task"}
                         </Text>
-                      </View>
 
-                      <Text className="font-KanitRegular text-xs text-black mx-2 mb-2 px-2">
-                        Assign to
-                      </Text>
+                        <View className="flex-row items-center gap-1 mb-5 mx-2 px-2">
+                          <Image source={icons.calenCircle} style={{ width: 17, height: 17 }} />
+                          <Text className="font-kanitRegular text-xs text-black">
+                            {task.deadline ?? "-"}
+                          </Text>
+                        </View>
 
-                      <View className="flex-row items-center mx-3 mb-5">
-                        {task.task_assign?.map((user: any, i: number) => (
-                          <View
-                            key={user.user_id}
-                            className={`${i !== 0 ? "-ml-3" : ""}`}
-                          >
-                            <Image
-                              source={{ uri: user.avatar_url }}
-                              style={{
-                                width: 28,
-                                height: 28,
-                                borderRadius: 14,
-                                borderWidth: 1,
-                                borderColor: "gray",
-                              }}
-                            />
-                          </View>
-                        ))}
+                        <Text className="font-kanitRegular text-xs text-black mx-2 mb-2 px-2">
+                          Assign to
+                        </Text>
+
+                        <View className="flex-row items-center mx-3 mb-5">
+                          {task.task_assign?.map((user: any, i: number) => (
+                            <View key={user.user_id} className={`${i !== 0 ? "-ml-3" : ""}`}>
+                              <Image
+                                source={{ uri: user.avatar_url }}
+                                style={{ width: 28, height: 28, borderRadius: 14, borderWidth: 1, borderColor: "gray" }}
+                              />
+                            </View>
+                          ))}
+                        </View>
                       </View>
-                    </View>
+                    </Pressable>
                   </Animated.View>
                 );
               })}
-              </ScrollView>
+            </ScrollView>
 
-              <TouchableOpacity
-                className="flex-row items-center gap-2 mt-2"
-                onPress={() => setModalVisible(true)}
-              >
-                <Text className="font-KanitMedium text-neutral-500 text-md">+ Add Task</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              className="flex-row items-center gap-2 mt-2"
+              onPress={() => setModalVisible(true)}
+            >
+              <Text className="font-kanitMedium text-neutral-500 text-md">+ Add Task</Text>
+            </TouchableOpacity>
+          </View>
         );
       })}
     </ScrollView>
   );
 }
-
