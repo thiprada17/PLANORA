@@ -9,7 +9,7 @@ import {
   Dimensions,
   Pressable,
 } from "react-native";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import CreateTaskModal from "@/components/task/create_task";
 import ProjectChatModal from "@/components/chat/project_chat";
 import { icons } from "@/constants/icons";
@@ -19,7 +19,9 @@ import BoardBar from "@/components/board/boardBar";
 import KanbanBoard from "@/components/board/kanbanBoard";
 import CalendarBoard from "@/components/board/calendarBoard";
 import TodoBoard from "@/components/board/todoBoard";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useFocusEffect } from "expo-router";
+import TaskSetting from "@/components/task/taskSetting";
+
 const Icon = ({
   name,
   size = 18,
@@ -103,40 +105,46 @@ export default function BoardScreen() {
       deadline: rawTask.deadline,
       members: rawTask.task_assign ?? [],
     });
-    
+
     setSettingVisible(true);
   };
-  useEffect(() => {
-    const fetchTask = async () => {
-      try {
-        const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/get/task/${projectID}`);
-        // const res = await fetch(`http://192.168.1.125:3000/get/task/${projectID}`);
 
-        if (!res.ok) {
-          throw new Error("Network response not ok");
-        }
+  const fetchTask = async () => {
+    try {
+      const res = await fetch(
+        `https://freddy-unseconded-kristan.ngrok-free.dev/get/task/${projectID}`,
+      );
+      // const res = await fetch(`http://192.168.1.125:3000/get/task/${projectID}`);
 
-        const data = await res.json();
+      if (!res.ok) {
+        throw new Error("Network response not ok");
+      }
 
-        if (Array.isArray(data)) {
-          setTasks(data);
-        } else if (Array.isArray(data.tasks)) {
-          setTasks(data.tasks);
-        } else {
-          setTasks([]);
-        }
+      const data = await res.json();
+      console.log("Fetched Tasks:", data);
 
-        console.log(data);
-      } catch (err) {
-        console.log("Fetch error:", err);
+      if (Array.isArray(data)) {
+        setTasks(data);
+      } else if (data && Array.isArray(data.tasks)) {
+        setTasks(data.tasks);
+      } else {
         setTasks([]);
       }
-    };
+    } catch (err) {
+      console.log("Fetch error:", err);
+      setTasks([]);
+    }
+  };
 
-    fetchTask();
-  }, [projectID]);
+  useFocusEffect(
+    useCallback(() => {
+      if (projectID) {
+        fetchTask();
+      }
+    }, [projectID]),
+  );
 
-  if (!projectID) return;
+  if (!projectID) return <View className="flex-1 bg-white" />;
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -195,10 +203,7 @@ export default function BoardScreen() {
 
       {/* todo */}
       {activeTab === "todo" && (
-        <TodoBoard 
-          tasks={tasks} 
-          setModalVisible={setModalVisible} 
-        />
+        <TodoBoard tasks={tasks} setModalVisible={setModalVisible} />
       )}
       {/* calendar */}
       {activeTab === "calendar" && <CalendarBoard tasks={tasks} />}
@@ -232,3 +237,4 @@ export default function BoardScreen() {
     </SafeAreaView>
   );
 }
+
