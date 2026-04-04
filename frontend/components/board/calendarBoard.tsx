@@ -137,7 +137,9 @@ export default function CalendarBoard({ tasks }: Props) {
                             backgroundColor: "white",
                             padding: 3
                         }}>
-                            {day && <Text style={{ fontSize: 11, fontWeight: "500" }}>{day}</Text>}
+                            {day && <Text style={{ fontSize: 11, fontWeight: "500" }} className="font-KanitRegular">
+                                {day}
+                            </Text>}
                         </View>
                     ))}
                 </View>
@@ -180,6 +182,7 @@ export default function CalendarBoard({ tasks }: Props) {
                                 <Pressable
                                     key={idx}
                                     onPress={() => setSelectedTask(seg.task)}
+                                    className="font-KanitRegular"
                                     style={{
                                         position: "absolute",
                                         left: seg.col * cellW + 2,
@@ -194,7 +197,7 @@ export default function CalendarBoard({ tasks }: Props) {
                                         borderColor: "#666",
                                     }}
                                 >
-                                    <Text numberOfLines={1} style={{ fontSize: 10, color: "#000" }}>
+                                    <Text numberOfLines={1} style={{ fontSize: 10, color: "#000" }} >
                                         {seg.task.task_name || "Untitled"}
                                     </Text>
                                 </Pressable>

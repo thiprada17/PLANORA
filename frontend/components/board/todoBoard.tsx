@@ -15,12 +15,12 @@ export default function TodoBoard({ tasks, setModalVisible }: TodoBoardProps) {
       <TouchableOpacity className="w-5 h-5 border border-gray-400 rounded bg-white mr-3" />
 
       {/* Task Name */}
-      <Text className="flex-1 font-kanitMedium text-black text-[14px]" numberOfLines={1}>
+      <Text className="flex-1 font-KanitMedium text-black text-[14px]" numberOfLines={1}>
         {item.title || item.name || "Untitled Task"}
       </Text>
 
       {/* End Date */}
-      <Text className="w-20 text-center text-black font-kanitMedium text-[12px] mr-2">
+      <Text className="w-20 text-center text-black font-KanitMedium text-[12px] mr-2">
         {item.end_date || "DD/MM/YY"}
       </Text>
 

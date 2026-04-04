@@ -15,6 +15,8 @@ import { icons } from "@/constants/icons";
 import TabBar from "@/components/tabBar";
 import { useLocalSearchParams, useRouter} from "expo-router";
 
+const API_URL = process.env.API_URL
+
 export default function setting() {
   const router = useRouter();
   const { projectId } = useLocalSearchParams<{ projectId: string }>();

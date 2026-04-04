@@ -131,7 +131,7 @@ export default function KanbanBoard({ tasks: initialTasks, setModalVisible, onTa
             }}
           >
             <View className="flex-row items-center justify-between">
-              <Text className="font-kanitMedium text-xl text-[#222222]">{col.title}</Text>
+              <Text className="font-KanitMedium text-xl text-[#222222]">{col.title}</Text>
             </View>
 
             <View className="h-[1px] bg-neutral-600 my-3 mt-2" />
@@ -143,7 +143,7 @@ export default function KanbanBoard({ tasks: initialTasks, setModalVisible, onTa
               nestedScrollEnabled
             >
               {columnTasks.length === 0 && (
-                <Text style={{ color: "#9ca3af", textAlign: "center", marginTop: 8 }}>
+                <Text style={{ color: "#9ca3af", textAlign: "center", marginTop: 8 }} className="font-KanitRegular">
                   No task here
                 </Text>
               )}
@@ -168,18 +168,18 @@ export default function KanbanBoard({ tasks: initialTasks, setModalVisible, onTa
                   >
                     <Pressable onPress={() => onTaskPress(task)}>
                       <View className="mt-4 rounded-3xl border border-black bg-white">
-                        <Text className="font-kanitMedium text-xl mt-5 mx-2 px-2">
+                        <Text className="font-KanitMedium text-xl mt-5 mx-2 px-2">
                           {task.task_name ?? "Untitled Task"}
                         </Text>
 
                         <View className="flex-row items-center gap-1 mb-5 mx-2 px-2">
                           <Image source={icons.calenCircle} style={{ width: 17, height: 17 }} />
-                          <Text className="font-kanitRegular text-xs text-black">
+                          <Text className="font-KanitRegular text-xs text-black">
                             {task.deadline ?? "-"}
                           </Text>
                         </View>
 
-                        <Text className="font-kanitRegular text-xs text-black mx-2 mb-2 px-2">
+                        <Text className="font-KanitRegular text-xs text-black mx-2 mb-2 px-2">
                           Assign to
                         </Text>
 
@@ -204,7 +204,7 @@ export default function KanbanBoard({ tasks: initialTasks, setModalVisible, onTa
               className="flex-row items-center gap-2 mt-2"
               onPress={() => setModalVisible(true)}
             >
-              <Text className="font-kanitMedium text-neutral-500 text-md">+ Add Task</Text>
+              <Text className="font-KanitMedium text-neutral-500 text-md">+ Add Task</Text>
             </TouchableOpacity>
           </View>
         );

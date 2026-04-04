@@ -157,7 +157,7 @@ export default function BoardScreen() {
           <Icon name="menu" size={24} />
         </TouchableOpacity>
 
-        <Text className="flex-1 font-kanitMedium text-[36px] text-black">
+        <Text className="flex-1 font-KanitMedium text-[36px] text-black">
           Board
         </Text>
 
