@@ -287,7 +287,7 @@ const filteredProjects = projects.filter((project) => {
                         setAppliedToDate(null);
                         setShowDeadlineCard(false);
                       }}
-                      className="flex-1 bg-[#F07166] rounded-lg py-2"
+                      className="flex-1 bg-[#D95246] rounded-lg border border-[#595858] py-2 mr-3"
                     >
                       <Text className="text-center text-xs text-white">
                         Clear
@@ -305,7 +305,7 @@ const filteredProjects = projects.filter((project) => {
                         setAppliedToDate(toDate);
                         setShowDeadlineCard(false);
                       }}
-                      className="flex-1 bg-[#98DAAA] rounded-lg py-2"
+                      className="flex-1 bg-[#75C791] border border-[#595858] rounded-lg py-2"
                     >
                       <Text className="text-center text-xs text-white">
                         Apply
