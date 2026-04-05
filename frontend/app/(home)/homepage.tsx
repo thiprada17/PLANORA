@@ -67,7 +67,14 @@ export default function HomePage() {
     const userId = await AsyncStorage.getItem("user_id")
     if (!userId) return;
     try {
-      const response = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`);
+      const response = await fetch(
+  `https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`,
+  {
+    headers: {
+      "ngrok-skip-browser-warning": "true",  // ✅ bypass หน้าเตือน ngrok
+    },
+  }
+);
       
       if (!response.ok) {
         const text = await response.text();

@@ -9,7 +9,7 @@ import {
   Dimensions,
   Pressable,
 } from "react-native";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import CreateTaskModal from "@/components/task/create_task";
 import ProjectChatModal from "@/components/chat/project_chat";
 import { icons } from "@/constants/icons";
@@ -19,7 +19,7 @@ import BoardBar from "@/components/board/boardBar";
 import KanbanBoard from "@/components/board/kanbanBoard";
 import CalendarBoard from "@/components/board/calendarBoard";
 import TaskSetting from "@/components/task/taskSetting";
-
+import { useFocusEffect } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 
 const Icon = ({
@@ -96,51 +96,61 @@ export default function BoardScreen() {
   const [selectedTask, setSelectedTask] = useState<any>(null);
 
   const { projectId } = useLocalSearchParams<{ projectId: string }>();
-
   const projectID = Number(projectId);
   const handleTaskPress = (rawTask: any) => {
     setSelectedTask({
       task_id: rawTask.id,
       task_name: rawTask.task_name,
+      start_date: rawTask.start_date,
       deadline: rawTask.deadline,
       members: rawTask.task_assign ?? [],
     });
-    
+
     setSettingVisible(true);
   };
-  useEffect(() => {
-    const fetchTask = async () => {
-      try {
-        const res = await fetch(
-          `https://freddy-unseconded-kristan.ngrok-free.dev/get/task/${projectID}`,
-        );
-        // const res = await fetch(`http://192.168.1.154:3000/get/task/${projectID}`);
+  const fetchTask = async (id?: number) => {
+  const pid = id ?? projectID;
 
-        if (!res.ok) {
-          throw new Error("Network response not ok");
-        }
+  if (!pid || isNaN(pid)) return;
 
-        const data = await res.json();
+  try {
+    const res = await fetch(
+      `https://freddy-unseconded-kristan.ngrok-free.dev/get/task/${pid}`
+    );
 
-        if (Array.isArray(data)) {
-          setTasks(data);
-        } else if (Array.isArray(data.tasks)) {
-          setTasks(data.tasks);
-        } else {
-          setTasks([]);
-        }
+    const data = await res.json();
 
-        console.log(data);
-      } catch (err) {
-        console.log("Fetch error:", err);
-        setTasks([]);
+    const formatted = (Array.isArray(data) ? data : data.tasks ?? []).map((t: any) => ({
+      id: t.id,
+      task_name: t.task_name,
+      start_date: t.start_date, 
+      deadline: t.deadline,
+      status: t.status,
+      task_assign: t.task_assign ?? [],
+    }));
+
+    setTasks(formatted);
+
+  } catch (err) {
+    console.log("Fetch error:", err);
+    setTasks([]);
+  }
+};
+
+ const refreshTasks = () => {
+  fetchTask(projectID);
+};
+
+  useFocusEffect(
+    useCallback(() => {
+      if (projectID) {
+        fetchTask();
       }
-    };
+    }, [projectID]),
+  );
 
-    fetchTask();
-  }, [projectID]);
-
-  if (!projectID) return;
+  if (!projectId) return null;
+  if (isNaN(projectID)) return null;
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -173,12 +183,14 @@ export default function BoardScreen() {
           visible={modalVisible}
           onClose={() => setModalVisible(false)}
           projectId={projectID}
+          onSuccess={refreshTasks}
         />
         <TaskSetting
           visible={settingVisible}
           onClose={() => setSettingVisible(false)}
           projectId={projectID}
           task={selectedTask}
+          onSuccess={refreshTasks}
         />
       </View>
 

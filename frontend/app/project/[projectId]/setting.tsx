@@ -15,6 +15,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 import { icons } from "@/constants/icons";
 import TabBar from "@/components/tabBar";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { Label } from "@react-navigation/elements";
 
 export default function setting() {
   const { projectId } = useLocalSearchParams<{ projectId: string }>();
@@ -105,8 +106,10 @@ export default function setting() {
 
   // check status เหมือนหน้า homepage แล้ว
   const statusItems = [
-    { label: "Process", value: "PROCESS" },
-    { label: "Complete", value: "COMPLETE" },
+    { label: "On Process", value: "On Process" },
+    { label: "Complete", value: "Complete" },
+    { label: "LAZY", value: "LAZY" },
+    { label: "Almost Dead", value: "Almost Dead" },
   ];
 
   // check subject เหมือนหน้า homepage แล้ว

@@ -6,13 +6,15 @@ import TaskForm from "./taskForm";
 type CreateTaskModalProps = {
   visible: boolean;
   onClose: () => void;
-  projectId: number
+  projectId: number;
+  onSuccess: () => void;
 };
 
 export default function CreateTaskModal({
   visible,
   onClose,
-  projectId
+  projectId,
+  onSuccess
 }: CreateTaskModalProps) {
     
   return (
@@ -30,7 +32,7 @@ export default function CreateTaskModal({
           </TouchableWithoutFeedback>
         </KeyboardAvoidingView> */}
         <Pressable onPress={(e) => {e.stopPropagation(); Keyboard.dismiss();}} className="bg-white rounded-[30px] p-6 w-full shadow-lg"> 
-          <TaskForm onCancel={onClose} projectId={projectId}/>
+          <TaskForm onCancel={onClose} projectId={projectId} onSuccess={onSuccess}/>
         </Pressable>
       </KeyboardAvoidingView>
       </View>
