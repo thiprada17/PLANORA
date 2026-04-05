@@ -428,7 +428,7 @@ app.post('/search/member', async (req, res) => {
 })
 
 app.post('/create/task', async (req, res) => {
-    const { name, start_date, deadline, projectId, members } = req.body;
+    const { name, deadline, start_date, projectId, members } = req.body
 
     try {
         const { data, error } = await supabase

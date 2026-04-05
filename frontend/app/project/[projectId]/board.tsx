@@ -111,11 +111,9 @@ export default function BoardScreen() {
   const fetchTask = async (id?: number) => {
   const pid = id ?? projectID;
 
-  if (!pid || isNaN(pid)) return;
-
   try {
     const res = await fetch(
-      `https://freddy-unseconded-kristan.ngrok-free.dev/get/task/${pid}`
+      `http://192.168.100.166:3000/get/task/${pid}`
     );
 
     const data = await res.json();
@@ -123,7 +121,7 @@ export default function BoardScreen() {
     const formatted = (Array.isArray(data) ? data : data.tasks ?? []).map((t: any) => ({
       id: t.id,
       task_name: t.task_name,
-      start_date: t.start_date, 
+      start_date: t.start_date,
       deadline: t.deadline,
       status: t.status,
       task_assign: t.task_assign ?? [],
@@ -135,10 +133,6 @@ export default function BoardScreen() {
     console.log("Fetch error:", err);
     setTasks([]);
   }
-};
-
- const refreshTasks = () => {
-  fetchTask(projectID);
 };
 
   useFocusEffect(
@@ -183,14 +177,14 @@ export default function BoardScreen() {
           visible={modalVisible}
           onClose={() => setModalVisible(false)}
           projectId={projectID}
-          onSuccess={refreshTasks}
+          onSuccess={fetchTask}
         />
         <TaskSetting
           visible={settingVisible}
           onClose={() => setSettingVisible(false)}
           projectId={projectID}
           task={selectedTask}
-          onSuccess={refreshTasks}
+          onSuccess={fetchTask}
         />
       </View>
 

@@ -45,9 +45,9 @@ const [members, setMembers] = useState<any[]>([]);
           console.log("ไม่พบ user_id ใน Storage");
           return;
         }
-
-        // const res = await fetch(`http://10.0.2.2:3000/dashboard/${projectId}/${userId}`);
-        const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/dashboard/${projectId}/${userId}`);
+        
+        const res = await fetch(`http://192.168.100.166:3000//dashboard/${projectId}/${userId}`)
+        // const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/dashboard/${projectId}/${userId}`);
 
         if (!res.ok) {
           throw new Error(`Server Error: ${res.status}`);

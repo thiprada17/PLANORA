@@ -8,7 +8,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 type TaskFormProps = {
   onCancel: () => void;
   projectId: number;
-  onSuccess: () => void;
+  onSuccess?: () => void;
 };
 
 export default function TaskForm({
@@ -16,18 +16,14 @@ export default function TaskForm({
   projectId,
   onSuccess,
 }: TaskFormProps) {
-  const [showPicker, setShowPicker] = useState(false);
   const [pickerType, setPickerType] = useState<"start" | "end" | null>(null);
-
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<string[]>([]);
-  const [items, setItems] = useState<
-    {
-      label: string;
-      value: string;
-      avatar_url: string;
-    }[]
-  >([]);
+  const [items, setItems] = useState<{
+    label: string;
+    value: string;
+    avatar_url: string;
+  }[]>([]);
 
   const [task, setTask] = useState({
     task_name: "",
@@ -39,10 +35,8 @@ export default function TaskForm({
     const loadMembers = async () => {
       try {
         const res = await fetch(
-          `https://freddy-unseconded-kristan.ngrok-free.dev/assign/member/${projectId}`,
-          {
-            headers: { "ngrok-skip-browser-warning": "true" },
-          }
+          // `https://freddy-unseconded-kristan.ngrok-free.dev/assign/member/${projectId}`,
+          `http://192.168.100.166:3000/assign/member/${projectId}`,
         );
 
         const data = await res.json();
@@ -66,8 +60,13 @@ export default function TaskForm({
 
   const handleCreateTask = async () => {
     try {
-      if (!task.task_name || !task.start_date || !task.deadline) {
-        alert("กรอกข้อมูลให้ครบ");
+      if (!task.task_name.trim()) {
+        alert("Please enter task name");
+        return;
+      }
+
+      if (!task.start_date || !task.deadline) {
+        alert("Please select dates");
         return;
       }
 
@@ -87,6 +86,7 @@ export default function TaskForm({
         projectId: projectId,
         members: selectedMembers,
       };
+      console.log("PAYLOAD:", payload);
 
       const res = await fetch(
         "https://freddy-unseconded-kristan.ngrok-free.dev/create/task",
@@ -101,8 +101,8 @@ export default function TaskForm({
       console.log("CREATE TASK:", data);
 
       alert("Task Created!");
-      onSuccess(); // refresh board
-      onCancel(); // close modal
+      onSuccess?.();
+      onCancel();
     } catch (error) {
       console.log("Create Task Error:", error);
     }
@@ -121,13 +121,20 @@ export default function TaskForm({
     const type = pickerType;
 
     setPickerType(null);
-    setShowPicker(false);
 
     const formattedDate = selectedDate.toISOString().split("T")[0];
 
     if (type === "start") {
+      if (task.deadline && formattedDate > task.deadline) {
+        alert("Start date cannot be later than End date");
+        return;
+      }
       setTask({ ...task, start_date: formattedDate });
     } else if (type === "end") {
+      if (task.start_date && formattedDate < task.start_date) {
+        alert("End date cannot be earlier than Start date");
+        return;
+      }
       setTask({ ...task, deadline: formattedDate });
     }
   };
@@ -167,8 +174,7 @@ export default function TaskForm({
 
         <Pressable
           onPress={() => {
-            setPickerType("start"); 
-            setShowPicker(true);
+            setPickerType("start");
           }}
           className="border border-neutral-400 rounded-xl px-4 py-3 bg-white"
         >
@@ -191,8 +197,7 @@ export default function TaskForm({
 
         <Pressable
           onPress={() => {
-            setPickerType("end"); 
-            setShowPicker(true);
+            setPickerType("end");
           }}
           className="border border-neutral-400 rounded-xl px-4 py-3 bg-white"
         >
@@ -205,9 +210,15 @@ export default function TaskForm({
           </Text>
         </Pressable>
 
-        {showPicker && (
+        {pickerType && (
           <DateTimePicker
-            value={new Date()}
+            value={
+              pickerType === "start" && task.start_date
+                ? new Date(task.start_date)
+                : pickerType === "end" && task.deadline
+                ? new Date(task.deadline)
+                : new Date()
+            }
             mode="date"
             display="default"
             onChange={onDateChange}

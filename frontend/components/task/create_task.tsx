@@ -6,15 +6,15 @@ import TaskForm from "./taskForm";
 type CreateTaskModalProps = {
   visible: boolean;
   onClose: () => void;
-  projectId: number;
-  onSuccess: () => void;
+  projectId: number
+  onSuccess?: () => void;
 };
 
 export default function CreateTaskModal({
   visible,
   onClose,
   projectId,
-  onSuccess
+  onSuccess,
 }: CreateTaskModalProps) {
     
   return (
