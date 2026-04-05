@@ -320,6 +320,7 @@ app.get('/display/projects/:userId', async (req, res) => {
                 project_name,
                 subject,
                 deadline,
+                status,
                 members:project_members!inner (
                     user_id,
                     user_profile (
@@ -345,6 +346,7 @@ app.get('/display/projects/:userId', async (req, res) => {
                 project_name: item.project.project_name,
                 subject: item.project.subject,
                 deadline: item.project.deadline,
+                status: item.project.status,
                 members: membersArray.map(m => ({
                     id: m.user_id,
                     avatar: m.user_profile?.avatar_url ?? null
