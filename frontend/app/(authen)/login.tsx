@@ -6,7 +6,8 @@ import {
     Dimensions,
     useColorScheme,
     TextInput,
-    Image
+    Image,
+    Modal,
 } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useFonts } from 'expo-font';
@@ -27,8 +28,12 @@ export default function Index() {
     const [pageLoading, setPageLoading] = useState(true);
     const [loginEmail, setLoginEmail] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
 
     const openSignup = () => {
+        setLoginEmail('');
+        setLoginPassword('');
+
         Animated.timing(loginY, {
             toValue: 360,
             duration: 300,
@@ -38,6 +43,10 @@ export default function Index() {
     };
 
     const openLogin = () => {
+        setUsername('');
+        setEmail('');
+        setPassword('');
+
         Animated.timing(loginY, {
             toValue: 0,
             duration: 300,
@@ -49,7 +58,6 @@ export default function Index() {
         KanitBold: require("../../assets/fonts/KanitBold.ttf"),
         KanitRegular: require("../../assets/fonts/KanitRegular.ttf"),
     });
-
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -69,9 +77,9 @@ export default function Index() {
             setIsLoading(true);
             // ตอนนี้มันต้องเปลี่ยน ip ที่จะ fetch ตาามเครื่องน้าา ยุ่งยากมาก
             const res = await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/api/signup', {
-                        // const res = await fetch('http://192.168.1.125:3000/api/signup', {
-  
-            method: 'POST',
+                // const res = await fetch('http://192.168.1.125:3000/api/signup', {
+
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'ngrok-skip-browser-warning': '69420'
@@ -83,21 +91,39 @@ export default function Index() {
                 })
             })
             const data = await res.json()
+            console.log('API Response status:', res.status);
+            console.log('API Response OK:', res.ok);
+            console.log('API Response body:', data);
 
-            if (data.success == true) {
-                router.replace('/(home)/homepage')
-            }
+            // if (data.success == true) {
+            //     router.replace('/(home)/homepage')
+            // }
             if (!res.ok) {
                 alert(data.message || data.error)
                 return
             }
-            alert('Signup success')
+            // alert('Signup success')
+            if (data.message && data.message.toLowerCase().includes('signup success')) {
+                console.log('Signup successful, showing modal...');
+                setShowSuccessModal(true);
+            } else {
+                console.log('Signup failed according to API response');
+                alert(data.message || 'Signup failed');
+            }
+
         } catch (err) {
-            console.log(err)
+            console.log('Signup error:', err);
+            alert('An error occurred. Please try again.');
         } finally {
             setIsLoading(false);
         }
-    }
+    };
+
+    const handleModalClose = () => {
+        setShowSuccessModal(false);
+        router.replace('/(home)/homepage');
+    };
+
     return (
 
         <View className="flex-1 bg-white">
@@ -107,7 +133,7 @@ export default function Index() {
                 style={{ height: screenHeight * 0.26 }}
             >
 
-                <Image source={icons.logo} className='w-[80%] h-10'/>
+                <Image source={icons.logo} className='w-[80%] h-10' />
             </View>
 
             {/*Card*/}
@@ -217,6 +243,24 @@ export default function Index() {
                 </Animated.View>
 
             </View>
+            {/* Success Modal */}
+            <Modal
+                transparent={true}
+                visible={showSuccessModal}
+                animationType="fade" //or slide เดะค่อนเลือก
+            >
+                <View className="flex-1 justify-center items-center bg-black/50 bg-opacity-20">
+                    <View className="bg-white p-6 rounded-xl w-80 items-center">
+                        <Text className="text-lg font-KanitBold mb-4">signup success!!</Text>
+                        <Pressable
+                            onPress={handleModalClose}
+                            className="bg-[#98DAAA] py-2 px-4 rounded-xl mt-2"
+                        >
+                            <Text className="text-[#E9FCEF] font-KanitBold text-center">Go to Homepage</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
