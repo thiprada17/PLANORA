@@ -12,6 +12,7 @@ type Props = {
   subject: string;
   deadline: Date | null;
   members: Member[]; //number[] อันนี้เอาไว้เทส
+  status?: string;
     onPress?: () => void;
 };
 
@@ -21,13 +22,25 @@ export default function ProjectCard({
     subject,
     deadline,
     members = [],
+    status,
     onPress,
-}: Props) 
-{
+}: Props) {
 // const safeMembers = Array.isArray(members) ? members : []
 // const visibleMembers = safeMembers.slice(0, 4)
 // const extraCount = safeMembers.length - 4
 
+const getStatusColor = () => {
+  switch (status) {
+    case "Complete":
+      return "#9E9E9E";
+    case "LAZY":
+      return "#B8A3E4";
+    case "Almost Dead":
+      return "#E29797";
+    default:
+      return "#CAEAD5";
+  }
+};
     return (
         <Pressable
             onPress={onPress}
@@ -40,7 +53,10 @@ export default function ProjectCard({
             }}
         >
             <View className="absolute inset-0 rounded-3xl bg-black" />
-            <View className="absolute top-0 left-0 right-0 h-[135px] rounded-3xl bg-GREEN p-3 border border-black">
+            <View
+  className="absolute top-0 left-0 right-0 h-[135px] rounded-3xl p-3 border border-[#222222]"
+  style={{ backgroundColor: getStatusColor() }}
+>
 
             <View className="self-start bg-white px-3 rounded-full mb-2 flex-row items-center"
                 style={{
