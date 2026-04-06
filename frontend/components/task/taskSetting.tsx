@@ -56,13 +56,8 @@ export default function TaskSetting({
     deadline: "",
   });
 
-  const [fonts] = useFonts({
-    KanitBold: require("@/assets/fonts/KanitBold.ttf"),
-    KanitRegular: require("@/assets/fonts/KanitRegular.ttf"),
-  });
   const [tasktName, settaskName] = useState<String | null>(null);
 
- 
 
   // sync ข้อมูลเดิมของ task เข้า form ทุกครั้งที่ task เปลี่ยน
   useEffect(() => {
@@ -197,7 +192,7 @@ export default function TaskSetting({
     }
   };
 
-  if (!fonts || !task) return null;
+  if (!task) return null;
 
   return (
     <Modal visible={visible} animationType="fade" transparent>
@@ -221,7 +216,7 @@ export default function TaskSetting({
                   onChangeText={(text) =>
                     setTaskForm({ ...taskForm, task_name: text })
                   }
-                  className="font-kanitMedium text-3xl text-black pb"
+                  className="font-KanitMedium text-3xl text-black pb"
                   multiline
                   style={{ minHeight: 60 }}
                 />
@@ -233,7 +228,7 @@ export default function TaskSetting({
               <View className="mb-4 mt-3">
                 <View className="flex-row items-center gap-2 mb-2">
                   <Image source={icons.calendar} className="w-5 h-5" />
-                  <Text className="font-kanitBold text-black">Start date</Text>
+                  <Text className="font-KanitBold text-black">Start date</Text>
                 </View>
 
                 <Pressable
@@ -241,7 +236,7 @@ export default function TaskSetting({
                   className="border border-neutral-400 rounded-xl px-4 py-3 bg-white"
                 >
                   <Text
-                    className={`font-kanitRegular ${
+                    className={`font-KanitRegular ${
                       taskForm.start_date ? "text-black" : "text-neutral-400"
                     }`}
                   >
@@ -258,14 +253,14 @@ export default function TaskSetting({
                     className="w-5 h-5"
                     resizeMode="contain"
                   />
-                  <Text className="font-kanitBold text-black">End date</Text>
+                  <Text className="font-KanitBold text-black">End date</Text>
                 </View>
                 <Pressable
                   onPress={() => setPickerType("end")}
                   className="border border-neutral-400 rounded-xl px-4 py-3 bg-white"
                 >
                   <Text
-                    className={`font-kanitRegular ${taskForm.deadline ? "text-black" : "text-neutral-400"}`}
+                    className={`font-KanitRegular ${taskForm.deadline ? "text-black" : "text-neutral-400"}`}
                   >
                     {taskForm.deadline || "DD/MM/YY"}
                   </Text>
@@ -296,7 +291,7 @@ export default function TaskSetting({
                     className="w-5 h-5"
                     resizeMode="contain"
                   />
-                  <Text className="font-kanitBold text-black">Assign</Text>
+                  <Text className="font-KanitBold text-black">Assign</Text>
                 </View>
                 <DropDownPicker
                   multiple={true}
@@ -347,7 +342,7 @@ export default function TaskSetting({
                     display: "none",
                   }}
                 />
-                <Text className="text-[10px] text-neutral-400 mt-1">
+                <Text className="text-[10px] text-neutral-400 mt-1 font-KanitRegular">
                   * You can select multiple members
                 </Text>
               </View>

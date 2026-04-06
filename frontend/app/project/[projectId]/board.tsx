@@ -10,7 +10,6 @@ import {
   Pressable,
 } from "react-native";
 import { useState, useCallback } from "react";
-import { useState, useCallback } from "react";
 import CreateTaskModal from "@/components/task/create_task";
 import ProjectChatModal from "@/components/chat/project_chat";
 import { icons } from "@/constants/icons";
