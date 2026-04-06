@@ -29,8 +29,8 @@ export default function TaskForm({
 
   const [task, setTask] = useState({
     task_name: "",
-    start_date: "",
-    deadline: "",
+    start_date: null as Date | null,
+    deadline: null as Date | null,
   });
 
   useEffect(() => {
@@ -43,10 +43,15 @@ export default function TaskForm({
 
         const membersArray = Array.isArray(data) ? data : data.members || [];
 
-        const formatted = membersArray.map((m: any) => ({
-          label: m.username,
-          value: m.user_id.toString(),
-          avatar_url: m.avatar_url,
+        // const formatted = membersArray.map((m: any) => ({
+        //   label: m.username,
+        //   value: m.user_id.toString(),
+        //   avatar_url: m.avatar_url,
+        // }));
+        const formatted = membersArray.map((m: any, index: number) => ({
+          label: m.username || `User ${index}`,
+          value: m.user_id?.toString() ?? `temp-${index}`,
+          avatar_url: m.avatar_url ?? "",
         }));
 
         setItems(formatted);
@@ -73,24 +78,27 @@ export default function TaskForm({
         return;
       }
 
-      const selectedMembers = value.map((id) => {
-        const member = items.find((item) => item.value === id);
-        return {
-          user_id: Number(id),
-          username: member?.label,
-          avatar_url: member?.avatar_url,
-        };
-      });
+      const selectedMembers = value
+        .map((id) => {
+          const member = items.find((item) => item.value === id);
+          if (!member) return null;
+          return {
+            user_id: Number(id),
+            username: member.label,
+            avatar_url: member.avatar_url,
+          };
+        })
+        .filter(Boolean) as { user_id: number; username: string; avatar_url: string }[];
 
       const payload = {
         name: task.task_name,
-        start_date: task.start_date,
-        deadline: task.deadline,
+        start_date: task.start_date ? new Date(task.start_date).toISOString() : null,
+        deadline: task.deadline ? new Date(task.deadline).toISOString() : null,
         projectId: projectId,
         members: selectedMembers,
       };
-      console.log("PAYLOAD:", payload);
 
+      console.log("Sending payload:", JSON.stringify(payload, null, 2));
       const res = await fetch(
         "https://freddy-unseconded-kristan.ngrok-free.dev/create/task",
         {
@@ -111,36 +119,18 @@ export default function TaskForm({
     }
   };
 
-  const [fonts] = useFonts({
-    KanitBold: require("@/assets/fonts/KanitBold.ttf"),
-    KanitRegular: require("@/assets/fonts/KanitRegular.ttf"),
-  });
-
-  if (!fonts) return null;
-
   const onDateChange = (event: any, selectedDate?: Date) => {
     if (!selectedDate) return;
 
     const type = pickerType;
 
     setPickerType(null);
+    console.log("Selected start date:", selectedDate, "task state:", task);
 
-    const formattedDate = selectedDate.toISOString().split("T")[0];
-
-    if (type === "start") {
-      if (task.deadline && formattedDate > task.deadline) {
-        alert("Start date cannot be later than End date");
-        return;
-      }
-      setTask({ ...task, start_date: formattedDate });
-    } else if (type === "end") {
-      if (task.start_date && formattedDate < task.start_date) {
-        alert("End date cannot be earlier than Start date");
-        return;
-      }
-      setTask({ ...task, deadline: formattedDate });
-    }
+    if (type === "start") setTask({ ...task, start_date: selectedDate });
+    if (type === "end") setTask({ ...task, deadline: selectedDate });
   };
+
 
   return (
     <View className="gap-4 p-2">
@@ -153,7 +143,7 @@ export default function TaskForm({
       <View>
         <View className="flex-row items-center gap-2 mb-2">
           <Image source={icons.label} className="w-5 h-5" />
-          <Text className="font-kanitBold text-black">Task name</Text>
+          <Text className="font-KanitBold text-black">Task name</Text>
         </View>
 
         <TextInput
@@ -168,7 +158,7 @@ export default function TaskForm({
       <View>
         <View className="flex-row items-center gap-2 mb-2">
           <Image source={icons.calendar} className="w-5 h-5" />
-          <Text className="font-kanitBold text-black">Start date</Text>
+          <Text className="font-KanitBold text-black">Start date</Text>
         </View>
 
         <Pressable
@@ -178,40 +168,14 @@ export default function TaskForm({
           className="border border-neutral-400 rounded-xl px-4 py-3 bg-white"
         >
           <Text
-            className={`font-kanitRegular ${
-              task.start_date ? "text-black" : "text-neutral-400"
-            }`}
+            className={`font-KanitRegular ${task.start_date ? "text-black" : "text-neutral-400"}`}
           >
-            {task.start_date || "DD/MM/YY"}
+            {task.start_date ? task.start_date.toLocaleDateString() : "DD/MM/YY"}
           </Text>
         </Pressable>
       </View>
 
       {/* END DATE */}
-      <View>
-        <View className="flex-row items-center gap-2 mb-2">
-          <Image
-            source={icons.calendar}
-            className="w-5 h-5"
-            resizeMode="contain"
-          />
-          <Text className="font-KanitBold text-black">Start date</Text>
-        </View>
-
-        <Pressable
-          onPress={() => setPickerType("start")}
-          className="border border-neutral-400 rounded-xl px-4 py-3 bg-white"
-        >
-          <Text
-            className={`font-KanitRegular ${
-              task.start_date ? "text-black" : "text-neutral-400"
-            }`}
-          >
-            {task.start_date || "DD/MM/YY"}
-          </Text>
-        </Pressable>
-      </View>
-
       <View>
         <View className="flex-row items-center gap-2 mb-2">
           <Image
@@ -229,11 +193,9 @@ export default function TaskForm({
           className="border border-neutral-400 rounded-xl px-4 py-3 bg-white"
         >
           <Text
-            className={`font-KanitRegular ${
-              task.deadline ? "text-black" : "text-neutral-400"
-            }`}
+            className={`font-KanitRegular ${task.deadline ? "text-black" : "text-neutral-400"}`}
           >
-            {task.deadline || "DD/MM/YY"}
+            {task.deadline ? task.deadline.toLocaleDateString() : "DD/MM/YY"}
           </Text>
         </Pressable>
 
@@ -243,8 +205,8 @@ export default function TaskForm({
               pickerType === "start" && task.start_date
                 ? new Date(task.start_date)
                 : pickerType === "end" && task.deadline
-                ? new Date(task.deadline)
-                : new Date()
+                  ? new Date(task.deadline)
+                  : new Date()
             }
             mode="date"
             display="default"
@@ -312,7 +274,7 @@ export default function TaskForm({
           }}
         />
 
-        <Text className="text-[10px] text-neutral-400 mt-1">
+        <Text className="text-[10px] text-neutral-400 mt-1 font-KanitRegular">
           * You can select multiple members
         </Text>
       </View>

@@ -76,9 +76,9 @@ export default function TaskSetting({
     const loadMembers = async () => {
       try {
         const res = await fetch(
-          // `https://freddy-unseconded-kristan.ngrok-free.dev/assign/member/${projectId}`,
-          // { headers: { "ngrok-skip-browser-warning": "true" } },
-          `http://192.168.100.166:3000/assign/member/${projectId}`,
+          `https://freddy-unseconded-kristan.ngrok-free.dev/assign/member/${projectId}`,
+          { headers: { "ngrok-skip-browser-warning": "true" } },
+          // `http://192.168.100.166:3000/assign/member/${projectId}`,
         );
         const data = await res.json();
         setItems(
@@ -89,7 +89,7 @@ export default function TaskSetting({
           })),
         );
       } catch (error) {
-        console.log("Load Members Error:", error);
+        console.log("Load Members Error setting:", error);
       }
     };
     loadMembers();
@@ -99,7 +99,8 @@ export default function TaskSetting({
     const taskname = async () => {
       try {
         const res = await fetch(
-          `http://192.168.100.166:3000/taskname/${task.task_id}`,
+          `https://freddy-unseconded-kristan.ngrok-free.dev/taskname/${task.task_id}`,
+          // `http://192.168.100.166:3000/taskname/${task.task_id}`,
         );
         const data = await res.json();
 
@@ -155,8 +156,8 @@ export default function TaskSetting({
       });
 
       await fetch(
-        // `https://freddy-unseconded-kristan.ngrok-free.dev/update/task/${task?.task_id}`,
-        `http://192.168.100.166:3000/task/${task?.task_id}`,
+        `https://freddy-unseconded-kristan.ngrok-free.dev/task/${task?.task_id}`,
+        // `http://192.168.100.166:3000/task/${task?.task_id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -180,8 +181,8 @@ export default function TaskSetting({
   const handleDeleteTask = async () => {
     try {
       await fetch(
-        // `https://freddy-unseconded-kristan.ngrok-free.dev/api/task/${task?.task_id}`,
-        `http://192.168.100.166:3000/api/task/${task?.task_id}`,
+        `https://freddy-unseconded-kristan.ngrok-free.dev/api/task/${task?.task_id}`,
+        // `http://192.168.100.166:3000/api/task/${task?.task_id}`,
         { method: "DELETE" },
       );
       alert("Task Deleted!");

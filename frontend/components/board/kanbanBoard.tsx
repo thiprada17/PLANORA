@@ -184,14 +184,18 @@ export default function KanbanBoard({ tasks: initialTasks, setModalVisible, onTa
                         </Text>
 
                         <View className="flex-row items-center mx-3 mb-5">
-                          {task.task_assign?.map((user: any, i: number) => (
-                            <View key={user.user_id} className={`${i !== 0 ? "-ml-3" : ""}`}>
-                              <Image
-                                source={{ uri: user.avatar_url }}
-                                style={{ width: 28, height: 28, borderRadius: 14, borderWidth: 1, borderColor: "gray" }}
-                              />
-                            </View>
-                          ))}
+                          {task.task_assign?.map((user: any, i: number) => {
+                            const userKey = user.user_id ?? i;  // fallback เป็น index ถ้า user_id เป็น null ไม่ว่าทำไร มันerror เลยกันไว้ก่อน
+                            const taskKey = task.id ?? "task-" + i;
+                            return (
+                              <View key={`${taskKey}-${userKey}`} className={`${i !== 0 ? "-ml-3" : ""}`}>
+                                <Image
+                                  source={{ uri: user.avatar_url }}
+                                  style={{ width: 28, height: 28, borderRadius: 14, borderWidth: 1, borderColor: "gray" }}
+                                />
+                              </View>
+                            );
+                          })}
                         </View>
                       </View>
                     </Pressable>
