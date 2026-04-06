@@ -82,7 +82,8 @@ export default function Index() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': '69420'
+                    'ngrok-skip-browser-warning': '69420',
+                    'Cache-Control': 'no-cache',
                 },
                 body: JSON.stringify({
                     username,

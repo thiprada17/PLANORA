@@ -67,13 +67,13 @@ export default function HomePage() {
     const userId = await AsyncStorage.getItem("user_id")
     if (!userId) return;
     try {
-      const response = await fetch(
-        `https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`,
-        {
-          headers: {
-            "ngrok-skip-browser-warning": "true",},
-          }
-      )
+ const response = await fetch(
+      `https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`,
+            // `http://192.168.1.124:3000/display/projects/${userId}`,
+      { headers: { "ngrok-skip-browser-warning": "true",
+       } }
+    );
+
       if (!response.ok) {
       const text = await response.text();
       console.error("API ERROR:", text);
@@ -84,11 +84,14 @@ export default function HomePage() {
     const formattedProjects = Array.isArray(data)
       ? data.map((p) => ({
           ...p,
-          deadline: p.deadline ? new Date(p.deadline + "T00:00:00") : null,
+          // deadline: p.deadline ? new Date(p.deadline + "T00:00:00") : null,
+          deadline: p.deadline ? new Date(p.deadline) : null,
           members: p.members ?? [],
         }))
       : [];
 
+      // console.log("DATA FROM API:", data);
+// console.log("FORMATTED PROJECTS:", formattedProjects);
 
       // deadline: p.deadline ? new Date(p.deadline) : null,
       //     members: []
@@ -133,9 +136,9 @@ export default function HomePage() {
   const [appliedToDate, setAppliedToDate] = useState<Date | null>(null);
 
 const filteredProjects = projects.filter((project) => {
-  if (statusValue !== "ALL" && project.status !== statusValue) {
-    return false;
-  }
+  // if (statusValue !== "ALL" && project.status !== statusValue) {
+  //   return false;
+  // }
   if (subjectFilter !== "ALL" && project.subject !== subjectFilter) {
     return false;
   }
@@ -152,8 +155,6 @@ const filteredProjects = projects.filter((project) => {
     appliedFromDate && appliedToDate
       ? `${appliedFromDate.toLocaleDateString()} - ${appliedToDate.toLocaleDateString()}`
       : "Any";
-
-
 
   const FILTER_HEIGHT = 30;
   const FILTER_RADIUS = 11;
@@ -172,7 +173,6 @@ const filteredProjects = projects.filter((project) => {
 //   subjectFilter === "ALL"
 //     ? projects
 //     : projects.filter(p => p.subject === subjectFilter);
-
 
   return (
     <SafeAreaView className="flex-1 bg-white">

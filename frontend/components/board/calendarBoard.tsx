@@ -131,15 +131,9 @@ export default function CalendarBoard({ tasks }: Props) {
                 {/* cell backgrounds + วันที่ */}
                 <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
                     {cells.map((day, i) => (
-                        <View key={i} style={{
-                            width: cellW,
-                            height: 85,
-                            backgroundColor: "white",
-                            padding: 3
-                        }}>
-                            {day && <Text style={{ fontSize: 11, fontWeight: "500" }} className="font-KanitRegular">
-                                {day}
-                            </Text>}
+
+                        <View key={i} className="p-[3px]" style={{ width: cellW, height: 85 }}>
+                            {day && <Text className="text-[11px] font-KanitRegular">{day}</Text>}
                         </View>
                     ))}
                 </View>
@@ -197,7 +191,7 @@ export default function CalendarBoard({ tasks }: Props) {
                                         borderColor: "#666",
                                     }}
                                 >
-                                    <Text numberOfLines={1} style={{ fontSize: 10, color: "#000" }} >
+                                    <Text numberOfLines={1} className="text-[10px] text-black font-KanitRegular">
                                         {seg.task.task_name || "Untitled"}
                                     </Text>
                                 </Pressable>
@@ -230,8 +224,7 @@ export default function CalendarBoard({ tasks }: Props) {
                                         alignItems: "center",
                                     }}
                                 >
-                                    <Text style={{ fontSize: 9, color: "#555" }}>+{count - 2} more</Text>
-                                </Pressable>
+                                    <Text className="text-[9px] text-gray-500 font-KanitRegular">+{count - 2} more</Text>                                </Pressable>
                             );
                         })}
                     </View>
@@ -251,8 +244,9 @@ export default function CalendarBoard({ tasks }: Props) {
                         <Text className="text-lg font-KanitMedium mb-3">Tasks</Text>
                         {selectedTasks?.map((t) => (
                             <Pressable key={t.id} onPress={() => { setSelectedTasks(null); setSelectedTask(t); }}
-                                style={{ backgroundColor: statusColor[t.status], padding: 8, borderRadius: 6, marginBottom: 6 }}>
-                                <Text style={{ fontSize: 12 }}>{t.task_name || "Untitled"}</Text>
+                                className="px-2 py-2 mb-1 rounded-[6px]"
+                                style={{ backgroundColor: statusColor[t.status] }}>
+                                <Text className="text-[12px] font-KanitRegular">{t.task_name || "Untitled"}</Text>
                             </Pressable>
                         ))}
                         <Pressable onPress={() => setSelectedTasks(null)} className="bg-black rounded-lg px-4 py-2 mt-2">
@@ -279,18 +273,18 @@ export default function CalendarBoard({ tasks }: Props) {
                     }}
                         onPress={() => { }}>
                         <Text className="text-lg font-KanitMedium mb-3">{selectedTask?.task_name || "Untitled"}</Text>
-                        <View style={{
-                            backgroundColor: statusColor[selectedTask?.status ?? "todo"],
-                            paddingHorizontal: 10,
-                            paddingVertical: 4,
-                            borderRadius: 6,
-                            alignSelf: "flex-start",
-                            marginBottom: 12
-                        }}>
-                            <Text style={{ fontSize: 12 }}>{selectedTask?.status}</Text>
+                        <View className="px-2 py-1 rounded-[6px] self-start mb-3" style={{ backgroundColor: statusColor[selectedTask?.status ?? "todo"] }}>
+                            <Text className="text-[12px] font-KanitRegular">{selectedTask?.status}</Text>
                         </View>
-                        <Text style={{ fontSize: 12, color: "#666", marginBottom: 4 }}>Start: {selectedTask?.start_date || "-"}</Text>
-                        <Text style={{ fontSize: 12, color: "#666" }}>Due: {selectedTask?.deadline || "-"}</Text>
+                        <Text className="text-[12px] font-KanitRegular text-gray-600 mb-1">
+                            Start: {selectedTask?.start_date || "-"}
+                        </Text>
+                        <Text className="text-[12px] font-KanitRegular text-gray-600">
+                            Due: {selectedTask?.deadline || "-"}
+                        </Text>
+                        <Text className="text-[12px] font-KanitRegular">
+                            {selectedTask?.status}
+                        </Text>
                         <Pressable onPress={() => setSelectedTask(null)} className="bg-black rounded-lg px-4 py-2 mt-4">
                             <Text className="text-white text-center">Close</Text>
                         </Pressable>
