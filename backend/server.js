@@ -137,8 +137,6 @@ app.get("/chat/history/:projectId", async (req, res) => {
 app.get("/project/name/:projectId", async (req, res) => {
     const { projectId } = req.params;
 
-
-
     const { data, error } = await supabase
         .from("project")
         .select("project_name")
@@ -434,8 +432,6 @@ app.delete('/api/project/:project_id', async (req, res) => {
     }
 })
 
-// filter: sucject
-
 
 app.post('/search/member', async (req, res) => {
     const email = req.body.email.trim().toLowerCase()
@@ -463,26 +459,23 @@ app.post('/search/member', async (req, res) => {
 })
 
 app.post('/create/task', async (req, res) => {
-    const { name, deadline, projectId, members } = req.body
+    const { name, deadline, start_date, projectId, members } = req.body
 
     try {
-        console.log("Data received:", name, deadline)
-        
-         const { data, error} = await supabase
+        const { data, error } = await supabase
             .from('task')
             .insert({
                 task_name: name,
+                start_date: start_date,
                 deadline: deadline,
                 project_id: projectId,
                 status: "to-do"
             })
             .select()
-            .single()
-        
-            console.log(data)
+            .single();
 
-               if (error || !data) {
-            return res.json(error)
+        if (error || !data) {
+            return res.status(400).json(error);
         }
 
         const membersData = members.map(i => ({
@@ -491,35 +484,36 @@ app.post('/create/task', async (req, res) => {
             username: i.username,
             task_id: data.id,
             avatar_url: i.avatar_url
-        }))
+        }));
 
         const { error: error_member_add } = await supabase
             .from('task_assign')
-            .insert(membersData)
+            .insert(membersData);
 
-        if (error_member_add) throw error_member_add
+        if (error_member_add) throw error_member_add;
 
         res.status(200).json({
             success: true,
             data
-        })
+        });
 
     } catch (err) {
-        console.log(err)
-        res.status(500).json({ error: err.message })
+        console.log(err);
+        res.status(500).json({ error: err.message });
     }
-})
+});
 
 // edit task
 app.put('/task/:id', async (req, res) => {
     const { id } = req.params;
-    const { name, deadline } = req.body;
+    const { name, start_date, deadline, members } = req.body;
 
     try {
         const { data, error } = await supabase
             .from('task')
             .update({ 
                 task_name: name,
+                start_date: start_date,
                 deadline: deadline 
             })
             .eq('id', id)
@@ -582,7 +576,6 @@ app.get('/assign/member/:projectId', async (req, res) => {
     }
 })
 
-
 app.get('/get/task/:projectId', async (req, res) => {
     const { projectId } = req.params
 
@@ -600,6 +593,7 @@ app.get('/get/task/:projectId', async (req, res) => {
         )
       `)
             .eq('project_id', projectId)
+            .order('created_at', { ascending: true });
 
         if (error) throw error
         console.log(data)
@@ -607,7 +601,8 @@ app.get('/get/task/:projectId', async (req, res) => {
         res.json(data)
 
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        res.status(500).send("Server Error");
 
     }
 

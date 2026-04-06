@@ -24,6 +24,7 @@ type Member = {
 type TaskData = {
   task_id: number;
   task_name: string;
+  start_date: string;
   deadline: string;
   members: Member[];
 };
@@ -33,6 +34,7 @@ type TaskSettingProps = {
   onClose: () => void;
   projectId: number;
   task: TaskData | null;
+  onSuccess?: () => void;
 };
 
 export default function TaskSetting({
@@ -40,14 +42,19 @@ export default function TaskSetting({
   onClose,
   projectId,
   task,
+  onSuccess,
 }: TaskSettingProps) {
-  const [showPicker, setShowPicker] = useState(false);
+  const [pickerType, setPickerType] = useState<"start" | "end" | null>(null);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<string[]>([]);
   const [items, setItems] = useState<
     { label: string; value: string; avatar_url: string }[]
   >([]);
-  const [taskForm, setTaskForm] = useState({ task_name: "", deadline: "" });
+  const [taskForm, setTaskForm] = useState({
+    task_name: "",
+    start_date: "",
+    deadline: "",
+  });
 
   const [fonts] = useFonts({
     KanitBold: require("@/assets/fonts/KanitBold.ttf"),
@@ -55,10 +62,16 @@ export default function TaskSetting({
   });
   const [tasktName, settaskName] = useState<String | null>(null);
 
+ 
+
   // sync ข้อมูลเดิมของ task เข้า form ทุกครั้งที่ task เปลี่ยน
   useEffect(() => {
     if (task) {
-      setTaskForm({ task_name: task.task_name, deadline: task.deadline });
+      setTaskForm({
+        task_name: task.task_name,
+        start_date: task.start_date,
+        deadline: task.deadline,
+      });
       setValue(task.members.map((m) => m.user_id));
     }
   }, [task]);
@@ -68,8 +81,9 @@ export default function TaskSetting({
     const loadMembers = async () => {
       try {
         const res = await fetch(
-          `https://freddy-unseconded-kristan.ngrok-free.dev/assign/member/${projectId}`,
-          { headers: { "ngrok-skip-browser-warning": "true" } },
+          // `https://freddy-unseconded-kristan.ngrok-free.dev/assign/member/${projectId}`,
+          // { headers: { "ngrok-skip-browser-warning": "true" } },
+          `http://192.168.100.166:3000/assign/member/${projectId}`,
         );
         const data = await res.json();
         setItems(
@@ -90,8 +104,7 @@ export default function TaskSetting({
     const taskname = async () => {
       try {
         const res = await fetch(
-          `http://172.25.46.112:3000/taskname/${task?.task_id}`,
-          { headers: { "ngrok-skip-browser-warning": "true" } },
+          `http://192.168.100.166:3000/taskname/${task.task_id}`,
         );
         const data = await res.json();
 
@@ -102,20 +115,41 @@ export default function TaskSetting({
       }
     };
     taskname();
-  }, [projectId]);
+  }, [projectId, task]);
 
   const onDateChange = (event: any, selectedDate?: Date) => {
-    setShowPicker(false);
-    if (selectedDate) {
-      setTaskForm({
-        ...taskForm,
-        deadline: selectedDate.toISOString().split("T")[0],
-      });
+  if (event.type === "dismissed" || !selectedDate) return;
+
+  const type = pickerType;
+
+  setPickerType(null);
+
+  const year = selectedDate.getFullYear();
+  const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
+  const day = String(selectedDate.getDate()).padStart(2, "0");
+  const formattedDate = `${year}-${month}-${day}`;
+
+  if (type === "start") {
+    if (taskForm.deadline && formattedDate > taskForm.deadline) {
+      alert("Start date cannot be later than End date");
+      return;
     }
-  };
+    setTaskForm((prev) => ({ ...prev, start_date: formattedDate }));
+  } else if (type === "end") {
+    if (taskForm.start_date && formattedDate < taskForm.start_date) {
+      alert("End date cannot be earlier than Start date");
+      return;
+    }
+    setTaskForm((prev) => ({ ...prev, deadline: formattedDate }));
+  }
+};
 
   const handleUpdateTask = async () => {
     try {
+      if (!taskForm.start_date || !taskForm.deadline) {
+        alert("Please select both dates");
+        return;
+      }
       const selectedMembers = value.map((id) => {
         const member = items.find((item) => item.value === id);
         return {
@@ -126,12 +160,14 @@ export default function TaskSetting({
       });
 
       await fetch(
-        `https://freddy-unseconded-kristan.ngrok-free.dev/update/task/${task?.task_id}`,
+        // `https://freddy-unseconded-kristan.ngrok-free.dev/update/task/${task?.task_id}`,
+        `http://192.168.100.166:3000/task/${task?.task_id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: taskForm.task_name,
+            start_date: taskForm.start_date,
             deadline: taskForm.deadline,
             projectId,
             members: selectedMembers,
@@ -139,6 +175,7 @@ export default function TaskSetting({
         },
       );
       alert("Task Updated!");
+      onSuccess?.();
       onClose();
     } catch (error) {
       console.log("Update Task Error:", error);
@@ -148,10 +185,12 @@ export default function TaskSetting({
   const handleDeleteTask = async () => {
     try {
       await fetch(
-        `https://freddy-unseconded-kristan.ngrok-free.dev/api/task/${task?.task_id}`,
+        // `https://freddy-unseconded-kristan.ngrok-free.dev/api/task/${task?.task_id}`,
+        `http://192.168.100.166:3000/api/task/${task?.task_id}`,
         { method: "DELETE" },
       );
       alert("Task Deleted!");
+      onSuccess?.();
       onClose();
     } catch (error) {
       console.log("Delete Task Error:", error);
@@ -184,11 +223,32 @@ export default function TaskSetting({
                   }
                   className="font-kanitMedium text-3xl text-black pb"
                   multiline
-                  style={{ minHeight: 60}}
+                  style={{ minHeight: 60 }}
                 />
               </View>
 
               <View className="h-[1px] bg-[#000000] mb-2" />
+
+              {/* Start date */}
+              <View className="mb-4 mt-3">
+                <View className="flex-row items-center gap-2 mb-2">
+                  <Image source={icons.calendar} className="w-5 h-5" />
+                  <Text className="font-kanitBold text-black">Start date</Text>
+                </View>
+
+                <Pressable
+                  onPress={() => setPickerType("start")}
+                  className="border border-neutral-400 rounded-xl px-4 py-3 bg-white"
+                >
+                  <Text
+                    className={`font-kanitRegular ${
+                      taskForm.start_date ? "text-black" : "text-neutral-400"
+                    }`}
+                  >
+                    {taskForm.start_date || "DD/MM/YY"}
+                  </Text>
+                </Pressable>
+              </View>
 
               {/* Deadline */}
               <View className="mb-4 mt-3">
@@ -201,7 +261,7 @@ export default function TaskSetting({
                   <Text className="font-kanitBold text-black">End date</Text>
                 </View>
                 <Pressable
-                  onPress={() => setShowPicker(true)}
+                  onPress={() => setPickerType("end")}
                   className="border border-neutral-400 rounded-xl px-4 py-3 bg-white"
                 >
                   <Text
@@ -210,15 +270,19 @@ export default function TaskSetting({
                     {taskForm.deadline || "DD/MM/YY"}
                   </Text>
                 </Pressable>
-                {showPicker && (
+                {pickerType && (
                   <DateTimePicker
                     value={
-                      taskForm.deadline
-                        ? new Date(taskForm.deadline)
-                        : new Date()
+                      pickerType === "start"
+                        ? taskForm.start_date
+                          ? new Date(taskForm.start_date)
+                          : new Date()
+                        : taskForm.deadline
+                          ? new Date(taskForm.deadline)
+                          : new Date()
                     }
                     mode="date"
-                    display="default"
+                    display={Platform.OS === "ios" ? "spinner" : "default"}
                     onChange={onDateChange}
                   />
                 )}

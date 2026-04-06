@@ -14,6 +14,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 import { icons } from "@/constants/icons";
 import TabBar from "@/components/tabBar";
 import { useLocalSearchParams, useRouter} from "expo-router";
+import { Label } from "@react-navigation/elements";
 
 const API_URL = process.env.API_URL
 
@@ -133,8 +134,8 @@ export default function setting() {
   const statusItems = [
     { label: "On Process", value: "On Process" },
     { label: "Complete", value: "Complete" },
- { label: "LAZY", value: "LAZY" },
-  { label: "Almost Dead", value: "Almost Dead" },
+    { label: "LAZY", value: "LAZY" },
+    { label: "Almost Dead", value: "Almost Dead" },
   ];
 
   // check subject เหมือนหน้า homepage แล้ว

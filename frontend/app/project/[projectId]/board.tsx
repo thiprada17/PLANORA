@@ -10,6 +10,7 @@ import {
   Pressable,
 } from "react-native";
 import { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import CreateTaskModal from "@/components/task/create_task";
 import ProjectChatModal from "@/components/chat/project_chat";
 import { icons } from "@/constants/icons";
@@ -96,45 +97,47 @@ export default function BoardScreen() {
   const [selectedTask, setSelectedTask] = useState<any>(null);
 
   const { projectId } = useLocalSearchParams<{ projectId: string }>();
-
   const projectID = Number(projectId);
   const handleTaskPress = (rawTask: any) => {
     setSelectedTask({
       task_id: rawTask.id,
       task_name: rawTask.task_name,
+      start_date: rawTask.start_date,
       deadline: rawTask.deadline,
       members: rawTask.task_assign ?? [],
     });
 
     setSettingVisible(true);
   };
+  const fetchTask = async (id?: number) => {
+  const pid = id ?? projectID;
 
-  const fetchTask = async () => {
-    try {
-      const res = await fetch(
-        `https://freddy-unseconded-kristan.ngrok-free.dev/get/task/${projectID}`,
-      );
-      // const res = await fetch(`http://192.168.1.125:3000/get/task/${projectID}`);
-
+  try {
+    const res = await fetch(
+      `https://freddy-unseconded-kristan.ngrok-free.dev/get/task/${pid}`
+    );
+    
       if (!res.ok) {
         throw new Error("Network response not ok");
       }
+        const data = await res.json();
 
-      const data = await res.json();
-      console.log("Fetched Tasks:", data);
+    const formatted = (Array.isArray(data) ? data : data.tasks ?? []).map((t: any) => ({
+      id: t.id,
+      task_name: t.task_name,
+      start_date: t.start_date,
+      deadline: t.deadline,
+      status: t.status,
+      task_assign: t.task_assign ?? [],
+    }));
 
-      if (Array.isArray(data)) {
-        setTasks(data);
-      } else if (data && Array.isArray(data.tasks)) {
-        setTasks(data.tasks);
-      } else {
-        setTasks([]);
-      }
-    } catch (err) {
-      console.log("Fetch error:", err);
-      setTasks([]);
-    }
-  };
+    setTasks(formatted);
+
+  } catch (err) {
+    console.log("Fetch error:", err);
+    setTasks([]);
+  }
+};
 
   useFocusEffect(
     useCallback(() => {
@@ -144,7 +147,8 @@ export default function BoardScreen() {
     }, [projectID]),
   );
 
-  if (!projectID) return <View className="flex-1 bg-white" />;
+  if (!projectId) return <View className="flex-1 bg-white" />;
+  if (isNaN(projectID)) return null;
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -177,12 +181,14 @@ export default function BoardScreen() {
           visible={modalVisible}
           onClose={() => setModalVisible(false)}
           projectId={projectID}
+          onSuccess={fetchTask}
         />
         <TaskSetting
           visible={settingVisible}
           onClose={() => setSettingVisible(false)}
           projectId={projectID}
           task={selectedTask}
+          onSuccess={fetchTask}
         />
       </View>
 

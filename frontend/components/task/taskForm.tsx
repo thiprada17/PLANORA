@@ -8,10 +8,15 @@ import DropDownPicker from "react-native-dropdown-picker";
 type TaskFormProps = {
   onCancel: () => void;
   projectId: number;
+  onSuccess?: () => void;
 };
 
-export default function TaskForm({ onCancel, projectId }: TaskFormProps) {
-  const [showPicker, setShowPicker] = useState(false);
+export default function TaskForm({
+  onCancel,
+  projectId,
+  onSuccess,
+}: TaskFormProps) {
+  const [pickerType, setPickerType] = useState<"start" | "end" | null>(null);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<string[]>([]);
   const [items, setItems] = useState<
@@ -22,7 +27,6 @@ export default function TaskForm({ onCancel, projectId }: TaskFormProps) {
     }[]
   >([]);
 
-  const [pickerType, setPickerType] = useState<"start" | "end" | null>(null);
   const [task, setTask] = useState({
     task_name: "",
     start_date: "",
@@ -59,10 +63,20 @@ export default function TaskForm({ onCancel, projectId }: TaskFormProps) {
 
   const handleCreateTask = async () => {
     try {
+      if (!task.task_name.trim()) {
+        alert("Please enter task name");
+        return;
+      }
+
+      if (!task.start_date || !task.deadline) {
+        alert("Please select dates");
+        return;
+      }
+
       const selectedMembers = value.map((id) => {
         const member = items.find((item) => item.value === id);
         return {
-          user_id: id,
+          user_id: Number(id),
           username: member?.label,
           avatar_url: member?.avatar_url,
         };
@@ -75,8 +89,9 @@ export default function TaskForm({ onCancel, projectId }: TaskFormProps) {
         projectId: projectId,
         members: selectedMembers,
       };
+      console.log("PAYLOAD:", payload);
 
-      await fetch(
+      const res = await fetch(
         "https://freddy-unseconded-kristan.ngrok-free.dev/create/task",
         {
           method: "POST",
@@ -85,7 +100,11 @@ export default function TaskForm({ onCancel, projectId }: TaskFormProps) {
         },
       );
 
+      const data = await res.json();
+      console.log("CREATE TASK:", data);
+
       alert("Task Created!");
+      onSuccess?.();
       onCancel();
     } catch (error) {
       console.log("Create Task Error:", error);
@@ -100,44 +119,43 @@ export default function TaskForm({ onCancel, projectId }: TaskFormProps) {
   if (!fonts) return null;
 
   const onDateChange = (event: any, selectedDate?: Date) => {
-    setPickerType(null);
-
     if (!selectedDate) return;
 
-    const isoDate = selectedDate.toISOString().split("T")[0];
+    const type = pickerType;
 
-    if (pickerType === "start") {
-      if (task.deadline && isoDate > task.deadline) {
+    setPickerType(null);
+
+    const formattedDate = selectedDate.toISOString().split("T")[0];
+
+    if (type === "start") {
+      if (task.deadline && formattedDate > task.deadline) {
         alert("Start date cannot be later than End date");
         return;
       }
-
-      setTask({ ...task, start_date: isoDate });
-    } else if (pickerType === "end") {
-      if (task.start_date && isoDate < task.start_date) {
+      setTask({ ...task, start_date: formattedDate });
+    } else if (type === "end") {
+      if (task.start_date && formattedDate < task.start_date) {
         alert("End date cannot be earlier than Start date");
         return;
       }
-
-      setTask({ ...task, deadline: isoDate });
+      setTask({ ...task, deadline: formattedDate });
     }
   };
 
   return (
     <View className="gap-4 p-2">
+      {/* HEADER */}
       <View className="items-center mb-2">
         <Text className="font-KanitBold text-2xl text-black">Create Task</Text>
       </View>
 
+      {/* TASK NAME */}
       <View>
         <View className="flex-row items-center gap-2 mb-2">
-          <Image
-            source={icons.label}
-            className="w-5 h-5"
-            resizeMode="contain"
-          />
-          <Text className="font-KanitBold text-black">Task name</Text>
+          <Image source={icons.label} className="w-5 h-5" />
+          <Text className="font-kanitBold text-black">Task name</Text>
         </View>
+
         <TextInput
           placeholder="JerseyJamTU"
           className="font-KanitRegular border border-neutral-400 rounded-xl px-4 py-3 text-neutral-700 bg-white"
@@ -146,6 +164,30 @@ export default function TaskForm({ onCancel, projectId }: TaskFormProps) {
         />
       </View>
 
+      {/* START DATE */}
+      <View>
+        <View className="flex-row items-center gap-2 mb-2">
+          <Image source={icons.calendar} className="w-5 h-5" />
+          <Text className="font-kanitBold text-black">Start date</Text>
+        </View>
+
+        <Pressable
+          onPress={() => {
+            setPickerType("start");
+          }}
+          className="border border-neutral-400 rounded-xl px-4 py-3 bg-white"
+        >
+          <Text
+            className={`font-kanitRegular ${
+              task.start_date ? "text-black" : "text-neutral-400"
+            }`}
+          >
+            {task.start_date || "DD/MM/YY"}
+          </Text>
+        </Pressable>
+      </View>
+
+      {/* END DATE */}
       <View>
         <View className="flex-row items-center gap-2 mb-2">
           <Image
@@ -181,7 +223,9 @@ export default function TaskForm({ onCancel, projectId }: TaskFormProps) {
         </View>
 
         <Pressable
-          onPress={() => setPickerType("end")}
+          onPress={() => {
+            setPickerType("end");
+          }}
           className="border border-neutral-400 rounded-xl px-4 py-3 bg-white"
         >
           <Text
@@ -195,7 +239,13 @@ export default function TaskForm({ onCancel, projectId }: TaskFormProps) {
 
         {pickerType && (
           <DateTimePicker
-            value={new Date()}
+            value={
+              pickerType === "start" && task.start_date
+                ? new Date(task.start_date)
+                : pickerType === "end" && task.deadline
+                ? new Date(task.deadline)
+                : new Date()
+            }
             mode="date"
             display="default"
             onChange={onDateChange}
@@ -203,6 +253,7 @@ export default function TaskForm({ onCancel, projectId }: TaskFormProps) {
         )}
       </View>
 
+      {/* ASSIGN */}
       <View style={{ zIndex: 5000 }}>
         <View className="flex-row items-center gap-2 mb-2">
           <Image
@@ -259,27 +310,20 @@ export default function TaskForm({ onCancel, projectId }: TaskFormProps) {
             borderWidth: 1,
             borderColor: "#E5E5E5",
           }}
-          badgeDotColors={"#222222"}
-          badgeDotStyle={{
-            width: 6,
-            height: 6,
-          }}
         />
+
         <Text className="text-[10px] text-neutral-400 mt-1">
           * You can select multiple members
         </Text>
       </View>
 
+      {/* SUBMIT */}
       <View className="flex-row justify-end mt-4">
         <Pressable
           onPress={handleCreateTask}
           className="bg-[#A8D5BA] border border-black rounded-lg p-2 w-10 h-10 items-center justify-center shadow-sm"
         >
-          <Image
-            source={icons.check}
-            className="w-5 h-5"
-            resizeMode="contain"
-          />
+          <Image source={icons.check} className="w-5 h-5" />
         </Pressable>
       </View>
     </View>
