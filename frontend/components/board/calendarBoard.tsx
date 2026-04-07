@@ -6,17 +6,17 @@ type Task = {
     task_name: string;
     start_date: string;
     deadline: string;
-    status: "todo" | "progress" | "review" | "done";
+    status: "to-do" | "progress" | "review" | "done";
 };
 
 type Props = { tasks: Task[] };
 
 const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const statusColor: Record<Task["status"], string> = {
-    todo: "#F0F0F0",
-    progress: "#C2E9FF",
-    review: "#FFF5A6",
-    done: "#B4F3C9",
+    "to-do": "#F0F0F0",
+    "progress": "#C2E9FF",
+    "review": "#FFF5A6",
+    "done": "#B4F3C9",
 };
 
 export default function CalendarBoard({ tasks }: Props) {
@@ -108,18 +108,26 @@ export default function CalendarBoard({ tasks }: Props) {
             {/* header */}
             <View className="flex-row items-center justify-between mb-3">
                 <Pressable onPress={() => changeMonth(-1)} hitSlop={8}>
-                    <Text className="text-xl px-2">{"<"}</Text>
+                    <Text className="text-xl px-2">
+                        {"<"}
+                    </Text>
                 </Pressable>
-                <Text className="text-xl font-KanitMedium">{monthName} {year}</Text>
+                <Text className="text-xl font-KanitMedium">{monthName}
+                    {year}
+                </Text>
                 <Pressable onPress={() => changeMonth(1)} hitSlop={8}>
-                    <Text className="text-xl px-2">{">"}</Text>
+                    <Text className="text-xl px-2">
+                        {">"}
+                    </Text>
                 </Pressable>
             </View>
 
             {/* weekday headers */}
             <View className="flex-row mb-1">
                 {days.map((d) => (
-                    <Text key={d} className="flex-1 text-center text-xs font-KanitMedium text-gray-500">{d}</Text>
+                    <Text key={d} className="flex-1 text-center text-xs font-KanitMedium text-gray-500">
+                        {d}
+                    </Text>
                 ))}
             </View>
 
@@ -167,11 +175,15 @@ export default function CalendarBoard({ tasks }: Props) {
 
                 {/* task bars */}
                 {containerWidth > 0 && (
-                    <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+                    <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, marginBottom: 1 }}
                         pointerEvents="box-none">
 
                         {slottedTasks.map((seg, idx) => {
                             if (seg.slot >= 2) return null;
+
+                            const taskBarHeight = 18;
+                            const taskBarSpacing = 2; // เว้น 2px
+
                             return (
                                 <Pressable
                                     key={idx}
@@ -180,9 +192,9 @@ export default function CalendarBoard({ tasks }: Props) {
                                     style={{
                                         position: "absolute",
                                         left: seg.col * cellW + 2,
-                                        top: seg.row * 85 + 24 + seg.slot * 19,
+                                        top: seg.row * 85 + 24 + seg.slot * (taskBarHeight + taskBarSpacing),
                                         width: seg.span * cellW - 4,
-                                        height: 20,
+                                        height: taskBarHeight,
                                         backgroundColor: statusColor[seg.task.status],
                                         borderRadius: 4,
                                         justifyContent: "center",
@@ -208,6 +220,10 @@ export default function CalendarBoard({ tasks }: Props) {
                             const cellTasks = slottedTasks
                                 .filter(s => s.row === row && s.col <= col && col < s.col + s.span)
                                 .map(s => s.task);
+
+                            // เพิ่ม offset เล็กน้อยให้ห่างจาก task bars
+                            const topOffset = row * 85 + 24 + 2 * 19 + 3; // +3px
+
                             return (
                                 <Pressable
                                     key={`more-${i}`}
@@ -215,7 +231,7 @@ export default function CalendarBoard({ tasks }: Props) {
                                     style={{
                                         position: "absolute",
                                         left: col * cellW + 2,
-                                        top: row * 85 + 24 + 2 * 19,
+                                        top: topOffset,
                                         width: cellW - 4,
                                         height: 13,
                                         backgroundColor: "#E5E7EB",
@@ -224,7 +240,10 @@ export default function CalendarBoard({ tasks }: Props) {
                                         alignItems: "center",
                                     }}
                                 >
-                                    <Text className="text-[9px] text-gray-500 font-KanitRegular">+{count - 2} more</Text>                                </Pressable>
+                                    <Text className="text-[9px] text-gray-500 font-KanitRegular">
+                                        +{count - 2} more
+                                    </Text>
+                                </Pressable>
                             );
                         })}
                     </View>
@@ -241,52 +260,79 @@ export default function CalendarBoard({ tasks }: Props) {
                 }}
                     onPress={() => setSelectedTasks(null)}>
                     <Pressable style={{ backgroundColor: "white", padding: 24, borderRadius: 12, width: "80%" }} onPress={() => { }}>
-                        <Text className="text-lg font-KanitMedium mb-3">Tasks</Text>
+                        <Text className="text-lg font-KanitMedium mb-3">
+                            Tasks
+                            </Text>
                         {selectedTasks?.map((t) => (
                             <Pressable key={t.id} onPress={() => { setSelectedTasks(null); setSelectedTask(t); }}
                                 className="px-2 py-2 mb-1 rounded-[6px]"
                                 style={{ backgroundColor: statusColor[t.status] }}>
-                                <Text className="text-[12px] font-KanitRegular">{t.task_name || "Untitled"}</Text>
+                                <Text className="text-[12px] font-KanitRegular">
+                                    {t.task_name || "Untitled"}
+                                </Text>
                             </Pressable>
                         ))}
                         <Pressable onPress={() => setSelectedTasks(null)} className="bg-black rounded-lg px-4 py-2 mt-2">
-                            <Text className="text-white text-center">Close</Text>
+                            <Text className="text-white text-center">
+                                Close
+                            </Text>
                         </Pressable>
                     </Pressable>
                 </Pressable>
             </Modal>
 
             <Modal visible={!!selectedTask} transparent animationType="fade">
-                <Pressable style={{
-                    flex: 1,
-                    backgroundColor: "rgba(0,0,0,0.4)",
-                    justifyContent: "center",
-                    alignItems: "center"
-                }}
-                    onPress={() => setSelectedTask(null)}>
-
-                    <Pressable style={{
-                        backgroundColor: "white",
-                        padding: 24,
-                        borderRadius: 12,
-                        width: "80%"
+                <Pressable
+                    style={{
+                        flex: 1,
+                        backgroundColor: "rgba(0,0,0,0.4)",
+                        justifyContent: "center",
+                        alignItems: "center",
                     }}
-                        onPress={() => { }}>
-                        <Text className="text-lg font-KanitMedium mb-3">{selectedTask?.task_name || "Untitled"}</Text>
-                        <View className="px-2 py-1 rounded-[6px] self-start mb-3" style={{ backgroundColor: statusColor[selectedTask?.status ?? "todo"] }}>
-                            <Text className="text-[12px] font-KanitRegular">{selectedTask?.status}</Text>
+                    onPress={() => setSelectedTask(null)}
+                >
+                    <Pressable
+                        style={{
+                            backgroundColor: "white",
+                            padding: 24,
+                            borderRadius: 12,
+                            width: "80%",
+                        }}
+                        onPress={() => { }}
+                    >
+                        {/* Task name */}
+                        <Text className="text-lg font-KanitMedium mb-3">
+                            {selectedTask?.task_name || "Untitled"}
+                        </Text>
+
+                        {/* Status */}
+                        <View
+                            className="px-2 py-1 rounded-[6px] self-start mb-3"
+                            style={{
+                                backgroundColor: statusColor[selectedTask?.status ?? "to-do"],
+                            }}
+                        >
+                            <Text className="text-[12px] font-KanitRegular">
+                                {selectedTask?.status}
+                            </Text>
                         </View>
+
+                        {/* Dates */}
                         <Text className="text-[12px] font-KanitRegular text-gray-600 mb-1">
                             Start: {selectedTask?.start_date || "-"}
                         </Text>
-                        <Text className="text-[12px] font-KanitRegular text-gray-600">
+                        <Text className="text-[12px] font-KanitRegular text-gray-600 mb-4">
                             Due: {selectedTask?.deadline || "-"}
                         </Text>
-                        <Text className="text-[12px] font-KanitRegular">
-                            {selectedTask?.status}
-                        </Text>
-                        <Pressable onPress={() => setSelectedTask(null)} className="bg-black rounded-lg px-4 py-2 mt-4">
-                            <Text className="text-white text-center">Close</Text>
+
+                        {/* Close button */}
+                        <Pressable
+                            onPress={() => setSelectedTask(null)}
+                            className="bg-black rounded-lg px-4 py-2"
+                        >
+                            <Text className="text-white text-center">
+                                Close
+                            </Text>
                         </Pressable>
                     </Pressable>
                 </Pressable>

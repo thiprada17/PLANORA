@@ -14,6 +14,7 @@ type Props = {
   tasks: any[];
   setModalVisible: (v: boolean) => void;
   onTaskPress: (task: any) => void;
+  onTaskStatusChange?: (taskId: string, status: string) => void;
 };
 
 type ColumnLayout = { x: number; width: number };
@@ -30,7 +31,7 @@ const HEADER_HEIGHT = 60;
 const ADD_BUTTON_HEIGHT = 36;
 const MAX_COL_HEIGHT = 500;
 
-export default function KanbanBoard({ tasks: initialTasks, setModalVisible, onTaskPress }: Props) {
+export default function KanbanBoard({ tasks: initialTasks, setModalVisible, onTaskPress, onTaskStatusChange }: Props) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [highlightCol, setHighlightCol] = useState<string | null>(null);
@@ -47,6 +48,14 @@ export default function KanbanBoard({ tasks: initialTasks, setModalVisible, onTa
     setTasks((prev) =>
       prev.map((t) => (t.id === taskId ? { ...t, status: toColumnId } : t))
     );
+
+
+if (onTaskStatusChange) {
+  const task = tasks.find(t => t.id === taskId);
+  if (task) {
+    onTaskStatusChange(task.id, toColumnId);
+  }
+}
   };
 
   const getColumnAtX = (pageX: number): string | null => {

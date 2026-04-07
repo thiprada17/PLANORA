@@ -18,9 +18,10 @@ import TabBar from "@/components/tabBar";
 import BoardBar from "@/components/board/boardBar";
 import KanbanBoard from "@/components/board/kanbanBoard";
 import CalendarBoard from "@/components/board/calendarBoard";
+import TaskSetting, { TaskData } from "@/components/task/taskSetting";
+import { useFocusEffect } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import TodoBoard from "@/components/board/todoBoard";
-import { useLocalSearchParams, useFocusEffect } from "expo-router";
-import TaskSetting from "@/components/task/taskSetting";
 
 const Icon = ({
   name,
@@ -57,31 +58,6 @@ const spacing = {
   margin_horizontal: scale(64),
 };
 
-// column
-const Column = [
-  {
-    id: "to-do",
-    title: "To-do",
-    tasks: [1, 2, 3, 4],
-  },
-  {
-    id: "progress",
-    title: "On Progress",
-    tasks: [1],
-  },
-  {
-    id: "review",
-    title: "In Review",
-    tasks: [1],
-  },
-  {
-    id: "complete",
-    title: "Complete",
-    tasks: [1],
-  },
-];
-
-const users = [1, 2, 3]; // mock
 
 export default function BoardScreen() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -109,34 +85,32 @@ export default function BoardScreen() {
     setSettingVisible(true);
   };
   const fetchTask = async (id?: number) => {
-  const pid = id ?? projectID;
+    const pid = id ?? projectID;
 
-  try {
-    const res = await fetch(
-      `https://freddy-unseconded-kristan.ngrok-free.dev/get/task/${pid}`
-    );
-    
-      if (!res.ok) {
-        throw new Error("Network response not ok");
-      }
-        const data = await res.json();
+    try {
+      const res = await fetch(
+        `https://freddy-unseconded-kristan.ngrok-free.dev/get/task/${pid}`,
+        // `http://192.168.100.166:3000/get/task/${pid}`
+      );
 
-    const formatted = (Array.isArray(data) ? data : data.tasks ?? []).map((t: any) => ({
-      id: t.id,
-      task_name: t.task_name,
-      start_date: t.start_date,
-      deadline: t.deadline,
-      status: t.status,
-      task_assign: t.task_assign ?? [],
-    }));
+      const data = await res.json();
 
-    setTasks(formatted);
+      const formatted = (Array.isArray(data) ? data : data.tasks ?? []).map((t: any) => ({
+        id: t.id,
+        task_name: t.task_name,
+        start_date: t.start_date,
+        deadline: t.deadline,
+        status: t.status,
+        task_assign: t.task_assign ?? [],
+      }));
 
-  } catch (err) {
-    console.log("Fetch error:", err);
-    setTasks([]);
-  }
-};
+      setTasks(formatted);
+
+    } catch (err) {
+      console.log("Fetch error:", err);
+      setTasks([]);
+    }
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -148,6 +122,31 @@ export default function BoardScreen() {
 
   if (!projectId) return <View className="flex-1 bg-white" />;
   if (isNaN(projectID)) return null;
+  const handleTaskUpdate = (updatedTask: TaskData) => {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === updatedTask.task_id ? updatedTask : t))
+    );
+  };
+
+  const handleTaskStatusChange = async (taskId: string, status: string) => {
+    // อัปเดต state local ก่อน
+    setTasks((prev) =>
+      prev.map((t) => (t.id === taskId ? { ...t, status } : t))
+    );
+
+
+
+    // ส่งไป server
+    try {
+      await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/update/task/${taskId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+    } catch (err) {
+      console.log("Failed to update task status:", err);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -187,7 +186,7 @@ export default function BoardScreen() {
           onClose={() => setSettingVisible(false)}
           projectId={projectID}
           task={selectedTask}
-          onSuccess={fetchTask}
+          onSuccess={handleTaskUpdate}
         />
       </View>
 
@@ -203,6 +202,7 @@ export default function BoardScreen() {
           tasks={tasks}
           setModalVisible={setModalVisible}
           onTaskPress={handleTaskPress}
+          onTaskStatusChange={handleTaskStatusChange}
         />
       )}
 
@@ -210,6 +210,7 @@ export default function BoardScreen() {
       {activeTab === "todo" && (
         <TodoBoard tasks={tasks} setModalVisible={setModalVisible} />
       )}
+
       {/* calendar */}
       {activeTab === "calendar" && <CalendarBoard tasks={tasks} />}
       <TabBar
@@ -235,11 +236,10 @@ export default function BoardScreen() {
           shadowRadius: 4,
           shadowOffset: { width: 0, height: 3 },
         }}
-        // className="w-[56px] h-[56px] rounded-full bg-white justify-center items-center"
+      // className="w-[56px] h-[56px] rounded-full bg-white justify-center items-center"
       >
         <Image source={icons.chatwithyak} style={{ width: 65, height: 65 }} />
       </Pressable>
     </SafeAreaView>
   );
 }
-

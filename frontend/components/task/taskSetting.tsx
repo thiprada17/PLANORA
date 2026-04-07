@@ -15,17 +15,18 @@ import { icons } from "@/constants/icons";
 import { useFonts } from "expo-font";
 import DropDownPicker from "react-native-dropdown-picker";
 
-type Member = {
+export type Member = {
   user_id: string;
   username: string;
   avatar_url: string;
 };
 
-type TaskData = {
+export type TaskData = {
   task_id: number;
   task_name: string;
   start_date: string;
   deadline: string;
+  status: string;
   members: Member[];
 };
 
@@ -34,7 +35,7 @@ type TaskSettingProps = {
   onClose: () => void;
   projectId: number;
   task: TaskData | null;
-  onSuccess?: () => void;
+  onSuccess?: (updatedTask: TaskData) => void; 
 };
 
 export default function TaskSetting({
@@ -54,6 +55,7 @@ export default function TaskSetting({
     task_name: "",
     start_date: "",
     deadline: "",
+    status: "to-do",
   });
 
   const [tasktName, settaskName] = useState<String | null>(null);
@@ -66,6 +68,7 @@ export default function TaskSetting({
         task_name: task.task_name,
         start_date: task.start_date,
         deadline: task.deadline,
+        status: task.status,
       });
       setValue(task.members.map((m) => m.user_id));
     }
@@ -114,31 +117,31 @@ export default function TaskSetting({
   }, [projectId, task]);
 
   const onDateChange = (event: any, selectedDate?: Date) => {
-  if (event.type === "dismissed" || !selectedDate) return;
+    if (event.type === "dismissed" || !selectedDate) return;
 
-  const type = pickerType;
+    const type = pickerType;
 
-  setPickerType(null);
+    setPickerType(null);
 
-  const year = selectedDate.getFullYear();
-  const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
-  const day = String(selectedDate.getDate()).padStart(2, "0");
-  const formattedDate = `${year}-${month}-${day}`;
+    const year = selectedDate.getFullYear();
+    const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
+    const day = String(selectedDate.getDate()).padStart(2, "0");
+    const formattedDate = `${year}-${month}-${day}`;
 
-  if (type === "start") {
-    if (taskForm.deadline && formattedDate > taskForm.deadline) {
-      alert("Start date cannot be later than End date");
-      return;
+    if (type === "start") {
+      if (taskForm.deadline && formattedDate > taskForm.deadline) {
+        alert("Start date cannot be later than End date");
+        return;
+      }
+      setTaskForm((prev) => ({ ...prev, start_date: formattedDate }));
+    } else if (type === "end") {
+      if (taskForm.start_date && formattedDate < taskForm.start_date) {
+        alert("End date cannot be earlier than Start date");
+        return;
+      }
+      setTaskForm((prev) => ({ ...prev, deadline: formattedDate }));
     }
-    setTaskForm((prev) => ({ ...prev, start_date: formattedDate }));
-  } else if (type === "end") {
-    if (taskForm.start_date && formattedDate < taskForm.start_date) {
-      alert("End date cannot be earlier than Start date");
-      return;
-    }
-    setTaskForm((prev) => ({ ...prev, deadline: formattedDate }));
-  }
-};
+  };
 
   const handleUpdateTask = async () => {
     try {
@@ -154,7 +157,7 @@ export default function TaskSetting({
           avatar_url: member?.avatar_url,
         };
       });
-
+ const res =
       await fetch(
         `https://freddy-unseconded-kristan.ngrok-free.dev/task/${task?.task_id}`,
         // `http://192.168.100.166:3000/task/${task?.task_id}`,
@@ -167,11 +170,13 @@ export default function TaskSetting({
             deadline: taskForm.deadline,
             projectId,
             members: selectedMembers,
+            status: taskForm.status,
           }),
         },
       );
+      const updatedTask = await res.json(); // สมมติ backend ส่ง task ใหม่กลับมา
+    onSuccess?.(updatedTask); // แจ้ง KanbanBoard อัปเดต
       alert("Task Updated!");
-      onSuccess?.();
       onClose();
     } catch (error) {
       console.log("Update Task Error:", error);
@@ -186,7 +191,6 @@ export default function TaskSetting({
         { method: "DELETE" },
       );
       alert("Task Deleted!");
-      onSuccess?.();
       onClose();
     } catch (error) {
       console.log("Delete Task Error:", error);
@@ -237,9 +241,8 @@ export default function TaskSetting({
                   className="border border-neutral-400 rounded-xl px-4 py-3 bg-white"
                 >
                   <Text
-                    className={`font-KanitRegular ${
-                      taskForm.start_date ? "text-black" : "text-neutral-400"
-                    }`}
+                    className={`font-KanitRegular ${taskForm.start_date ? "text-black" : "text-neutral-400"
+                      }`}
                   >
                     {taskForm.start_date || "DD/MM/YY"}
                   </Text>
