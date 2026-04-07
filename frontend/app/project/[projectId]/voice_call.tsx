@@ -130,6 +130,33 @@ export default function RoomPage() {
           }]);
         },
 
+        // มีคนอื่นเข้ามา
+        onUserJoined: (connection, uid) => {
+          console.log("User joined:", uid)
+
+          setJoinedUsers(prev => {
+            if (prev.some(u => u.uid === uid)) return prev;
+            return [...prev, {
+              uid,
+              name: "Loading",
+              avatar: `https://api.dicebear.com/7.x/adventurer/png?seed=${uid}` // ← fallback ก่อน ไม่ใช่ ""
+            }]
+          })
+
+          const userInfo = engineRef.current?.getUserInfoByUid(uid)
+          console.log("userInfo from getUserInfoByUid:", userInfo)
+
+          if (userInfo?.userAccount) {
+            getUser(userInfo.userAccount).then(avatarUrl => {
+              setJoinedUsers(prev => prev.map(u =>
+                u.uid === uid
+                  ? { ...u, name: userInfo.userAccount!, avatar: avatarUrl ?? `https://api.dicebear.com/7.x/adventurer/png?seed=${uid}` }
+                  : u
+              ))
+            })
+          }
+        },
+
 
         onUserInfoUpdated: (uid, info) => {
           const username = info.userAccount;
@@ -157,19 +184,6 @@ export default function RoomPage() {
               }
             });
           });
-        },
-
-        // มีคนอื่นเข้ามา
-        onUserJoined: (connection, uid) => {
-          console.log("User joined:", uid)
-          setJoinedUsers(prev => {
-            if (prev.some(u => u.uid === uid)) return prev;
-            return [...prev, {
-              uid,
-              name: "Loading",
-              avatar: ``
-            }]
-          })
         },
 
         // คนออก
@@ -236,8 +250,8 @@ export default function RoomPage() {
 
     const proejctId = userRef.current.projectId
 
-      const token = await fetchToken(proejctId, 0);
-  console.log('token:', token);
+    const token = await fetchToken(proejctId, 0);
+    console.log('token:', token);
 
     console.log(userRef.current.name + " " + userRef.current.projectId)
     if (!username) {
