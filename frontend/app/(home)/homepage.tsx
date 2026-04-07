@@ -70,15 +70,16 @@ export default function HomePage() {
 
   const fetchProjects = async () => {
     const userId = await AsyncStorage.getItem("user_id");
+    // a566dae5-5e72-4b94-b778-7d5ea9e6d763
     if (!userId) return;
     try {
       const response = await fetch(
-        // `https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`,
-        // {
-        //   headers: {
-        //     "ngrok-skip-browser-warning": "true",},
-        //   }
         `https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`,
+        {
+          headers: {
+            "ngrok-skip-browser-warning": "true",},
+          }
+        // `http://172.20.10.6:3000/display/projects/${userId}`,
       );
       if (!response.ok) {
         const text = await response.text();
@@ -115,9 +116,9 @@ export default function HomePage() {
 
   // const projects = mockProjects;
 
-  const [statusOpen, setStatusOpen] = useState(false);
+  // const [statusOpen, setStatusOpen] = useState(false);
   const [statusValue, setStatusValue] = useState("ALL");
-  const [subjectOpen, setSubjectOpen] = useState(false);
+  // const [subjectOpen, setSubjectOpen] = useState(false);
   const [subjectFilter, setSubjectFilter] = useState("ALL");
   const [showStatusCard, setShowStatusCard] = useState(false);
   const [showSubjectCard, setShowSubjectCard] = useState(false);
@@ -128,6 +129,14 @@ export default function HomePage() {
     { label: "Complete", value: "Complete" },
     { label: "LAZY", value: "LAZY" },
     { label: "Almost Dead", value: "Almost Dead" },
+  ];
+
+    const subjectItems = [
+    { label: "ALL", value: "ALL" },
+    ...Array.from(new Set(projects.map((p) => p.subject))).map((sub) => ({
+      label: sub,
+      value: sub,
+    })),
   ];
 
   const [showDeadlineCard, setShowDeadlineCard] = useState(false);
@@ -180,13 +189,7 @@ export default function HomePage() {
   const FILTER_RADIUS = 11;
   const FILTER_TEXT_SIZE = 9;
 
-  const subjectItems = [
-    { label: "ALL", value: "ALL" },
-    ...Array.from(new Set(projects.map((p) => p.subject))).map((sub) => ({
-      label: sub,
-      value: sub,
-    })),
-  ];
+
 
   return (
     <SafeAreaView className="flex-1 bg-white">
