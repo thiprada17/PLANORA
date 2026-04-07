@@ -78,7 +78,7 @@ export default function HomePage() {
         //   headers: {
         //     "ngrok-skip-browser-warning": "true",},
         //   }
-        `http://172.20.10.6:3000/display/projects/${userId}`,
+        `https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`,
       );
       if (!response.ok) {
         const text = await response.text();

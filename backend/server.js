@@ -96,8 +96,9 @@ app.get("/avatar/:username", async (req, res) => {
   const { data, error } = await supabase
     .from("user_profile")
     .select("avatar_url")
-    .eq("idtask", username);
+    .eq("username", username);
 
+    console.log(data)
   if (error) return res.status(500).json(error);
   res.json(data);
 });
