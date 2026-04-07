@@ -1,267 +1,259 @@
 import {
-    View,
-    Text,
-    Pressable,
-    Animated,
-    Dimensions,
-    useColorScheme,
-    TextInput,
-    Image,
-    Modal,
-} from 'react-native';
-import { useEffect, useRef, useState } from 'react';
-import { useFonts } from 'expo-font';
-import GoogleButton from '../(authen)/googleBtn';
-import Auth from "../../components/Auth"
-import { router } from 'expo-router';
-const screenHeight = Dimensions.get('window').height;
-import Loading from '../../components/loading';
-import { icons } from "@/constants/icons";
+  View,
+  Text,
+  Pressable,
+  Animated,
+  Dimensions,
+  useColorScheme,
+  TextInput,
+} from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { useFonts } from "expo-font";
+import GoogleButton from "../(authen)/googleBtn";
+import Auth from "../../components/Auth";
+import { router } from "expo-router";
+const screenHeight = Dimensions.get("window").height;
+import Loading from "../../components/loading";
 
 export default function Index() {
-    const [isSignupOpen, setIsSignupOpen] = useState(false);
-    const loginY = useRef(new Animated.Value(0)).current;
-    const [username, setUsername] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [isLoading, setIsLoading] = useState(false);
-    const [pageLoading, setPageLoading] = useState(true);
-    const [loginEmail, setLoginEmail] = useState('');
-    const [loginPassword, setLoginPassword] = useState('');
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isSignupOpen, setIsSignupOpen] = useState(false);
+  const loginY = useRef(new Animated.Value(0)).current;
+  const [username, setUsername] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
 
-    const openSignup = () => {
-        setLoginEmail('');
-        setLoginPassword('');
+  const openSignup = () => {
+    Animated.timing(loginY, {
+      toValue: 360,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+    setIsSignupOpen(true);
+  };
 
-        Animated.timing(loginY, {
-            toValue: 360,
-            duration: 300,
-            useNativeDriver: true,
-        }).start();
-        setIsSignupOpen(true);
-    };
+  const openLogin = () => {
+    Animated.timing(loginY, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+    setIsSignupOpen(false);
+  };
+  const [fonts] = useFonts({
+    KanitBold: require("../../assets/fonts/KanitBold.ttf"),
+    KanitRegular: require("../../assets/fonts/KanitRegular.ttf"),
+  });
 
-    const openLogin = () => {
-        setUsername('');
-        setEmail('');
-        setPassword('');
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 500);
 
-        Animated.timing(loginY, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: true,
-        }).start();
-        setIsSignupOpen(false);
-    };
-    const [fonts] = useFonts({
-        KanitBold: require("../../assets/fonts/KanitBold.ttf"),
-        KanitRegular: require("../../assets/fonts/KanitRegular.ttf"),
-    });
+    return () => clearTimeout(timer);
+  }, []);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setPageLoading(false);
-        }, 500);
+  if (!fonts || pageLoading) {
+    return <Loading visible={true} />;
+  }
 
-        return () => clearTimeout(timer);
-    }, []);
-
-    if (!fonts || pageLoading) {
-        return <Loading visible={true} />;
+  //signup dtb
+  const handleSignup = async () => {
+    if (!signupEmail || !signupPassword || !username) {
+      alert("กรอกข้อมูลให้ครบ");
+      return;
     }
+    try {
+      setIsLoading(true);
+      // ตอนนี้มันต้องเปลี่ยน ip ที่จะ fetch ตาามเครื่องน้าา ยุ่งยากมาก
+      const res = await fetch(
+        "https://freddy-unseconded-kristan.ngrok-free.dev/api/signup",
 
-    //signup dtb
-    const handleSignup = async () => {
-        try {
-            setIsLoading(true);
-            // ตอนนี้มันต้องเปลี่ยน ip ที่จะ fetch ตาามเครื่องน้าา ยุ่งยากมาก
-            const res = await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/api/signup', {
-                // const res = await fetch('http://192.168.1.125:3000/api/signup', {
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "69420",
+          },
+          body: JSON.stringify({
+            username,
+            email: signupEmail,
+            password: signupPassword,
+          }),
+        },
+      );
+      const data = await res.json();
 
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': '69420',
-                    'Cache-Control': 'no-cache',
-                },
-                body: JSON.stringify({
-                    username,
-                    email,
-                    password
-                })
-            })
-            const data = await res.json()
-            console.log('API Response status:', res.status);
-            console.log('API Response OK:', res.ok);
-            console.log('API Response body:', data);
+      if (data.success == true) {
+        router.replace("/homepage");
+      }
+      if (!res.ok) {
+        alert(data.message || data.error);
+        return;
+      }
+      alert("Signup success");
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleLogin = async () => {
+    try {
+      setIsLoading(true);
 
-            // if (data.success == true) {
-            //     router.replace('/(home)/homepage')
-            // }
-            if (!res.ok) {
-                alert(data.message || data.error)
-                return
-            }
-            // alert('Signup success')
-            if (data.message && data.message.toLowerCase().includes('signup success')) {
-                console.log('Signup successful, showing modal...');
-                setShowSuccessModal(true);
-            } else {
-                console.log('Signup failed according to API response');
-                alert(data.message || 'Signup failed');
-            }
+      const res = await fetch(
+        "https://freddy-unseconded-kristan.ngrok-free.dev/api/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: loginEmail,
+            password: loginPassword,
+          }),
+        },
+      );
 
-        } catch (err) {
-            console.log('Signup error:', err);
-            alert('An error occurred. Please try again.');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+      const data = await res.json();
 
-    const handleModalClose = () => {
-        setShowSuccessModal(false);
-        router.replace('/(home)/homepage');
-    };
+      if (!res.ok) {
+        alert(data.message || "Login failed");
+        return;
+      }
 
-    return (
+      if (data.success) {
+        router.replace("/homepage");
+      }
+    } catch (err) {
+      console.log(err);
+      alert("Network error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  return (
+    <View className="flex-1 bg-white">
+      <Loading visible={isLoading} />
+      <View
+        className="items-center justify-center"
+        style={{ height: screenHeight * 0.26 }}
+      >
+        <Text className="font-kanitBold text-[30px]">Plandora</Text>
+      </View>
 
-        <View className="flex-1 bg-white">
-            <Loading visible={isLoading} />
-            <View
-                className="items-center justify-center"
-                style={{ height: screenHeight * 0.26 }}
-            >
+      {/*Card*/}
+      <View className="flex-1 items-center">
+        <View className="absolute -top-4 h-full w-[90%] rounded-t-[28px] bg-GREEN px-5 pt-4 shadow-sm">
+          <Pressable className="py-3" onPress={openSignup}>
+            <Text className="font-kanitBold text-xl">Sign Up</Text>
+          </Pressable>
 
-                <Image source={icons.logo} className='w-[80%] h-10' />
+          {isSignupOpen && (
+            <View className="mt-6">
+              <TextInput
+                placeholder="Username"
+                value={username}
+                onChangeText={setUsername}
+                placeholderTextColor="#9CA3AF"
+                autoCapitalize="none"
+                className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+              />
+              <TextInput
+                placeholder="Email"
+                value={signupEmail}
+                onChangeText={setSignupEmail}
+                placeholderTextColor="#9CA3AF"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+              />
+              <TextInput
+                placeholder="Password"
+                value={signupPassword}
+                onChangeText={setSignupPassword}
+                placeholderTextColor="#9CA3AF"
+                secureTextEntry
+                className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+              />
+              <Pressable
+                onPress={handleSignup}
+                disabled={isLoading}
+                className={`rounded-xl py-3 ${isLoading ? "bg-GRAY" : "bg-black"}`}
+              >
+                <Text className="text-center font-kanitBold text-white">
+                  {isLoading ? "Loading...." : "Sign Up"}
+                </Text>
+              </Pressable>
+
+              <View className="my-4 flex-row items-center">
+                <View className="h-px flex-1 bg-gray-300" />
+                <Text className="mx-2 font-kanitRegular text-sm text-gray-500">
+                  or
+                </Text>
+                <View className="h-px flex-1 bg-gray-300" />
+              </View>
+              <GoogleButton />
             </View>
-
-            {/*Card*/}
-            <View className="flex-1 items-center">
-                <View className="absolute -top-4 h-full w-[90%] rounded-t-[28px] bg-GREEN px-5 pt-4 shadow-sm">
-                    <Pressable className="py-3" onPress={openSignup}>
-                        <Text className="font-KanitBold text-xl">
-                            Sign Up
-                        </Text>
-                    </Pressable>
-
-                    {isSignupOpen && (
-                        <View className="mt-6">
-                            <TextInput
-                                placeholder="Username"
-                                value={username}
-                                onChangeText={setUsername}
-                                placeholderTextColor="#9CA3AF"
-                                autoCapitalize="none"
-                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-KanitRegular"
-                            />
-                            <TextInput
-                                placeholder="Email"
-                                value={email}
-                                onChangeText={setEmail}
-                                placeholderTextColor="#9CA3AF"
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-KanitRegular"
-                            />
-                            <TextInput
-                                placeholder="Password"
-                                value={password}
-                                onChangeText={setPassword}
-                                placeholderTextColor="#9CA3AF"
-                                secureTextEntry
-                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-KanitRegular"
-                            />
-                            <Pressable onPress={handleSignup} disabled={isLoading} className={`rounded-xl py-3 ${isLoading ? 'bg-GRAY' : 'bg-black'}`}>
-                                <Text className="text-center font-KanitBold text-white">
-                                    {isLoading ? 'Loading....' : 'Sign Up'}
-                                </Text>
-                            </Pressable>
-
-
-                            <View className="my-4 flex-row items-center">
-                                <View className="h-px flex-1 bg-gray-300" />
-                                <Text className="mx-2 font-KanitRegular text-sm text-gray-500">
-                                    or
-                                </Text>
-                                <View className="h-px flex-1 bg-gray-300" />
-                            </View>
-                            <GoogleButton />
-                        </View>
-                    )}
-                </View>
-
-                {/*login*/}
-                <Animated.View
-                    className="absolute top-14 h-full w-[90%] rounded-t-[28px] border-[1px] border-neutral-900 shadow-sm bg-GRAY px-5 pt-4 shadow-lg"
-                    style={{ transform: [{ translateY: loginY }] }}
-                >
-                    <Pressable className="py-3" onPress={openLogin}>
-                        <Text className="font-KanitBold text-xl">
-                            Login
-                        </Text>
-                    </Pressable>
-
-                    {!isSignupOpen && (
-                        <View className="mt-6">
-                            <TextInput
-                                placeholder="Email"
-                                value={loginEmail}
-                                onChangeText={setLoginEmail}
-                                placeholderTextColor="#9CA3AF"
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-KanitRegular"
-                            />
-
-                            <TextInput
-                                placeholder="Password"
-                                value={loginPassword}
-                                onChangeText={setLoginPassword}
-                                placeholderTextColor="#9CA3AF"
-                                secureTextEntry
-                                className="mb-4 rounded-xl border-[1px] border-gray-300 bg-white px-4 py-3 font-KanitRegular"
-                            />
-
-                            <Pressable className="rounded-xl bg-black py-3">
-                                <Text className="text-center font-KanitBold text-white">
-                                    Login
-                                </Text>
-                            </Pressable>
-
-                            {/*ไอเส้นๆ*/}
-                            <View className="my-4 flex-row items-center">
-                                <View className="h-px flex-1 bg-gray-300" />
-                                <Text className="mx-2 font-KanitRegular text-sm text-gray-500">
-                                    or
-                                </Text>
-                                <View className="h-px flex-1 bg-gray-300" />
-                            </View>
-                            <GoogleButton />
-                        </View>
-                    )}
-                </Animated.View>
-
-            </View>
-            {/* Success Modal */}
-            <Modal
-                transparent={true}
-                visible={showSuccessModal}
-                animationType="fade" //or slide เดะค่อนเลือก
-            >
-                <View className="flex-1 justify-center items-center bg-black/50 bg-opacity-20">
-                    <View className="bg-white p-6 rounded-xl w-80 items-center">
-                        <Text className="text-lg font-KanitBold mb-4">signup success!!</Text>
-                        <Pressable
-                            onPress={handleModalClose}
-                            className="bg-[#98DAAA] py-2 px-4 rounded-xl mt-2"
-                        >
-                            <Text className="text-[#E9FCEF] font-KanitBold text-center">Go to Homepage</Text>
-                        </Pressable>
-                    </View>
-                </View>
-            </Modal>
+          )}
         </View>
-    );
+
+        {/*login*/}
+        <Animated.View
+          className="absolute top-14 h-full w-[90%] rounded-t-[28px] border border-neutral-900 shadow-sm bg-GRAY px-5 pt-4 shadow-lg"
+          style={{ transform: [{ translateY: loginY }] }}
+        >
+          <Pressable className="py-3" onPress={openLogin}>
+            <Text className="font-kanitBold text-xl">Login</Text>
+          </Pressable>
+
+          {!isSignupOpen && (
+            <View className="mt-6">
+              <TextInput
+                value={loginEmail}
+                onChangeText={setLoginEmail}
+                placeholder="Email"
+                placeholderTextColor="#9CA3AF"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+              />
+
+              <TextInput
+                value={loginPassword}
+                onChangeText={setLoginPassword}
+                placeholder="Password"
+                placeholderTextColor="#9CA3AF"
+                secureTextEntry
+                className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 font-kanitRegular"
+              />
+
+              <Pressable
+                onPress={handleLogin}
+                className="rounded-xl bg-black py-3"
+              >
+                <Text className="text-center font-kanitBold text-white">
+                  Login
+                </Text>
+              </Pressable>
+
+              {/*ไอเส้นๆ*/}
+              <View className="my-4 flex-row items-center">
+                <View className="h-px flex-1 bg-gray-300" />
+                <Text className="mx-2 font-kanitRegular text-sm text-gray-500">
+                  or
+                </Text>
+                <View className="h-px flex-1 bg-gray-300" />
+              </View>
+              <GoogleButton />
+            </View>
+          )}
+        </Animated.View>
+      </View>
+    </View>
+  );
 }
