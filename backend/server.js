@@ -520,7 +520,7 @@ app.post("/create/task", async (req, res) => {
 // edit task
 app.put("/task/:id", async (req, res) => {
   const { id } = req.params;
-  const { name, start_date, deadline, members } = req.body;
+  const { name, start_date, deadline, members, status } = req.body;
 
   try {
     const { data, error } = await supabase
@@ -529,6 +529,7 @@ app.put("/task/:id", async (req, res) => {
         task_name: name,
         start_date: start_date,
         deadline: deadline,
+        status: status,
       })
       .eq("id", id)
       .select()
