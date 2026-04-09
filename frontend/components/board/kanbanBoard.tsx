@@ -44,20 +44,6 @@ export default function KanbanBoard({ tasks: initialTasks, setModalVisible, onTa
     setTasks(initialTasks);
   }, [initialTasks]);
 
-  const moveTask = (taskId: string, toColumnId: string) => {
-    setTasks((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, status: toColumnId } : t))
-    );
-
-
-if (onTaskStatusChange) {
-  const task = tasks.find(t => t.id === taskId);
-  if (task) {
-    onTaskStatusChange(task.id, toColumnId);
-  }
-}
-  };
-
   const getColumnAtX = (pageX: number): string | null => {
     for (const [colId, layout] of Object.entries(columnLayouts.current)) {
       if (pageX >= layout.x && pageX <= layout.x + layout.width) {
@@ -67,23 +53,35 @@ if (onTaskStatusChange) {
     return null;
   };
 
-  const createPanResponder = (taskId: string) =>
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => setDraggingId(taskId),
-      onPanResponderMove: (evt) => setHighlightCol(getColumnAtX(evt.nativeEvent.pageX)),
-      onPanResponderRelease: (evt) => {
-        const col = getColumnAtX(evt.nativeEvent.pageX);
-        if (col) moveTask(taskId, col);
-        setDraggingId(null);
-        setHighlightCol(null);
-      },
-      onPanResponderTerminate: () => {
-        setDraggingId(null);
-        setHighlightCol(null);
-      },
-    });
+const moveTask = (taskId: string, toColumnId: string) => {
+  // อัปเดต state local ของ KanbanBoard
+  setTasks(prev =>
+    prev.map(t => (t.id === taskId ? { ...t, status: toColumnId } : t))
+  );
+
+  // เรียก parent callback เพื่ออัปเดต server
+  if (onTaskStatusChange) {
+    onTaskStatusChange(taskId, toColumnId);
+  }
+};
+
+const createPanResponder = (taskId: string) =>
+  PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderGrant: () => setDraggingId(taskId),
+    onPanResponderMove: (evt) => setHighlightCol(getColumnAtX(evt.nativeEvent.pageX)),
+    onPanResponderRelease: (evt) => {
+      const col = getColumnAtX(evt.nativeEvent.pageX);
+      if (col) moveTask(taskId, col); // อัปเดต state + server
+      setDraggingId(null);
+      setHighlightCol(null);
+    },
+    onPanResponderTerminate: () => {
+      setDraggingId(null);
+      setHighlightCol(null);
+    },
+  });
 
   return (
     <ScrollView

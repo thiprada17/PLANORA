@@ -128,25 +128,26 @@ export default function BoardScreen() {
     );
   };
 
-  const handleTaskStatusChange = async (taskId: string, status: string) => {
-    // อัปเดต state local ก่อน
-    setTasks((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, status } : t))
-    );
+const handleTaskStatusChange = async (taskId: string, status: string) => {
+  setTasks(prev => prev.map(t => (t.id === taskId ? { ...t, status } : t)));
 
+  try {
+    const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/task/${taskId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
 
-
-    // ส่งไป server
-    try {
-      await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/update/task/${taskId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      });
-    } catch (err) {
-      console.log("Failed to update task status:", err);
+    if (!res.ok) {
+      console.error("Server rejected request");
+      return;
     }
-  };
+
+    fetchTask(); // refresh tasks
+  } catch (err) {
+    console.error("Failed to update task status:", err);
+  }
+};
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -208,7 +209,7 @@ export default function BoardScreen() {
 
       {/* todo */}
       {activeTab === "todo" && (
-        <TodoBoard tasks={tasks} setModalVisible={setModalVisible} />
+        <TodoBoard tasks={tasks} setModalVisible={setModalVisible} onTaskPress={handleTaskPress} />
       )}
 
       {/* calendar */}
