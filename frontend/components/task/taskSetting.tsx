@@ -79,7 +79,7 @@ export default function TaskSetting({
     const loadMembers = async () => {
       try {
         const res = await fetch(
-          `https://freddy-unseconded-kristan.ngrok-free.dev/assign/member/${projectId}`,
+          `https://planora-4qj8.onrender.com/assign/member/${projectId}`,
           { headers: { "ngrok-skip-browser-warning": "true" } },
           // `http://192.168.100.166:3000/assign/member/${projectId}`,
         );
@@ -102,7 +102,7 @@ export default function TaskSetting({
     const taskname = async () => {
       try {
         const res = await fetch(
-          `https://freddy-unseconded-kristan.ngrok-free.dev/taskname/${task.task_id}`,
+          `https://planora-4qj8.onrender.com/taskname/${task.task_id}`,
           // `http://192.168.100.166:3000/taskname/${task.task_id}`,
         );
         const data = await res.json();
@@ -159,7 +159,7 @@ export default function TaskSetting({
       });
  const res =
       await fetch(
-        `https://freddy-unseconded-kristan.ngrok-free.dev/task/${task?.task_id}`,
+        `https://planora-4qj8.onrender.com/task/${task?.task_id}`,
         // `http://192.168.100.166:3000/task/${task?.task_id}`,
         {
           method: "PUT",
@@ -186,7 +186,7 @@ export default function TaskSetting({
   const handleDeleteTask = async () => {
     try {
       await fetch(
-        `https://freddy-unseconded-kristan.ngrok-free.dev/api/task/${task?.task_id}`,
+        `https://planora-4qj8.onrender.com/api/task/${task?.task_id}`,
         // `http://192.168.100.166:3000/api/task/${task?.task_id}`,
         { method: "DELETE" },
       );

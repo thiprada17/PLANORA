@@ -19,7 +19,7 @@ import io, { Socket } from "socket.io-client"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // ต่อ back
-const socket = io("https://freddy-unseconded-kristan.ngrok-free.dev", {
+const socket = io("https://planora-4qj8.onrender.com", {
   transports: ["websocket"],
   forceNew: true,
 })
@@ -112,13 +112,13 @@ export default function ProjectChatModal({
     const chatHistory = async () => {
 
         
-        const ress = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/project/name/${projectId}`)
+        const ress = await fetch(`https://planora-4qj8.onrender.com/project/name/${projectId}`)
       const project_name = await ress.json()
         console.log("สิ่งนี้คือ" + project_name.project_name)
       
         setPjName(project_name.project_name)
       
-      const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/chat/history/${projectId}`)
+      const res = await fetch(`https://planora-4qj8.onrender.com/chat/history/${projectId}`)
       const data = await res.json()
 
         data.forEach((msg: any) => {

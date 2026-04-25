@@ -37,7 +37,7 @@ export default function TaskForm({
     const loadMembers = async () => {
       try {
         const res = await fetch(
-          `https://freddy-unseconded-kristan.ngrok-free.dev/assign/member/${projectId}`,
+          `https://planora-4qj8.onrender.com/assign/member/${projectId}`,
         );
         const data = await res.json();
 
@@ -100,7 +100,7 @@ export default function TaskForm({
 
       console.log("Sending payload:", JSON.stringify(payload, null, 2));
       const res = await fetch(
-        "https://freddy-unseconded-kristan.ngrok-free.dev/create/task",
+        "https://planora-4qj8.onrender.com/create/task",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

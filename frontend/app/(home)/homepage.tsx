@@ -74,7 +74,7 @@ export default function HomePage() {
     if (!userId) return;
     try {
       const response = await fetch(
-        `https://freddy-unseconded-kristan.ngrok-free.dev/display/projects/${userId}`,
+        `https://planora-4qj8.onrender.com/display/projects/${userId}`,
         {
           headers: {
             "ngrok-skip-browser-warning": "true",},

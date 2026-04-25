@@ -65,8 +65,8 @@ export default function GoogleLoginButton() {
 
       await AsyncStorage.setItem("username", username)
       await AsyncStorage.setItem("email", email)
-            await AsyncStorage.setItem("profile", avatar)
-                await AsyncStorage.setItem("user_id", user.id)
+      await AsyncStorage.setItem("profile", avatar)
+      await AsyncStorage.setItem("user_id", user.id)
       router.replace('/(home)/homepage')
 
     } catch (err) {

@@ -89,7 +89,7 @@ export default function BoardScreen() {
 
     try {
       const res = await fetch(
-        `https://freddy-unseconded-kristan.ngrok-free.dev/get/task/${pid}`,
+        `https://planora-4qj8.onrender.com/get/task/${pid}`,
         // `http://192.168.100.166:3000/get/task/${pid}`
       );
 
@@ -132,7 +132,7 @@ const handleTaskStatusChange = async (taskId: string, status: string) => {
   setTasks(prev => prev.map(t => (t.id === taskId ? { ...t, status } : t)));
 
   try {
-    const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/task/${taskId}`, {
+    const res = await fetch(`https://planora-4qj8.onrender.com/task/${taskId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),

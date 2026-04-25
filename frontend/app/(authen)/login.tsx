@@ -75,7 +75,7 @@ export default function Index() {
       setIsLoading(true);
       // ตอนนี้มันต้องเปลี่ยน ip ที่จะ fetch ตาามเครื่องน้าา ยุ่งยากมาก
       const res = await fetch(
-        "https://freddy-unseconded-kristan.ngrok-free.dev/api/signup",
+        "https://planora-4qj8.onrender.com/api/signup",
 
         {
           method: "POST",
@@ -111,7 +111,7 @@ export default function Index() {
       setIsLoading(true);
 
       const res = await fetch(
-        "https://freddy-unseconded-kristan.ngrok-free.dev/api/login",
+        "https://planora-4qj8.onrender.com/api/login",
         {
           method: "POST",
           headers: {

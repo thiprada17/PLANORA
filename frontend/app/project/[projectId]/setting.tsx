@@ -36,7 +36,7 @@ export default function setting() {
   useEffect(() => {
     const fetchProject = async () => {
       const res = await fetch(
-        `https://freddy-unseconded-kristan.ngrok-free.dev/api/project/${projectID}`,
+        `https://planora-4qj8.onrender.com/api/project/${projectID}`,
       );
       const data = await res.json();
       console.log("fetch result:", data);
@@ -55,7 +55,7 @@ export default function setting() {
   const handleSave = async () => {
     try {
       const res = await fetch(
-        `https://freddy-unseconded-kristan.ngrok-free.dev/api/project/${projectID}`,
+        `https://planora-4qj8.onrender.com/api/project/${projectID}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -88,7 +88,7 @@ export default function setting() {
         onPress: async () => {
           try {
             const res = await fetch(
-              `https://freddy-unseconded-kristan.ngrok-free.dev/api/project/${projectID}`,
+              `https://planora-4qj8.onrender.com/api/project/${projectID}`,
               {
                 method: "DELETE",
               },

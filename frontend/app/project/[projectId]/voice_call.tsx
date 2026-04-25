@@ -62,7 +62,7 @@ export default function RoomPage() {
   useEffect(() => {
     const projectName = async () => {
 
-      const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/project/name/${projectId}`)
+      const res = await fetch(`https://planora-4qj8.onrender.com/project/name/${projectId}`)
       const data = await res.json()
       setProjecName(data.project_name)
 
@@ -82,7 +82,7 @@ export default function RoomPage() {
   const getUser = async (username: string) => {
     const encoded = encodeURIComponent(username);
     try {
-      const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/avatar/${encoded}`)
+      const res = await fetch(`https://planora-4qj8.onrender.com/avatar/${encoded}`)
       const data = await res.json()
 
       return data[0].avatar_url
@@ -224,7 +224,7 @@ export default function RoomPage() {
   const fetchToken = async (Room: string, uid: number): Promise<string> => {
     try {
       const res = await fetch(
-        `https://freddy-unseconded-kristan.ngrok-free.dev/agora/token?channelName=${Room}&uid=${uid}`
+        `https://planora-4qj8.onrender.com/agora/token?channelName=${Room}&uid=${uid}`
       );
       const data = await res.json()
       return data.token

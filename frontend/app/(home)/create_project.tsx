@@ -207,7 +207,7 @@ export default function CreateProject() {
   const searchMember = async (email: string) => {
     try {
 
-      const res = await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/search/member', {
+      const res = await fetch('https://planora-4qj8.onrender.com/search/member', {
       // const res = await fetch('http://10.4.13.69:3000/search/member', {
         method: "POST",
         headers: {
@@ -228,7 +228,7 @@ export default function CreateProject() {
     console.log("yes")
     const userId = await AsyncStorage.getItem('userId');
     try {
-      await fetch('https://freddy-unseconded-kristan.ngrok-free.dev/create/post', {
+      await fetch('https://planora-4qj8.onrender.com/create/post', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(project)

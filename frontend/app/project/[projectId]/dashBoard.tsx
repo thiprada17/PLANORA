@@ -48,7 +48,7 @@ const [members, setMembers] = useState<any[]>([]);
         }
 
         // const res = await fetch(`http://192.168.1.125:3000/dashboard/${projectId}/${userId}`);
-        const res = await fetch(`https://freddy-unseconded-kristan.ngrok-free.dev/dashboard/${projectId}/${userId}`);
+        const res = await fetch(`https://planora-4qj8.onrender.com/dashboard/${projectId}/${userId}`);
 
         if (!res.ok) {
           throw new Error(`Server Error: ${res.status}`);
